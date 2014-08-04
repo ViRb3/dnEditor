@@ -13,4 +13,4 @@ will not be that top-1 replacement.
  - Creator of Simple Assembly Explorer for his great piece of work. I took many ideas and features
  from his program.
  - Creator of dnlib for the epic library that made this project possible. Hands down.
- - Creator of dnSpy (and Confuser) for again his awesome work. I also took some ideas from him and his projects.
+ - Creator of dnSpy (and Confuser) for again his awesome work. I took some ideas and features from him as well.
