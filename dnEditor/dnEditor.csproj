@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>dnEditor.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -106,12 +109,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GitHub\dnlib\src\dnlib.csproj">
-      <Project>{FDFC1237-143F-4919-8318-4926901F4639}</Project>
-      <Name>dnlib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Images\Assembly.png" />
     <Content Include="Images\AssemblyList.png" />
     <Content Include="Images\AssemblyWarning.png" />
@@ -178,6 +175,12 @@
     <Content Include="MSIL Dictionary.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dnlib\src\dnlib.csproj">
+      <Project>{FDFC1237-143F-4919-8318-4926901F4639}</Project>
+      <Name>dnlib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

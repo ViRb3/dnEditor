@@ -7,6 +7,11 @@ using AssemblyHashAlgorithm = System.Configuration.Assemblies.AssemblyHashAlgori
 
 namespace dnEditor.Misc
 {
+    /*
+     * FULL CREDITS OF THIS CLASS GO TO THE CODER OF SIMPLE ASSEMBLY EXPLORER.
+     * I FULLY COPIED IT AND TAKE NO CREDIT FOR HIS WORK!
+     */
+
     public class TokenUtils
     {
         public static byte[] GetPublicKeyTokenFromKeyFile(string keyFile)

@@ -4,6 +4,11 @@ using System.Text;
 
 namespace dnEditor.Misc
 {
+    /*
+     * FULL CREDITS OF THIS CLASS GO TO THE CODER OF SIMPLE ASSEMBLY EXPLORER.
+     * I FULLY COPIED IT AND TAKE NO CREDIT FOR HIS WORK!
+     */
+
     public class BytesUtils
     {
         public static string BytesToHexStringBlock(byte[] bytes)
