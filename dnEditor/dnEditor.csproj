@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{48EAA0D1-F933-4AC3-8334-9B3375AF3446}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>dnEditor</RootNamespace>
+    <AssemblyName>dnEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Misc\ByteUtils.cs" />
+    <Compile Include="Misc\ColorRules.cs" />
+    <Compile Include="Misc\CurrentAssembly.cs" />
+    <Compile Include="Forms\EditInstructionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditInstructionForm.Designer.cs">
+      <DependentUpon>EditInstructionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PickReferenceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PickReferenceForm.Designer.cs">
+      <DependentUpon>PickReferenceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Handlers\DataGridViewHandler.cs" />
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Misc\Functions.cs" />
+    <Compile Include="Handlers\TreeViewHandler.cs" />
+    <Compile Include="Images\AccessOverlayIcon.cs" />
+    <Compile Include="Images\MemberIcon.cs" />
+    <Compile Include="Images\TypeIcon.cs" />
+    <Compile Include="Misc\InstructionBlock.cs" />
+    <Compile Include="Misc\MethodHolder.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Misc\TokenUtils.cs" />
+    <EmbeddedResource Include="Forms\EditInstructionForm.resx">
+      <DependentUpon>EditInstructionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PickReferenceForm.resx">
+      <DependentUpon>PickReferenceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Images\ILSpy.pdn" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\GitHub\dnlib\src\dnlib.csproj">
+      <Project>{FDFC1237-143F-4919-8318-4926901F4639}</Project>
+      <Name>dnlib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\Assembly.png" />
+    <Content Include="Images\AssemblyList.png" />
+    <Content Include="Images\AssemblyWarning.png" />
+    <Content Include="Images\Back.png" />
+    <Content Include="Images\Break.png" />
+    <Content Include="Images\Breakpoint.png" />
+    <Content Include="Images\Class.png" />
+    <Content Include="Images\ClearSearch.png" />
+    <Content Include="Images\Constructor.png" />
+    <Content Include="Images\CurrentLine.png" />
+    <Content Include="Images\Delegate.png" />
+    <Content Include="Images\Delete.png" />
+    <Content Include="Images\DisabledBreakpoint.png" />
+    <Content Include="Images\Enum.png" />
+    <Content Include="Images\EnumValue.png" />
+    <Content Include="Images\Event.png" />
+    <Content Include="Images\ExtensionMethod.png" />
+    <Content Include="Images\Field.png" />
+    <Content Include="Images\FieldReadOnly.png" />
+    <Content Include="Images\Find.png" />
+    <Content Include="Images\FindAssembly.png" />
+    <Content Include="Images\Folder.Closed.png" />
+    <Content Include="Images\Folder.Open.png" />
+    <Content Include="Images\Forward.png" />
+    <Content Include="Images\ILSpy-Large.ico" />
+    <Content Include="Images\ILSpy.ico" />
+    <Content Include="Images\ILSpyNewIconList.txt" />
+    <Content Include="Images\Indexer.png" />
+    <Content Include="Images\Interface.png" />
+    <Content Include="Images\Library.png" />
+    <Content Include="Images\Literal.png" />
+    <Content Include="Images\Method.png" />
+    <Content Include="Images\NameSpace.png" />
+    <Content Include="Images\OK.png" />
+    <Content Include="Images\Open.png" />
+    <Content Include="Images\Operator.png" />
+    <Content Include="Images\OverlayCompilerControlled.png" />
+    <Content Include="Images\OverlayInternal.png" />
+    <Content Include="Images\OverlayPrivate.png" />
+    <Content Include="Images\OverlayProtected.png" />
+    <Content Include="Images\OverlayProtectedInternal.png" />
+    <Content Include="Images\OverlayStatic.png" />
+    <Content Include="Images\PInvokeMethod.png" />
+    <Content Include="Images\PrivateInternal.png" />
+    <Content Include="Images\Property.png" />
+    <Content Include="Images\ReferenceFolder.Closed.png" />
+    <Content Include="Images\ReferenceFolder.Open.png" />
+    <Content Include="Images\Refresh.png" />
+    <Content Include="Images\Resource.png" />
+    <Content Include="Images\ResourceImage.png" />
+    <Content Include="Images\ResourceResourcesFile.png" />
+    <Content Include="Images\ResourceXml.png" />
+    <Content Include="Images\ResourceXsd.png" />
+    <Content Include="Images\ResourceXsl.png" />
+    <Content Include="Images\ResourceXslt.png" />
+    <Content Include="Images\SaveFile.png" />
+    <Content Include="Images\Search.png" />
+    <Content Include="Images\StaticClass.png" />
+    <Content Include="Images\Struct.png" />
+    <Content Include="Images\SubTypes.png" />
+    <Content Include="Images\SuperTypes.png" />
+    <Content Include="Images\ViewCode.png" />
+    <Content Include="Images\VirtualMethod.png" />
+    <Content Include="MSIL Dictionary.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
