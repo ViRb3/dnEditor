@@ -9,7 +9,7 @@ a pull request, I will make sure to merge it as soon as possible.
 Note that I am not a full-time coder nor a professional developer, so my work
 will not be that top-1 replacement.
 
-##Superme credits:
+##Supreme credits:
  - Creator of Simple Assembly Explorer for his great piece of work. I took many ideas and features
  from his program.
  - Creator of dnlib for the epic library that made this project possible. Hands down.
