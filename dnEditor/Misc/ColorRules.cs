@@ -25,14 +25,17 @@ namespace dnEditor.Misc
 
             foreach (DataGridViewRow row in dgView.Rows)
             {
-                Color newColor = DefaultColor;
                 string opcode = row.Cells["opcode"].Value.ToString().Trim(' ');
 
                 if (Rules.ContainsKey(opcode))
                 {
+                    Color newColor;
                     Rules.TryGetValue(opcode, out newColor);
 
+                    if (newColor == default(Color))
+                        newColor = DefaultColor;
 
+                    // Color darkening for instruction blocks
                     if (row.DefaultCellStyle.BackColor == BlockColor)
                     {
                         newColor = Color.FromArgb(newColor.R - 17 < 0 ? newColor.R : newColor.R - 17,
