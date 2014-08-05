@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
@@ -170,5 +173,11 @@ namespace dnEditor.Forms
 
             OpenFile(dialog.FileName);
         }
+
+        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            TreeViewHandler.treeView1_AfterExpand(sender, e);
+        }
+
     }
 }

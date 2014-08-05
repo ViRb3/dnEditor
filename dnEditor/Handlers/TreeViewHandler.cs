@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using dnEditor.Misc;
 using dnlib.DotNet;
@@ -10,9 +14,12 @@ namespace dnEditor.Handlers
 {
     public static class TreeViewHandler
     {
+        private const string VirtualNode = "VIRT";
         private static TreeNode _currentNode;
         private static TreeView _currentTreeView;
-        private static Dictionary<string, TreeNode> typeNameSpaceDictionary = new Dictionary<string, TreeNode>();
+
+        private static readonly Dictionary<string, TreeNode> typeNameSpaceDictionary =
+            new Dictionary<string, TreeNode>();
 
         public static CurrentAssembly DragDrop(object sender, DragEventArgs e)
         {
@@ -65,7 +72,7 @@ namespace dnEditor.Handlers
         public static void Load(TreeView treeView, AssemblyDef currentAssembly, bool clear)
         {
             _currentTreeView = treeView;
-            
+
             if (clear)
                 treeView.Nodes.Clear();
 
@@ -92,7 +99,7 @@ namespace dnEditor.Handlers
 
                 foreach (TypeDef type in module.Types.OrderBy(m => m.Name))
                 {
-                    LoadMembers(type); //TODO: Type loading takes very long time on larger assemblies
+                    LoadMembers(type);
                 }
             }
         }
@@ -132,7 +139,7 @@ namespace dnEditor.Handlers
                     AddType(type); // node is TypeDef
                 }
             }
-            else if(parentType != null)
+            else if (parentType != null)
                 AddType(type); // node is nested TypeDef
 
             List<MethodDef> accessorMethods = type.GetAccessorMethods();
@@ -163,11 +170,11 @@ namespace dnEditor.Handlers
                 ReturnToType(); // node is TypeDef
             }
 
-            foreach (TypeDef nestedType in type.NestedTypes.OrderBy(m => m.Name))
-            {
-                ReturnToType(type); // node is TypeDef
-                LoadMembers(nestedType, type);
-            }
+            //foreach (TypeDef nestedType in type.NestedTypes.OrderBy(m => m.Name))
+            //{
+            //    ReturnToType(type); // node is TypeDef
+            //    LoadMembers(nestedType, type);
+            //}
         }
 
         private static void ReturnToModule()
@@ -197,49 +204,113 @@ namespace dnEditor.Handlers
             }
         }
 
+        private static void bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var oArgs = e.Argument as object[];
+            var tNodeParent = oArgs[0] as TreeNode;
+            //string sInfo = oArgs[1].ToString();
+
+
+            var r = new Random();
+            Thread.Sleep(r.Next(500, 2500));
+
+            var arrChildren = new object[] {"Grapes", "Apples"};
+
+            // Return the Parent Tree Node and the list of children to the
+            // UI thread.
+            e.Result = new object[] {tNodeParent, arrChildren};
+        }
+
+        private static void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var oResult = e.Result as object[];
+            var tNodeParent = oResult[0] as TreeNode;
+            var arrChildren = oResult[1] as string[];
+
+            tNodeParent.Nodes.Clear();
+
+            foreach (string sChild in arrChildren)
+            {
+                TreeNode tNode = tNodeParent.Nodes.Add(sChild);
+                AddVirtualNode(tNode);
+            }
+        }
+
+        public static void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Nodes.ContainsKey(VirtualNode))
+            {
+                var bw = new BackgroundWorker();
+                bw.DoWork += bw_DoWork;
+                bw.RunWorkerCompleted +=
+                    bw_RunWorkerCompleted;
+
+                object[] oArgs = {e.Node, "Some information..."};
+                bw.RunWorkerAsync(oArgs);
+            }
+        }
+
+        public static void AddVirtualNode(TreeNode tNode)
+        {
+            var tVirt = new TreeNode
+            {
+                Text = "Loading...",
+                Name = VirtualNode,
+                ForeColor = Color.Blue,
+                NodeFont = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Underline)
+            };
+
+            tNode.Nodes.Add(tVirt);
+        }
+
         #region AddNode
 
-        private static void AddFile(AssemblyDef file)
+        private static TreeNode NewNode(string text)
         {
-            TreeNode node = _currentTreeView.Nodes.Add(file.Name);
+            return new TreeNode("text");
+        }
+
+        private static TreeNode AddFile(AssemblyDef file)
+        {
+            TreeNode node = NewNode(file.Name);
             node.Tag = file;
             node.ImageIndex = node.SelectedImageIndex = 0;
-            _currentNode = node;
+            return node;
         }
 
-        private static void AddModule(ModuleDefMD module)
+        private static TreeNode AddModule(ModuleDefMD module)
         {
-            TreeNode node = _currentNode.Nodes.Add(module.FullName);
+            TreeNode node = NewNode(module.FullName);
             node.Tag = module;
             node.ImageIndex = node.SelectedImageIndex = 28;
-            _currentNode = node;
+            return node;
         }
 
-        private static void AddAssemblyRef(AssemblyRef assemblyRef)
+        private static TreeNode AddAssemblyRef(AssemblyRef assemblyRef)
         {
-            TreeNode node = _currentNode.Nodes.Add(assemblyRef.FullName);
+            TreeNode node = NewNode(assemblyRef.FullName);
             node.Tag = assemblyRef;
             node.ImageIndex = node.SelectedImageIndex = 0;
-            _currentNode = node;
+            return node;
         }
 
-        private static void AddNameSpace(string nameSpace)
+        private static TreeNode AddNameSpace(string nameSpace)
         {
-            TreeNode node = _currentNode.Nodes.Add(nameSpace);
+            TreeNode node = NewNode(nameSpace);
             node.Tag = nameSpace;
             node.ImageIndex = node.SelectedImageIndex = 31;
-            _currentNode = node;
+            return node;
         }
 
-        private static void AddType(TypeDef type) // (Class)
+        private static TreeNode AddType(TypeDef type) // (Class)
         {
-            TreeNode node = _currentNode.Nodes.Add(type.Name);
+            TreeNode node = NewNode(type.Name);
             node.Tag = type;
             node.ImageIndex = node.SelectedImageIndex = 6;
-            _currentNode = node;
+            return node;
         }
 
-        private static void AddMethod(MethodDef method)
+        private static TreeNode AddMethod(MethodDef method)
         {
             string parameters = "";
 
@@ -249,49 +320,54 @@ namespace dnEditor.Handlers
                 parameters += ", ";
             }
 
-            parameters = parameters.TrimEnd(new[] { ',', ' ' });
+            parameters = parameters.TrimEnd(new[] {',', ' '});
 
-            TreeNode node =
-                _currentNode.Nodes.Add(string.Format("{0}({1}): {2}", method.Name, parameters,
-                    method.ReturnType.GetExtendedName()));
+            TreeNode node = NewNode(string.Format("{0}({1}): {2}", method.Name, parameters,
+                method.ReturnType.GetExtendedName()));
             node.Tag = method;
             node.ImageIndex = node.SelectedImageIndex = 30;
-            _currentNode = node;
+
+            return node;
         }
 
-        private static void AddProperty(PropertyDef property)
+        private static TreeNode[] AddProperty(PropertyDef property)
         {
-            TreeNode node = _currentNode.Nodes.Add(string.Format(property.Name));
+            TreeNode node = NewNode(string.Format(property.Name));
+
             node.Tag = property;
             node.ImageIndex = node.SelectedImageIndex = 43;
-            _currentNode = node;
+
+            var nodeList = new List<TreeNode>();
+
+            nodeList.Add(node);
 
             if (property.GetMethod != null)
             {
                 string type = property.GetMethod.ReturnType.GetExtendedName();
 
-                AddMethod(property.GetMethod);
+                nodeList.Add(AddMethod(property.GetMethod));
                 node.Text = string.Format("{0}: {1}", property.Name, type);
-                _currentNode = node;
             }
 
             if (property.SetMethod != null)
             {
-                AddMethod(property.SetMethod);
-                _currentNode = node;
+                nodeList.Add(AddMethod(property.SetMethod));
             }
+
             foreach (MethodDef method in property.OtherMethods)
             {
-                AddMethod(method);
-                _currentNode = node;
+                nodeList.Add(AddMethod(method));
             }
 
-            _currentNode = node;
+            return nodeList.ToArray();
         }
 
-        private static void AddEvent(EventDef eventDef)
+        private static TreeNode[] AddEvent(EventDef eventDef)
         {
-            TreeNode node = _currentNode.Nodes.Add(string.Format("{0}: {1}", eventDef.Name, "EventHandler"));
+            TreeNode node = NewNode(string.Format("{0}: {1}", eventDef.Name, "EventHandler"));
+            var nodeList = new List<TreeNode>();
+
+            nodeList.Add(node);
 
             node.Tag = eventDef;
             node.ImageIndex = node.SelectedImageIndex = 15;
@@ -299,36 +375,36 @@ namespace dnEditor.Handlers
 
             if (eventDef.AddMethod != null)
             {
-                AddMethod(eventDef.AddMethod);
-                _currentNode = node;
+                nodeList.Add(AddMethod(eventDef.AddMethod));
             }
 
             if (eventDef.RemoveMethod != null)
             {
-                AddMethod(eventDef.RemoveMethod);
-                _currentNode = node;
+                nodeList.Add(AddMethod(eventDef.RemoveMethod));
             }
+
             if (eventDef.InvokeMethod != null)
             {
-                AddMethod(eventDef.InvokeMethod);
-                _currentNode = node;
+                nodeList.Add(AddMethod(eventDef.InvokeMethod));
             }
+
             foreach (MethodDef method in eventDef.OtherMethods)
             {
-                AddMethod(method);
-                _currentNode = node;
+                nodeList.Add(AddMethod(method));
             }
+
+            return nodeList.ToArray();
         }
 
-        private static void AddField(FieldDef field)
+        private static TreeNode AddField(FieldDef field)
         {
             string type = field.FieldType.GetExtendedName();
 
             TreeNode node =
-                _currentNode.Nodes.Add(string.Format("{0}: {1}", field.Name, type));
+                NewNode(string.Format("{0}: {1}", field.Name, type));
             node.Tag = field;
             node.ImageIndex = node.SelectedImageIndex = 17;
-            _currentNode = node;
+            return node;
         }
 
         #endregion AddNode
