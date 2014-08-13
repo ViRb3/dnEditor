@@ -47,6 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\EventHandler.cs" />
+    <Compile Include="Handlers\FieldHandler.cs" />
+    <Compile Include="Handlers\MethodHandler.cs" />
+    <Compile Include="Handlers\PropertyHandler.cs" />
+    <Compile Include="Handlers\ReferenceHandler.cs" />
+    <Compile Include="Handlers\ResourceHandler.cs" />
+    <Compile Include="Handlers\TypeHandler.cs" />
     <Compile Include="Misc\ByteUtils.cs" />
     <Compile Include="Misc\ColorRules.cs" />
     <Compile Include="Misc\CurrentAssembly.cs" />
