@@ -3,14 +3,14 @@ dnEditor
 
 A dotNET assembly editor based on dnlib.
 
-All help from all sources is greatly appreciated. Feel free to upgrade this project by submitting
-a pull request, I will make sure to merge it as soon as possible.
+All kind of help from all sources is greatly appreciated. Feel free to upgrade, fix touch or hack
+this project by submitting a pull request and I will make sure to merge it as soon as possible.
 
-Note that I am not a full-time coder nor a professional developer, so my work
-will not be that top-1 replacement.
+Cheers!
 
-##Supreme credits:
- - Creator of Simple Assembly Explorer for his great piece of work. I took many ideas and features
- from his program.
- - Creator of dnlib for the epic library that made this project possible. Hands down.
- - Creator of dnSpy (and Confuser) for again his awesome work. I took some ideas and features from him as well.
+##Upper credits:
+ - WiCKY Hu (Simple Assembly Explorer) for his awesome piece of work. Many ideas and features that
+ you find in dnEditor are first seen there.
+ - 0xd4d (dnlib) for the epic library that made this project possible.
+ - yck1509 (dnSpy) for the first dnlib-based assembly decompiler. That definitely served me as a
+ reference and dictionary of all I wasn't sure how to do.
