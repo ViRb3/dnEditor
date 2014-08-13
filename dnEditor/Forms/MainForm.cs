@@ -35,7 +35,7 @@ namespace dnEditor.Forms
 
         private void LoadAssembly(bool clear)
         {
-            TreeViewHandler.Load(treeView1, CurrentAssembly.Assembly, clear);
+            TreeViewHandler.LoadAssembly(treeView1, CurrentAssembly.Assembly, clear);
         }
 
         private void treeView1_DragDrop(object sender, DragEventArgs e)
@@ -105,7 +105,7 @@ namespace dnEditor.Forms
                 Filter = "Executable Files (*.exe)|*.exe"
             };
 
-            if (dialog.ShowDialog() != DialogResult.OK && File.Exists(dialog.FileName))
+            if (dialog.ShowDialog() != DialogResult.OK || !File.Exists(dialog.FileName))
                 return;
 
             OpenFile(dialog.FileName);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -31,15 +30,15 @@ namespace dnEditor.Handlers
     public static class TreeViewHandler
     {
         private const string VirtualNode = "VIRT";
-        public static TreeNode CurrentNode;
-        public static List<TreeNode> ModuleNodes = new List<TreeNode>();
+
         public static TreeNode RefNode;
+        public static TreeNode CurrentModule;
         public static TreeView CurrentTreeView;
 
-        public static readonly Dictionary<string, TreeNode> TypeNameSpaceDictionary =
-            new Dictionary<string, TreeNode>();
+        public static List<string> NameSpaceList = new List<string>();
 
         #region Interface
+
         public static CurrentAssembly DragDrop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -58,10 +57,10 @@ namespace dnEditor.Handlers
         {
             e.Effect = DragDropEffects.Copy;
         }
+
         #endregion Interface
 
-
-        public static void Load(TreeView treeView, AssemblyDef currentAssembly, bool clear)
+        public static void LoadAssembly(TreeView treeView, AssemblyDef currentAssembly, bool clear)
         {
             CurrentTreeView = treeView;
 
@@ -73,8 +72,12 @@ namespace dnEditor.Handlers
 
             foreach (ModuleDefMD module in currentAssembly.Modules)
             {
+                NameSpaceList.Clear();
+
                 TreeNode moduleNode = NewModule(module);
-                moduleNode.AddTo(file); // Current is module
+                moduleNode.AddTo(file);
+
+                CurrentModule = moduleNode;
 
                 if (module.GetAssemblyRefs().Any())
                 {
@@ -95,21 +98,20 @@ namespace dnEditor.Handlers
 
             var children = new List<TreeNode>();
 
-            if (parentNode == RefNode)
+            if (parentNode == RefNode) // Assembly Reference
             {
-                ReferenceHandler.HandleReference2(parentNode, ref children);
+                ReferenceHandler.ProcessAssemblyRefs(parentNode, ref children);
             }
-            else if (parentNode.Tag is ModuleDefMD)
+            else if (parentNode.Tag is ModuleDefMD) // Module
             {
                 foreach (TypeDef type in (parentNode.Tag as ModuleDefMD).Types)
                 {
-                    children.Add(NewType(type));
+                    TypeHandler.HandleType(type);
                 }
             }
-            else if (parentNode.Tag is TypeDef)
+            else if (parentNode.Tag is TypeDef) // Type
             {
-                foreach (TypeDef type in (parentNode.Tag as TypeDef).NestedTypes)
-                    children.Add(NewType(type));
+                TypeHandler.ProcessTypeMembers(parentNode, ref children);
             }
 
 
@@ -128,18 +130,23 @@ namespace dnEditor.Handlers
 
             foreach (TreeNode child in children)
             {
-                if (child.Tag is TypeDef && (child.Tag as TypeDef).IsNested)
+                if (child.Tag is TypeDef)
                 {
-                    /*TODO: TypeHandler.HandleNestedType(child.Tag as TypeDef);
-                    continue;*/
+                    var type = child.Tag as TypeDef;
+
+                    if (type.IsNested)
+                    {
+                        TypeHandler.HandleType(child.Tag as TypeDef);
+                        continue;
+                    }
+
+                    if (ExpandableType(type))
+                    {
+                        AddVirtualNode(child);
+                    }
                 }
 
                 parentNode.Nodes.Add(child);
-
-                if (child.Tag is TypeDef && (child.Tag as TypeDef).HasNestedTypes)
-                {
-                    AddVirtualNode(child);
-                }
             }
         }
 
@@ -155,6 +162,12 @@ namespace dnEditor.Handlers
         }
 
         #region Functions
+
+        public static bool ExpandableType(TypeDef type)
+        {
+            return (type.HasNestedTypes || type.HasMethods || type.HasEvents || type.HasFields || type.HasProperties);
+        }
+
         public static TreeNode FindMethod(TreeNode node, MethodDef method)
         {
             foreach (TreeNode subNode in node.Nodes)
@@ -171,6 +184,7 @@ namespace dnEditor.Handlers
             }
             return null;
         }
+
         public static void AddVirtualNode(TreeNode parentNode)
         {
             var node = new TreeNode
@@ -204,6 +218,7 @@ namespace dnEditor.Handlers
                 parentNode.Nodes.Cast<TreeNode>()
                     .FirstOrDefault(n => n.Name == VirtualNode && n.ForeColor == Color.Blue && n.Text == "Loading...");
         }
+
         #endregion Functions
 
         #region AddNode
@@ -211,14 +226,11 @@ namespace dnEditor.Handlers
         public static void AddTo(this TreeNode node, TreeView view)
         {
             view.Nodes.Add(node);
-            CurrentNode = node;
-            ModuleNodes.Add(node);
         }
 
         public static void AddTo(this TreeNode node, TreeNode parentNode)
         {
             parentNode.Nodes.Add(node);
-            CurrentNode = node;
         }
 
         public static TreeNode NewNode(string text)
@@ -231,6 +243,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(file.Name);
             node.Tag = file;
             node.ImageIndex = node.SelectedImageIndex = 0;
+
             return node;
         }
 
@@ -239,6 +252,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(module.FullName);
             node.Tag = module;
             node.ImageIndex = node.SelectedImageIndex = 28;
+
             return node;
         }
 
@@ -247,6 +261,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(assemblyRef.FullName);
             node.Tag = assemblyRef;
             node.ImageIndex = node.SelectedImageIndex = 0;
+
             return node;
         }
 
@@ -255,6 +270,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(nameSpace);
             node.Tag = nameSpace;
             node.ImageIndex = node.SelectedImageIndex = 31;
+
             return node;
         }
 
@@ -263,6 +279,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(type.Name); //TODO: Extended name
             node.Tag = type;
             node.ImageIndex = node.SelectedImageIndex = 6;
+
             return node;
         }
 
@@ -286,70 +303,62 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode[] NewProperty(PropertyDef property)
+        public static TreeNode NewProperty(PropertyDef property)
         {
             TreeNode node = NewNode(string.Format(property.Name));
 
             node.Tag = property;
             node.ImageIndex = node.SelectedImageIndex = 43;
 
-            var nodeList = new List<TreeNode>();
-
-            nodeList.Add(node);
-
             if (property.GetMethod != null)
             {
                 string type = property.GetMethod.ReturnType.GetExtendedName();
 
-                nodeList.Add(NewMethod(property.GetMethod));
+                node.Nodes.Add(NewMethod(property.GetMethod));
                 node.Text = string.Format("{0}: {1}", property.Name, type);
             }
 
             if (property.SetMethod != null)
             {
-                nodeList.Add(NewMethod(property.SetMethod));
+                node.Nodes.Add(NewMethod(property.SetMethod));
             }
 
             foreach (MethodDef method in property.OtherMethods)
             {
-                nodeList.Add(NewMethod(method));
+                node.Nodes.Add(NewMethod(method));
             }
 
-            return nodeList.ToArray();
+            return node;
         }
 
-        public static TreeNode[] NewEvent(EventDef eventDef)
+        public static TreeNode NewEvent(EventDef @event)
         {
-            TreeNode node = NewNode(string.Format("{0}: {1}", eventDef.Name, "EventHandler"));
-            var nodeList = new List<TreeNode>();
+            TreeNode node = NewNode(string.Format("{0}: {1}", @event.Name, "EventHandler"));
 
-            nodeList.Add(node);
-
-            node.Tag = eventDef;
+            node.Tag = @event;
             node.ImageIndex = node.SelectedImageIndex = 15;
-            CurrentNode = node;
 
-            if (eventDef.AddMethod != null)
+            if (@event.AddMethod != null)
             {
-                nodeList.Add(NewMethod(eventDef.AddMethod));
+                node.Nodes.Add(NewMethod(@event.AddMethod));
             }
 
-            if (eventDef.RemoveMethod != null)
+            if (@event.RemoveMethod != null)
             {
-                nodeList.Add(NewMethod(eventDef.RemoveMethod));
+                node.Nodes.Add(NewMethod(@event.RemoveMethod));
             }
 
-            if (eventDef.InvokeMethod != null)
+            if (@event.InvokeMethod != null)
             {
-                nodeList.Add(NewMethod(eventDef.InvokeMethod));
+                node.Nodes.Add(NewMethod(@event.InvokeMethod));
             }
 
-            foreach (MethodDef method in eventDef.OtherMethods)
+            foreach (MethodDef method in @event.OtherMethods)
             {
-                nodeList.Add(NewMethod(method));
+                node.Nodes.Add(NewMethod(method));
             }
 
-            return nodeList.ToArray();
+            return node;
         }
 
         public static TreeNode NewField(FieldDef field)
@@ -360,6 +369,7 @@ namespace dnEditor.Handlers
                 NewNode(string.Format("{0}: {1}", field.Name, type));
             node.Tag = field;
             node.ImageIndex = node.SelectedImageIndex = 17;
+
             return node;
         }
 

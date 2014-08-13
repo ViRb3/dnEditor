@@ -10,7 +10,7 @@ namespace dnEditor.Handlers
     {
         public static void HandleReferences(IEnumerable<AssemblyRef> references)
         {
-            TreeViewHandler.RefNode = TreeViewHandler.CurrentNode.Nodes.Add("References");
+            TreeViewHandler.RefNode = TreeViewHandler.CurrentModule.Nodes.Add("References");
             TreeViewHandler.RefNode.ImageIndex = TreeViewHandler.RefNode.SelectedImageIndex = 44;
 
             TreeNode virtualNode = TreeViewHandler.RefNode.FindVirtualNode();
@@ -25,7 +25,7 @@ namespace dnEditor.Handlers
             }
         }
 
-        public static void HandleReference2(TreeNode parentNode, ref List<TreeNode> children)
+        public static void ProcessAssemblyRefs(TreeNode parentNode, ref List<TreeNode> children)
         {
             children = new List<TreeNode>();
             var refs = parentNode.FindVirtualNode().Tag as AssemblyRef[];
