@@ -11,6 +11,8 @@ namespace dnEditor.Forms
         public PickReferenceForm(string reference)
         {
             InitializeComponent();
+            treeView1.AfterExpand += TreeViewHandler.treeView1_AfterExpand;
+
             TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
 
             _reference = reference;

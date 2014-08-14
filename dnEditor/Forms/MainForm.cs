@@ -26,6 +26,8 @@ namespace dnEditor.Forms
 
             DgBody = dgBody;
             InitializeBody();
+
+            dgBody.RowTemplate.ContextMenuStrip = instructionMenu;
         }
 
         private void InitializeBody()
@@ -57,6 +59,8 @@ namespace dnEditor.Forms
         {
             if (e.Node.Tag is MethodDef)
                 DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
+            else
+                dgBody.Rows.Clear();
         }
 
         private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -179,5 +183,28 @@ namespace dnEditor.Forms
             TreeViewHandler.treeView1_AfterExpand(sender, e);
         }
 
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentAssembly.Method.Method.Body.Instructions.Remove(dgBody.SelectedRows[0].Tag as Instruction);
+            CurrentAssembly.Method.Method.Body.UpdateInstructionOffsets();
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
+        }
+
+        private void instructionMenu_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void dgBody_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            foreach (DataGridViewRow row in dgBody.Rows)
+                row.Selected = false;
+
+            dgBody.Rows[e.RowIndex].Selected = true;
+
+        }
     }
 }

@@ -186,16 +186,52 @@ namespace dnEditor.Forms
             }
             else if (cbOperandType.SelectedIndex == 12) // Field ref
             {
-                // TODO
+                #region Field
+                try
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as FieldDef);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                        Environment.NewLine + ex.Message, "Error");
+                    return;
+                }
+                #endregion Field
             }
             else if (cbOperandType.SelectedIndex == 13) // Method ref
             {
-                // TODO
+                #region Method
+                try
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as MethodDef);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                        Environment.NewLine + ex.Message, "Error");
+                    return;
+                }
+                #endregion Method
             }
 
             else if (cbOperandType.SelectedIndex == 14) // Type ref
             {
-                // TODO
+                #region Type
+                try
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as TypeDef);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                        Environment.NewLine + ex.Message, "Error");
+                    return;
+                }
+                #endregion Type
             }
 
             Close();

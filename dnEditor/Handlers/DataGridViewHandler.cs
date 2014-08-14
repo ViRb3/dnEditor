@@ -22,9 +22,9 @@ namespace dnEditor.Handlers
 
         public static void ReadMethod(MethodDef method)
         {
-            if (!method.HasBody || !method.Body.HasInstructions) return;
-
             DgBody.Rows.Clear();
+
+            if (!method.HasBody || !method.Body.HasInstructions) return;
 
             int i = 0;
             foreach (Instruction instruction in method.Body.Instructions)
@@ -55,7 +55,8 @@ namespace dnEditor.Handlers
                     row[j] = "   " + row[j];
                 }
 
-                DgBody.Rows.Add(row.ToArray());
+                int index = DgBody.Rows.Add(row.ToArray());
+                DgBody.Rows[index].Tag = instruction;
             }
 
             MainForm.CurrentAssembly.Method.Method = method;
