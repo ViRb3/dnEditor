@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using dnEditor.Misc;
 using dnlib.DotNet;
@@ -12,37 +13,94 @@ namespace dnEditor.Forms
     {
         public static object SelectedReference;
         private readonly List<object> _addedOperands = new List<object>();
+        private bool _enableOperandTypeChangedEvent = true;
 
-        public EditInstructionForm(OpCode opCode = null)
+        public EditInstructionForm(Instruction instruction)
         {
             InitializeComponent();
-            ListOpCodes(cbOpCode, opCode);
             cbOperandType.SelectedIndex = 0;
+
+            ListOpCodes(cbOpCode, instruction);
         }
 
-        public EditInstructionForm(string opCode = null)
-        {
-            InitializeComponent();
-            ListOpCodes(cbOpCode, opCode);
-            cbOperandType.SelectedIndex = 0;
-        }
-
-        private void ListOpCodes(ComboBox comboBox, OpCode inputOpCode = null)
+        private void ListOpCodes(ComboBox comboBox, Instruction inputInstruction)
         {
             foreach (OpCode opCode in Functions.OpCodes)
                 comboBox.Items.Add(opCode);
 
-            if (inputOpCode != null)
-                comboBox.SelectedItem = inputOpCode;
+            if (inputInstruction != null && inputInstruction.OpCode != null)
+                RestoreInstruction(inputInstruction);
         }
 
-        private void ListOpCodes(ComboBox comboBox, string inputOpCode = null)
+        private void RestoreInstruction(Instruction instruction)
         {
-            foreach (OpCode opCode in Functions.OpCodes)
-                comboBox.Items.Add(opCode);
+            OpCode opCode = instruction.OpCode;
+            OpCode item = cbOpCode.Items.Cast<OpCode>().FirstOrDefault(i => i.Name.ToLower() == opCode.Name.ToLower());
 
-            if (inputOpCode != null && Functions.GetOpCode(inputOpCode) != null)
-                comboBox.SelectedItem = Functions.GetOpCode(inputOpCode);
+            if (item != null)
+            {
+                cbOpCode.SelectedIndex = cbOpCode.Items.IndexOf(item);
+            }
+
+            _enableOperandTypeChangedEvent = false;
+
+            switch (opCode.OperandType)
+            {
+                case OperandType.InlineBrTarget:
+                case OperandType.ShortInlineBrTarget:
+                    cbOperandType.SelectedIndex = 9;
+                    break;
+                case OperandType.InlineString:
+                    cbOperandType.SelectedIndex = 7;
+                    cbOperand.Text = instruction.Operand.ToString();
+                    break;
+                case OperandType.InlineNone:
+                    cbOperandType.SelectedIndex = 0;
+                    break;
+                case OperandType.InlineI:
+                case OperandType.InlineI8:
+                case OperandType.ShortInlineI:
+                case OperandType.InlineR:
+                case OperandType.ShortInlineR:
+                    //TODO: Implement
+                case OperandType.InlineSwitch:
+                    //TODO: Implement
+                    break;
+                case OperandType.InlineField:
+                    cbOperandType.SelectedIndex = 12;
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    SelectedReference =
+                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
+                    cbOperand.Items.Add(SelectedReference as IField);
+                    cbOperand.SelectedIndex = 0;
+                    break;
+                case OperandType.InlineVar:
+                case OperandType.ShortInlineVar:
+                    cbOperandType.SelectedIndex = 10;
+                    VariableReference();
+                    break;
+                case OperandType.InlineMethod:
+                    cbOperandType.SelectedIndex = 13;
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    SelectedReference =
+                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
+                    cbOperand.Items.Add(SelectedReference as IMethod);
+                    cbOperand.SelectedIndex = 0;
+                    break;
+                case OperandType.InlineType:
+                    cbOperandType.SelectedIndex = 14;
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    SelectedReference =
+                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
+                    cbOperand.Items.Add(SelectedReference as ITypeDefOrRef);
+                    cbOperand.SelectedIndex = 0;
+                    break;
+            }
+
+            _enableOperandTypeChangedEvent = true;
         }
 
         private void cbOpCode_SelectedIndexChanged(object sender, EventArgs e)
@@ -186,16 +244,52 @@ namespace dnEditor.Forms
             }
             else if (cbOperandType.SelectedIndex == 12) // Field ref
             {
-                // TODO
+                #region Field
+                try
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as IField);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                        Environment.NewLine + ex.Message, "Error");
+                    return;
+                }
+                #endregion Field
             }
             else if (cbOperandType.SelectedIndex == 13) // Method ref
             {
-                // TODO
+                #region Method
+                try
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as IMethod);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                        Environment.NewLine + ex.Message, "Error");
+                    return;
+                }
+                #endregion Method
             }
 
             else if (cbOperandType.SelectedIndex == 14) // Type ref
             {
-                // TODO
+                #region Type
+                try
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as ITypeDefOrRef);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                        Environment.NewLine + ex.Message, "Error");
+                    return;
+                }
+                #endregion Type
             }
 
             Close();
@@ -208,6 +302,8 @@ namespace dnEditor.Forms
 
         private void cbOperandType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!_enableOperandTypeChangedEvent) return;
+
             cbOperand.Items.Clear();
             _addedOperands.Clear();
 
@@ -262,8 +358,11 @@ namespace dnEditor.Forms
         private void form_FormClosedField(object sender, FormClosedEventArgs e)
         {
             if (SelectedReference == null) return;
-            
-            cbOperand.Items.Add(SelectedReference as FieldDef);
+
+            SelectedReference =
+                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IField);
+            cbOperand.Items.Add(SelectedReference as IField);
+
             cbOperand.SelectedIndex = 0;
         }
 
@@ -271,7 +370,10 @@ namespace dnEditor.Forms
         {
             if (SelectedReference == null) return;
 
-            cbOperand.Items.Add(SelectedReference as MethodDef);
+            SelectedReference =
+                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IMethod);
+            cbOperand.Items.Add(SelectedReference as IMethod);
+
             cbOperand.SelectedIndex = 0;
         }
 
@@ -279,7 +381,10 @@ namespace dnEditor.Forms
         {
             if (SelectedReference == null) return;
 
-            cbOperand.Items.Add(SelectedReference as TypeDef);
+            SelectedReference =
+                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
+            cbOperand.Items.Add(SelectedReference as ITypeDefOrRef);
+
             cbOperand.SelectedIndex = 0;
         }
 

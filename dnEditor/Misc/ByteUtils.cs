@@ -75,5 +75,5 @@ namespace dnEditor.Misc
             }
             return bytes;
         }
-    } //end of class
+    }
 }

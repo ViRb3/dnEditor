@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
@@ -23,6 +26,8 @@ namespace dnEditor.Forms
 
             DgBody = dgBody;
             InitializeBody();
+
+            dgBody.RowTemplate.ContextMenuStrip = instructionMenu;
         }
 
         private void InitializeBody()
@@ -32,7 +37,7 @@ namespace dnEditor.Forms
 
         private void LoadAssembly(bool clear)
         {
-            TreeViewHandler.Load(treeView1, CurrentAssembly.Assembly, clear);
+            TreeViewHandler.LoadAssembly(treeView1, CurrentAssembly.Assembly, clear);
         }
 
         private void treeView1_DragDrop(object sender, DragEventArgs e)
@@ -54,6 +59,8 @@ namespace dnEditor.Forms
         {
             if (e.Node.Tag is MethodDef)
                 DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
+            else
+                dgBody.Rows.Clear();
         }
 
         private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -62,7 +69,7 @@ namespace dnEditor.Forms
             {
                 NewInstruction = null;
                 EditedInstruction = e.RowIndex;
-                var form = new EditInstructionForm(dgBody.Rows[e.RowIndex].Cells[2].Value.ToString().Trim());
+                var form = new EditInstructionForm(CurrentAssembly.Method.Method.Body.Instructions[e.RowIndex]);
                 form.Show();
                 form.FormClosed += EditInstructionForm_FormClosed;
             }
@@ -102,7 +109,7 @@ namespace dnEditor.Forms
                 Filter = "Executable Files (*.exe)|*.exe"
             };
 
-            if (dialog.ShowDialog() != DialogResult.OK && File.Exists(dialog.FileName))
+            if (dialog.ShowDialog() != DialogResult.OK || !File.Exists(dialog.FileName))
                 return;
 
             OpenFile(dialog.FileName);
@@ -169,6 +176,35 @@ namespace dnEditor.Forms
                 return;
 
             OpenFile(dialog.FileName);
+        }
+
+        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            TreeViewHandler.treeView1_AfterExpand(sender, e);
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentAssembly.Method.Method.Body.Instructions.Remove(dgBody.SelectedRows[0].Tag as Instruction);
+            CurrentAssembly.Method.Method.Body.UpdateInstructionOffsets();
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
+        }
+
+        private void instructionMenu_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void dgBody_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            foreach (DataGridViewRow row in dgBody.Rows)
+                row.Selected = false;
+
+            dgBody.Rows[e.RowIndex].Selected = true;
+
         }
     }
 }

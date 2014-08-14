@@ -43,12 +43,16 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
+            this.instructionMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.instructionMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -64,6 +68,7 @@
             this.treeView1.SelectedImageIndex = 0;
             this.treeView1.Size = new System.Drawing.Size(242, 393);
             this.treeView1.TabIndex = 0;
+            this.treeView1.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterExpand);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView1_DragDrop);
@@ -171,6 +176,7 @@
             this.dgBody.Size = new System.Drawing.Size(562, 393);
             this.dgBody.TabIndex = 1;
             this.dgBody.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgBody_CellDoubleClick);
+            this.dgBody.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgBody_CellMouseDown);
             // 
             // index
             // 
@@ -428,6 +434,28 @@
             this.btnSave.Text = "Save";
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
+            // instructionMenu
+            // 
+            this.instructionMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem,
+            this.insertToolStripMenuItem});
+            this.instructionMenu.Name = "instructionMenu";
+            this.instructionMenu.Size = new System.Drawing.Size(153, 70);
+            this.instructionMenu.Opening += new System.ComponentModel.CancelEventHandler(this.instructionMenu_Opening);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // insertToolStripMenuItem
+            // 
+            this.insertToolStripMenuItem.Name = "insertToolStripMenuItem";
+            this.insertToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.insertToolStripMenuItem.Text = "Insert";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -436,7 +464,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Name = "MainForm";
-            this.Text = "dnEditor v0.x ~darkunited";
+            this.Text = "dnEditor Alpha ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -444,6 +472,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.instructionMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -463,6 +492,9 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnSave;
         private System.Windows.Forms.ToolStripButton btnOpen;
+        private System.Windows.Forms.ContextMenuStrip instructionMenu;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
     }
 }
 

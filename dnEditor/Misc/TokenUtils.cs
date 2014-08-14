@@ -94,5 +94,5 @@ namespace dnEditor.Misc
         {
             return ui.ToString(String.Format("x0{0}", digits)).ToLower();
         }
-    } //end of class
+    }
 }

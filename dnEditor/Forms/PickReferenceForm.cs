@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using dnEditor.Handlers;
+using dnEditor.Misc;
 using dnlib.DotNet;
 
 namespace dnEditor.Forms
@@ -11,7 +12,11 @@ namespace dnEditor.Forms
         public PickReferenceForm(string reference)
         {
             InitializeComponent();
-            TreeViewHandler.Load(treeView1, MainForm.CurrentAssembly.Assembly, true);
+            treeView1.AllowDrop = true;
+            
+            treeView1.AfterExpand += TreeViewHandler.treeView1_AfterExpand;
+
+            TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
 
             _reference = reference;
             EditInstructionForm.SelectedReference = null;
@@ -33,6 +38,20 @@ namespace dnEditor.Forms
                 btnSelect.Enabled = true;
             else
                 btnSelect.Enabled = false;
+        }
+
+        private void treeView1_DragDrop(object sender, DragEventArgs e)
+        {
+            CurrentAssembly result = TreeViewHandler.DragDrop(sender, e);
+            if (result != null)
+            {
+                TreeViewHandler.LoadAssembly(treeView1, result.Assembly, false);
+            }
+        }
+
+        private void treeView1_DragEnter(object sender, DragEventArgs e)
+        {
+            TreeViewHandler.DragEnter(sender, e);
         }
     }
 }
