@@ -15,7 +15,7 @@ namespace dnEditor.Misc
         public CurrentAssembly(string path)
         {
             Path = path;
-            LoadAssembly();
+            OpenAssembly();
         }
 
         public CurrentAssembly(AssemblyDef assembly)
@@ -29,7 +29,7 @@ namespace dnEditor.Misc
             get { return (ModuleDefMD) Assembly.ManifestModule; }
         }
 
-        public void LoadAssembly(string path = null)
+        public void OpenAssembly(string path = null)
         {
             Assembly = path == null ? AssemblyDef.Load(Path) : AssemblyDef.Load(path);
         }

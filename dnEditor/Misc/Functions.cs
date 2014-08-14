@@ -81,6 +81,8 @@ namespace dnEditor.Misc
                             null, null, null);
                 OpCodes.Add(opCode);
             }
+
+            OpCodes = OpCodes.OrderBy(o => o.Name).ToList();
         }
 
         public static string GetAddress(Instruction instruction)

@@ -31,8 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PickReferenceForm));
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.btnSelect = new System.Windows.Forms.Button();
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
+            this.btnSelect = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // treeView1
@@ -49,17 +49,8 @@
             this.treeView1.Size = new System.Drawing.Size(421, 462);
             this.treeView1.TabIndex = 1;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-            // 
-            // btnSelect
-            // 
-            this.btnSelect.Enabled = false;
-            this.btnSelect.Location = new System.Drawing.Point(12, 6);
-            this.btnSelect.Name = "btnSelect";
-            this.btnSelect.Size = new System.Drawing.Size(421, 23);
-            this.btnSelect.TabIndex = 2;
-            this.btnSelect.Text = "SELECT";
-            this.btnSelect.UseVisualStyleBackColor = true;
-            this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
+            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView1_DragDrop);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView1_DragEnter);
             // 
             // imageList2
             // 
@@ -127,6 +118,17 @@
             this.imageList2.Images.SetKeyName(59, "SuperTypes.png");
             this.imageList2.Images.SetKeyName(60, "ViewCode.png");
             this.imageList2.Images.SetKeyName(61, "VirtualMethod.png");
+            // 
+            // btnSelect
+            // 
+            this.btnSelect.Enabled = false;
+            this.btnSelect.Location = new System.Drawing.Point(12, 6);
+            this.btnSelect.Name = "btnSelect";
+            this.btnSelect.Size = new System.Drawing.Size(421, 23);
+            this.btnSelect.TabIndex = 2;
+            this.btnSelect.Text = "SELECT";
+            this.btnSelect.UseVisualStyleBackColor = true;
+            this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
             // 
             // PickReferenceForm
             // 

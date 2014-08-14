@@ -69,7 +69,7 @@ namespace dnEditor.Forms
             {
                 NewInstruction = null;
                 EditedInstruction = e.RowIndex;
-                var form = new EditInstructionForm(dgBody.Rows[e.RowIndex].Cells[2].Value.ToString().Trim());
+                var form = new EditInstructionForm(CurrentAssembly.Method.Method.Body.Instructions[e.RowIndex]);
                 form.Show();
                 form.FormClosed += EditInstructionForm_FormClosed;
             }
