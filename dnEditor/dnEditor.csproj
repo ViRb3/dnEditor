@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\MultipleInstructionsSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MultipleInstructionsSelectForm.Designer.cs">
+      <DependentUpon>MultipleInstructionsSelectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Handlers\EventHandler.cs" />
     <Compile Include="Handlers\FieldHandler.cs" />
     <Compile Include="Handlers\MethodHandler.cs" />
@@ -82,6 +88,7 @@
     <Compile Include="Images\MemberIcon.cs" />
     <Compile Include="Images\TypeIcon.cs" />
     <Compile Include="Misc\InstructionBlock.cs" />
+    <Compile Include="Misc\InsUtils.cs" />
     <Compile Include="Misc\MethodHolder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +98,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MultipleInstructionsSelectForm.resx">
+      <DependentUpon>MultipleInstructionsSelectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PickReferenceForm.resx">
       <DependentUpon>PickReferenceForm.cs</DependentUpon>

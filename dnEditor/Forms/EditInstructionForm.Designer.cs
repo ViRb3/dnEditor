@@ -152,6 +152,7 @@
             "String",
             "Verbatim String",
             "-> Instruction reference",
+            "-> Multiple instructions reference",
             "-> Variable reference",
             "-> Parameter reference",
             "-> Field reference",
