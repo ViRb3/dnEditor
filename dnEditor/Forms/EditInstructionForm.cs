@@ -47,27 +47,55 @@ namespace dnEditor.Forms
             switch (opCode.OperandType)
             {
                 case OperandType.InlineBrTarget:
+                    cbOperandType.SelectedIndex = 9;
+                    InstructionReference();
+                    cbOperand.SelectedIndex =
+                        _addedOperands.Cast<Instruction>().ToList().IndexOf(instruction.Operand as Instruction);
+                    break;
                 case OperandType.ShortInlineBrTarget:
                     cbOperandType.SelectedIndex = 9;
+                    InstructionReference();
+                    cbOperand.SelectedIndex =
+                        _addedOperands.Cast<Instruction>().ToList().IndexOf(instruction.Operand as Instruction);
                     break;
                 case OperandType.InlineString:
                     cbOperandType.SelectedIndex = 7;
+                    cbOperand.Enabled = true;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     cbOperand.Text = instruction.Operand.ToString();
                     break;
                 case OperandType.InlineNone:
                     cbOperandType.SelectedIndex = 0;
                     break;
                 case OperandType.InlineI:
+                    //TODO: Implement
                 case OperandType.InlineI8:
+                    //TODO: Implement
                 case OperandType.ShortInlineI:
+                    //TODO: Implement
                 case OperandType.InlineR:
+                    //TODO: Implement
                 case OperandType.ShortInlineR:
                     //TODO: Implement
                 case OperandType.InlineSwitch:
                     //TODO: Implement
                     break;
+                case OperandType.InlineVar:
+                    cbOperandType.SelectedIndex = 11;
+                    VariableReference();
+                    cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
+                        .ToList()
+                        .IndexOf(instruction.Operand as Local);
+                    break;
+                case OperandType.ShortInlineVar:
+                    cbOperandType.SelectedIndex = 11;
+                    VariableReference();
+                    cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
+                        .ToList()
+                        .IndexOf(instruction.Operand as Local);
+                    break;
                 case OperandType.InlineField:
-                    cbOperandType.SelectedIndex = 12;
+                    cbOperandType.SelectedIndex = 13;
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
@@ -75,13 +103,8 @@ namespace dnEditor.Forms
                     cbOperand.Items.Add(SelectedReference as IField);
                     cbOperand.SelectedIndex = 0;
                     break;
-                case OperandType.InlineVar:
-                case OperandType.ShortInlineVar:
-                    cbOperandType.SelectedIndex = 10;
-                    VariableReference();
-                    break;
                 case OperandType.InlineMethod:
-                    cbOperandType.SelectedIndex = 13;
+                    cbOperandType.SelectedIndex = 14;
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
@@ -90,7 +113,7 @@ namespace dnEditor.Forms
                     cbOperand.SelectedIndex = 0;
                     break;
                 case OperandType.InlineType:
-                    cbOperandType.SelectedIndex = 14;
+                    cbOperandType.SelectedIndex = 15;
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
@@ -117,181 +140,98 @@ namespace dnEditor.Forms
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            if (cbOperandType.SelectedIndex == 0) // None
+            try
             {
-                #region None
-                try
+                if (cbOperandType.SelectedIndex == 0) // None
                 {
-                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
-                }
-                #endregion None
-            }
-            else if (cbOperandType.SelectedIndex > 0 && cbOperandType.SelectedIndex < 9) 
-                // Byte, SByte, Int32, Int64, Single, Double, String, Verbatim String
-            {
-                #region Value
+                    #region None
 
-                try
-                {
-                    switch (cbOperandType.Text)
-                    {
-                        case "Byte":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(byte.Parse(cbOperand.Text));
-                                break;
-                            }
-                        case "SByte":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(sbyte.Parse(cbOperand.Text));
-                                break;
-                            }
-                        case "Int32":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(Int32.Parse(cbOperand.Text));
-                                break;
-                            }
-                        case "Int64":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(Int64.Parse(cbOperand.Text));
-                                break;
-                            }
-                        case "Single":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(Single.Parse(cbOperand.Text));
-                                break;
-                            }
-                        case "Double":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(Double.Parse(cbOperand.Text));
-                                break;
-                            }
-                        case "String":
-                            {
-                                MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.Text);
-                                break;
-                            }
-                        default:
-                        {
-                            throw new NotImplementedException();
-                        }
-                    }
-                   
+                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction();
+
+                    #endregion None
                 }
-                catch (Exception ex)
+                else if (cbOperandType.SelectedIndex > 0 && cbOperandType.SelectedIndex < 9)
+                    // Byte, SByte, Int32, Int64, Single, Double, String, Verbatim String
                 {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
+                    #region Value
+
+                    ValueReference();
+
+                    #endregion Value
                 }
-                #endregion Value
-            }
-            else if (cbOperandType.SelectedIndex == 9) // Instruction ref
-            {
-                #region Instruction
-                try
+                else if (cbOperandType.SelectedIndex == 9) // Instruction ref
                 {
+                    #region Instruction
+
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(
                             MainForm.CurrentAssembly.Method.Method.Body.Instructions[cbOperand.SelectedIndex]);
+
+                    #endregion Instruction
                 }
-                catch (Exception ex)
+                else if (cbOperandType.SelectedIndex == 10) // Multi instructions ref
                 {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
+                    #region Multi instructions
+
+                    //TODO: Implement
+
+                    #endregion Instruction
                 }
-                #endregion Instruction
-            }
-            else if (cbOperandType.SelectedIndex == 10) // Variable ref
-            {
-                #region Variable
-                try
+                else if (cbOperandType.SelectedIndex == 11) // Variable ref
                 {
+                    #region Variable
+
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(
                             MainForm.CurrentAssembly.Method.Method.Body.Variables[cbOperand.SelectedIndex]);
+
+                    #endregion Variable
                 }
-                catch (Exception ex)
+                else if (cbOperandType.SelectedIndex == 12) // Parameter ref
                 {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
-                }
-                #endregion Variable
-            }
-            else if (cbOperandType.SelectedIndex == 11) // Parameter ref
-            {
-                #region Parameter
-                try
-                {
+                    #region Parameter
+
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(
                             MainForm.CurrentAssembly.Method.Method.Parameters[cbOperand.SelectedIndex]);
+
+                    #endregion Parameter
                 }
-                catch (Exception ex)
+                else if (cbOperandType.SelectedIndex == 13) // Field ref
                 {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
-                }
-                #endregion Parameter
-            }
-            else if (cbOperandType.SelectedIndex == 12) // Field ref
-            {
-                #region Field
-                try
-                {
+                    #region Field
+
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as IField);
+
+                    #endregion Field
                 }
-                catch (Exception ex)
+                else if (cbOperandType.SelectedIndex == 14) // Method ref
                 {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
-                }
-                #endregion Field
-            }
-            else if (cbOperandType.SelectedIndex == 13) // Method ref
-            {
-                #region Method
-                try
-                {
+                    #region Method
+
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as IMethod);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
-                }
-                #endregion Method
-            }
 
-            else if (cbOperandType.SelectedIndex == 14) // Type ref
-            {
-                #region Type
-                try
+                    #endregion Method
+                }
+
+                else if (cbOperandType.SelectedIndex == 15) // Type ref
                 {
+                    #region Type
+
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as ITypeDefOrRef);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Could not create instruction!" + Environment.NewLine +
-                        Environment.NewLine + ex.Message, "Error");
-                    return;
-                }
-                #endregion Type
-            }
 
+                    #endregion Type
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not create instruction!" + Environment.NewLine +
+                                Environment.NewLine + ex.Message, "Error");
+                return;
+            }
             Close();
         }
 
@@ -320,15 +260,23 @@ namespace dnEditor.Forms
             {
                 InstructionReference();
             }
-            else if (cbOperandType.SelectedIndex == 10) // Variable ref
+            else if (cbOperandType.SelectedIndex == 10) // Multi instructions ref
+            {
+                var multiInstructionSelectForm =
+                    new MultipleInstructionsSelectForm(
+                        MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToArray());
+
+                multiInstructionSelectForm.Show();
+            }
+            else if (cbOperandType.SelectedIndex == 11) // Variable ref
             {
                 VariableReference();
             }
-            else if (cbOperandType.SelectedIndex == 11) // Parameter ref
+            else if (cbOperandType.SelectedIndex == 12) // Parameter ref
             {
                 ParameterReference();
             }
-            else if (cbOperandType.SelectedIndex == 12) // Field ref
+            else if (cbOperandType.SelectedIndex == 13) // Field ref
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
@@ -336,7 +284,7 @@ namespace dnEditor.Forms
                 form.Show();
                 form.FormClosed += form_FormClosedField;
             }
-            else if (cbOperandType.SelectedIndex == 13) // Method ref
+            else if (cbOperandType.SelectedIndex == 14) // Method ref
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
@@ -345,7 +293,7 @@ namespace dnEditor.Forms
                 form.FormClosed += form_FormClosedMethod;
             }
 
-            else if (cbOperandType.SelectedIndex == 14) // Type ref
+            else if (cbOperandType.SelectedIndex == 15) // Type ref
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
@@ -360,7 +308,7 @@ namespace dnEditor.Forms
             if (SelectedReference == null) return;
 
             SelectedReference =
-                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IField);
+                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IField);
             cbOperand.Items.Add(SelectedReference as IField);
 
             cbOperand.SelectedIndex = 0;
@@ -371,7 +319,7 @@ namespace dnEditor.Forms
             if (SelectedReference == null) return;
 
             SelectedReference =
-                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IMethod);
+                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IMethod);
             cbOperand.Items.Add(SelectedReference as IMethod);
 
             cbOperand.SelectedIndex = 0;
@@ -382,7 +330,7 @@ namespace dnEditor.Forms
             if (SelectedReference == null) return;
 
             SelectedReference =
-                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
+                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
             cbOperand.Items.Add(SelectedReference as ITypeDefOrRef);
 
             cbOperand.SelectedIndex = 0;
@@ -436,6 +384,57 @@ namespace dnEditor.Forms
                     name = "VAR_" + i++;
 
                 cbOperand.Items.Add(string.Format("{0} : {1}", name, variable.Type.GetExtendedName()));
+            }
+        }
+
+        private void ValueReference()
+        {
+            switch (cbOperandType.Text)
+            {
+                case "Byte":
+                {
+                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(byte.Parse(cbOperand.Text));
+                    break;
+                }
+                case "SByte":
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(sbyte.Parse(cbOperand.Text));
+                    break;
+                }
+                case "Int32":
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Int32.Parse(cbOperand.Text));
+                    break;
+                }
+                case "Int64":
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Int64.Parse(cbOperand.Text));
+                    break;
+                }
+                case "Single":
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Single.Parse(cbOperand.Text));
+                    break;
+                }
+                case "Double":
+                {
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Double.Parse(cbOperand.Text));
+                    break;
+                }
+                case "String":
+                {
+                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.Text);
+                    break;
+                }
+                default:
+                {
+                    throw new NotImplementedException();
+                }
             }
         }
     }

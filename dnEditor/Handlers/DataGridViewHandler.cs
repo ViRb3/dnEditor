@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using dnEditor.Forms;
 using dnEditor.Misc;
@@ -35,20 +36,10 @@ namespace dnEditor.Handlers
                 row.Add(Functions.GetAddress(instruction));
                 row.Add(instruction.OpCode);
 
-                if (instruction.Operand == null)
-                {
-                    row.Add(String.Empty);
-                }
-                else if ((instruction.OpCode.FlowControl == FlowControl.Cond_Branch ||
-                          instruction.OpCode.FlowControl == FlowControl.Branch) && instruction.OpCode != OpCodes.Switch &&
-                         instruction.Operand is Instruction)
-                {
-                    var jumpInstruction = instruction.Operand as Instruction;
-                    row.Add(string.Format("{0} -> {1} {2}",
-                        method.Body.Instructions.IndexOf(jumpInstruction), jumpInstruction.OpCode,
-                        jumpInstruction.Operand));
-                }
-                else row.Add(instruction.Operand);
+                if (instruction.Operand is Instruction)
+                    row.Add(string.Format("{0}", Functions.ResolveOperandInstructions(method.Body.Instructions.ToList(), method.Body.Instructions.IndexOf(instruction))));
+                else 
+                    row.Add(instruction.Operand);
 
                 for (int j = 0; j < row.Count; j++)
                 {
@@ -62,37 +53,16 @@ namespace dnEditor.Handlers
             MainForm.CurrentAssembly.Method.Method = method;
             ColorRules.MarkBlocks(DgBody);
             ColorRules.ApplyColors(DgBody);
-        }
 
-        public static void InsertRow(Instruction instruction, int index)
-        {
-                var row = new List<object>();
+            foreach (DataGridViewRow row in DgBody.Rows)
+            {
+                string definition;
+                Functions.OpCodeDictionary.TryGetValue(Functions.GetOpCode(row.Cells["opcode"].Value.ToString().Trim()),
+                        out definition);
 
-                row.Add(index);
-                row.Add(Functions.GetAddress(instruction));
-                row.Add(instruction.OpCode);
-
-                if (instruction.Operand == null)
-                {
-                    row.Add(String.Empty);
-                }
-                else if ((instruction.OpCode.FlowControl == FlowControl.Cond_Branch ||
-                          instruction.OpCode.FlowControl == FlowControl.Branch) && instruction.OpCode != OpCodes.Switch &&
-                         instruction.Operand is Instruction)
-                {
-                    var jumpInstruction = instruction.Operand as Instruction;
-                    row.Add(string.Format("{0} -> {1} {2}",
-                        MainForm.CurrentAssembly.Method.Method.Body.Instructions.IndexOf(jumpInstruction), jumpInstruction.OpCode,
-                        jumpInstruction.Operand));
-                }
-                else row.Add(instruction.Operand);
-
-                for (int j = 0; j < row.Count; j++)
-                {
-                    row[j] = "   " + row[j];
-                }
-
-                DgBody.Rows.Insert(index, row.ToArray());
+                if (definition != null)
+                    row.Cells["opcode"].ToolTipText = definition;
+            }
         }
     }
 }

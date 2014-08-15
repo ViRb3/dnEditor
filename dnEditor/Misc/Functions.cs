@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -88,6 +89,47 @@ namespace dnEditor.Misc
         public static string GetAddress(Instruction instruction)
         {
             return String.Format("L_{0:x04}", instruction.Offset);
+        }
+
+        public static string GetAddress(uint offset)
+        {
+            return String.Format("L_{0:x04}", offset);
+        }
+
+        public static string FormatInstruction(List<Instruction> instructions, int index)
+        {
+            Instruction currentInstruction = instructions[index];
+
+            string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction), currentInstruction.OpCode);
+
+            if (currentInstruction.Operand != null)
+            {
+                if (currentInstruction.Operand is Instruction)
+                {
+                    output += string.Format(" {0}", ResolveOperandInstructions(instructions, index));
+                }
+                else
+                {
+                    output += string.Format(" -> {0}", currentInstruction.Operand);
+                }
+            }
+
+            return output;
+        }
+
+        public static string ResolveOperandInstructions(List<Instruction> instructions, int index)
+        {
+            string output = "";
+            Instruction currentInstruction = instructions[index];
+
+            while (currentInstruction.Operand is Instruction)
+            {
+                var newInstruction = instructions[index].Operand as Instruction;
+                output += string.Format("-> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
+                currentInstruction = newInstruction;
+            }
+
+            return output;
         }
 
         /*public static HashSet<MethodDef> GetAccessorMethods(this TypeDef type)
