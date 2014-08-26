@@ -13,8 +13,7 @@ namespace dnEditor.Forms
         {
             InitializeComponent();
             treeView1.AllowDrop = true;
-            
-            treeView1.AfterExpand += TreeViewHandler.treeView1_AfterExpand;
+           
 
             TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
 

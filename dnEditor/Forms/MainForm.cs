@@ -178,11 +178,6 @@ namespace dnEditor.Forms
             OpenFile(dialog.FileName);
         }
 
-        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
-        {
-            TreeViewHandler.treeView1_AfterExpand(sender, e);
-        }
-
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CurrentAssembly.Method.Method.Body.Instructions.Remove(dgBody.SelectedRows[0].Tag as Instruction);

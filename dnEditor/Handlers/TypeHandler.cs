@@ -14,7 +14,18 @@ namespace dnEditor.Handlers
             var type = parentNode.Tag as TypeDef;
 
             foreach (TypeDef nestedType in type.NestedTypes)
-                children.Add(TreeViewHandler.NewType(nestedType));
+            {
+                TreeNode newTypeNode = TreeViewHandler.NewType(nestedType);
+                
+                var subChildren = new List<TreeNode>();
+                ProcessTypeMembers(newTypeNode, ref subChildren);
+
+                foreach (var child in subChildren)
+                    newTypeNode.Nodes.Add(child);
+
+                children.Add(newTypeNode);
+            }
+                
 
             foreach (MethodDef method in type.Methods)
             {
@@ -38,8 +49,11 @@ namespace dnEditor.Handlers
         {
             TreeNode targetType = TreeViewHandler.NewType(type);
 
-            if (TreeViewHandler.ExpandableType(type))
-                TreeViewHandler.AddVirtualNode(targetType);
+            var children = new List<TreeNode>();
+            ProcessTypeMembers(targetType, ref children);
+
+            foreach (var child in children)
+                targetType.Nodes.Add(child);
 
             if (!TreeViewHandler.NameSpaceList.Contains(type.Namespace))
             {

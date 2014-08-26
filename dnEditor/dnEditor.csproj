@@ -53,6 +53,7 @@
     <Compile Include="Forms\MultipleInstructionsSelectForm.Designer.cs">
       <DependentUpon>MultipleInstructionsSelectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\NodeHandler.cs" />
     <Compile Include="Handlers\EventHandler.cs" />
     <Compile Include="Handlers\FieldHandler.cs" />
     <Compile Include="Handlers\MethodHandler.cs" />

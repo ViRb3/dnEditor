@@ -29,8 +29,6 @@ namespace dnEditor.Handlers
 
     public static class TreeViewHandler
     {
-        private const string VirtualNode = "VIRT";
-
         public static TreeNode RefNode;
         public static TreeNode CurrentModule;
         public static TreeView CurrentTreeView;
@@ -67,7 +65,7 @@ namespace dnEditor.Handlers
             if (clear)
                 treeView.Nodes.Clear();
 
-            TreeNode file = NewFile(currentAssembly);
+            TreeNode file = NewFile(currentAssembly); // AssemblyDef
             file.AddTo(treeView);
 
             foreach (ModuleDefMD module in currentAssembly.Modules)
@@ -75,6 +73,14 @@ namespace dnEditor.Handlers
                 NameSpaceList.Clear();
 
                 TreeNode moduleNode = NewModule(module);
+
+                if (module.Types.Any())
+                {
+                    var processor = new NodeHandler(moduleNode);
+                    processor.ProcessNode();
+                    moduleNode = processor.Node;
+                }
+
                 moduleNode.AddTo(file);
 
                 CurrentModule = moduleNode;
@@ -83,82 +89,11 @@ namespace dnEditor.Handlers
                 {
                     ReferenceHandler.HandleReferences(module.GetAssemblyRefs());
                 }
-
-                if (module.Types.Any())
-                {
-                    AddVirtualNode(moduleNode);
-                }
-            }
-        }
-
-
-        private static void bw_DoWork(object sender, DoWorkEventArgs e)
-        {
-            var parentNode = e.Argument as TreeNode;
-
-            var children = new List<TreeNode>();
-
-            if (parentNode == RefNode) // Assembly Reference
-            {
-                ReferenceHandler.ProcessAssemblyRefs(parentNode, ref children);
-            }
-            else if (parentNode.Tag is ModuleDefMD) // Module
-            {
-                foreach (TypeDef type in (parentNode.Tag as ModuleDefMD).Types)
-                {
-                    TypeHandler.HandleType(type);
-                }
-            }
-            else if (parentNode.Tag is TypeDef) // Type
-            {
-                TypeHandler.ProcessTypeMembers(parentNode, ref children);
             }
 
-
-            e.Result = new object[] {parentNode, children.ToArray()};
-        }
-
-        private static void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            var result = e.Result as object[];
-            var parentNode = result[0] as TreeNode;
-            var children = result[1] as TreeNode[];
-
-            if (children == null) return;
-
-            parentNode.FindVirtualNode().Remove();
-
-            foreach (TreeNode child in children)
-            {
-                if (child.Tag is TypeDef)
-                {
-                    var type = child.Tag as TypeDef;
-
-                    if (type.IsNested)
-                    {
-                        TypeHandler.HandleType(child.Tag as TypeDef);
-                        continue;
-                    }
-
-                    if (ExpandableType(type))
-                    {
-                        AddVirtualNode(child);
-                    }
-                }
-
-                parentNode.Nodes.Add(child);
-            }
-        }
-
-        public static void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
-        {
-            if (e.Node.FindVirtualNode() == null) return;
-
-            var bw = new BackgroundWorker();
-            bw.DoWork += bw_DoWork;
-            bw.RunWorkerCompleted += bw_RunWorkerCompleted;
-
-            bw.RunWorkerAsync(e.Node);
+            var processor2 = new NodeHandler(RefNode);
+            processor2.ProcessNode();
+            RefNode = processor2.Node;
         }
 
         #region Functions
@@ -183,40 +118,6 @@ namespace dnEditor.Handlers
                     return nodeResult;
             }
             return null;
-        }
-
-        public static void AddVirtualNode(TreeNode parentNode)
-        {
-            var node = new TreeNode
-            {
-                Text = "Loading...",
-                Name = VirtualNode,
-                ForeColor = Color.Blue,
-                NodeFont = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Underline),
-            };
-
-            parentNode.Nodes.Add(node);
-        }
-
-        public static void AddVirtualNodeWithContent(TreeNode parentNode, object[] content)
-        {
-            var node = new TreeNode
-            {
-                Text = "Loading...",
-                Name = VirtualNode,
-                ForeColor = Color.Blue,
-                NodeFont = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Underline),
-                Tag = content
-            };
-
-            parentNode.Nodes.Add(node);
-        }
-
-        public static TreeNode FindVirtualNode(this TreeNode parentNode)
-        {
-            return
-                parentNode.Nodes.Cast<TreeNode>()
-                    .FirstOrDefault(n => n.Name == VirtualNode && n.ForeColor == Color.Blue && n.Text == "Loading...");
         }
 
         #endregion Functions
