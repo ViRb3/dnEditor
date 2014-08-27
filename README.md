@@ -10,7 +10,7 @@ Please note that I am working on this project during my free time, and as just a
 alone, I cannot do everything at will. If your favourite feature is not found in dnEditor - submit
 a ticket. And just wait. I will eventually get through it.
 
-####Cheers!
+#####Cheers!
 
 #To-do:
  - [ ] Add search functions.
@@ -28,7 +28,7 @@ a ticket. And just wait. I will eventually get through it.
  - Sebastien LEBRETON (Reflexil) for the currently only fully-working and fully-featured assembly
  editor. If you find something similar in dnEditor's design: it's Reflexil that inspired(?) me.
  
-###All licenses can be found in the LICENSES.md file in this (the root) folder.
+####All licenses can be found in the LICENSES.md file in this (the root) folder.
  
 ##Greetings:
  - To you for contributing, reading or simply using this tool.
