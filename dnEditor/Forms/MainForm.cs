@@ -213,7 +213,7 @@ namespace dnEditor.Forms
             var dialog = new SaveFileDialog
             {
                 Title = "Choose a location to write the new assembly...",
-                Filter = "Executable Files (*.exe)|*.exe"
+                Filter = "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll"
             };
 
             if (dialog.ShowDialog() != DialogResult.OK)
@@ -229,7 +229,7 @@ namespace dnEditor.Forms
             var dialog = new OpenFileDialog
             {
                 Title = "Choose an assembly to open...",
-                Filter = "Executable Files (*.exe)|*.exe"
+                Filter = "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll"
             };
 
             if (dialog.ShowDialog() != DialogResult.OK || !File.Exists(dialog.FileName))

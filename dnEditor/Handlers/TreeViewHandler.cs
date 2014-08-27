@@ -42,11 +42,10 @@ namespace dnEditor.Handlers
                 return null;
             }
             var filePath = (string[]) (e.Data.GetData(DataFormats.FileDrop));
-            foreach (string fileLoc in filePath.Where(File.Exists))
-            {
-                return new CurrentAssembly(Path.GetFullPath(fileLoc));
-            }
-            return null;
+            string fileLoc = filePath.FirstOrDefault(File.Exists);
+            if (fileLoc == null) return null;
+
+            return new CurrentAssembly(Path.GetFullPath(fileLoc));
         }
 
         public static void DragEnter(object sender, DragEventArgs e)
