@@ -9,11 +9,26 @@ using dnlib.Utils;
 
 namespace dnEditor.Forms
 {
+    public enum EditInstructionMode
+    {
+        Edit,
+        InsertBefore,
+        InsertAfter
+    }
+
     public partial class EditInstructionForm : Form
     {
         public static object SelectedReference;
         private readonly List<object> _addedOperands = new List<object>();
         private bool _enableOperandTypeChangedEvent = true;
+
+        public EditInstructionForm()
+        {
+            InitializeComponent();
+            cbOperandType.SelectedIndex = 0;
+
+            ListOpCodes(cbOpCode, null);
+        }
 
         public EditInstructionForm(Instruction instruction)
         {
@@ -272,7 +287,7 @@ namespace dnEditor.Forms
                                 Environment.NewLine + ex.Message, "Error");
                 return;
             }
-            Close();
+            this.Close();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -325,16 +340,16 @@ namespace dnEditor.Forms
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                 var form = new PickReferenceForm("Field");
-                form.ShowDialog();
                 form.FormClosed += form_FormClosedField;
+                form.ShowDialog();
             }
             else if (cbOperandType.SelectedItem.ToString() == "-> Method reference")
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                 var form = new PickReferenceForm("Method");
-                form.ShowDialog();
                 form.FormClosed += form_FormClosedMethod;
+                form.ShowDialog();
             }
 
             else if (cbOperandType.SelectedItem.ToString() == "-> Type reference")
@@ -342,8 +357,8 @@ namespace dnEditor.Forms
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                 var form = new PickReferenceForm("Type");
-                form.ShowDialog();
                 form.FormClosed += form_FormClosedType;
+                form.ShowDialog();
             }
         }
 

@@ -102,6 +102,8 @@ namespace dnEditor.Misc
 
         public static string FormatInstruction(List<Instruction> instructions, int index)
         {
+            if (index < 0) return "???";
+
             Instruction currentInstruction = instructions[index];
 
             string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction), currentInstruction.OpCode);

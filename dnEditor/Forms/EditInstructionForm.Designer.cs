@@ -48,6 +48,8 @@
             // 
             // cbOpCode
             // 
+            this.cbOpCode.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbOpCode.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cbOpCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbOpCode.FormattingEnabled = true;
             this.cbOpCode.Location = new System.Drawing.Point(66, 12);
@@ -139,6 +141,8 @@
             // 
             // cbOperandType
             // 
+            this.cbOperandType.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbOperandType.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cbOperandType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbOperandType.FormattingEnabled = true;
             this.cbOperandType.Items.AddRange(new object[] {
