@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -28,41 +27,66 @@ namespace dnEditor.Handlers
             if (!method.HasBody || !method.Body.HasInstructions) return;
 
             int i = 0;
+            var rows = new List<DataGridViewRow>();
+
             foreach (Instruction instruction in method.Body.Instructions)
             {
-                var row = new List<object>();
+                var cells = new List<object>();
 
-                row.Add(i++);
-                row.Add(Functions.GetAddress(instruction));
-                row.Add(instruction.OpCode);
+                cells.Add(i++); // Column 1
+                cells.Add(Functions.GetAddress(instruction)); // Column 2
+                cells.Add(instruction.OpCode); // Column 3
+
+                #region Column 4
 
                 if (instruction.Operand is Instruction)
-                    row.Add(string.Format("{0}", Functions.ResolveOperandInstructions(method.Body.Instructions.ToList(), method.Body.Instructions.IndexOf(instruction))));
-                else 
-                    row.Add(instruction.Operand);
+                    cells.Add(string.Format("{0}",
+                        Functions.ResolveOperandInstructions(method.Body.Instructions.ToList(),
+                            method.Body.Instructions.IndexOf(instruction))));
+                else
+                    cells.Add(instruction.Operand);
 
-                for (int j = 0; j < row.Count; j++)
+                #endregion Column 4
+
+                #region Application
+
+                for (int j = 0; j < cells.Count; j++)
                 {
-                    row[j] = "   " + row[j];
+                    cells[j] = "   " + cells[j];
                 }
 
-                int index = DgBody.Rows.Add(row.ToArray());
-                DgBody.Rows[index].Tag = instruction;
+                var row = new DataGridViewRow();
+
+                for (int j = 0; j < 4; j++)
+                {
+                    row.Cells.Add(new DataGridViewTextBoxCell());
+                }
+
+                for (int j = 0; j < cells.Count; j++)
+                {
+                    row.Cells[j].Value = cells[j];
+                }
+
+                #endregion Application
+
+                string definition;
+                Functions.OpCodeDictionary.TryGetValue(Functions.GetOpCode(instruction.OpCode.ToString().Trim()),
+                    out definition);
+
+                if (definition != null)
+                    row.Cells[2].ToolTipText = definition;
+
+                row.Tag = instruction;
+                row.Height = 16;
+
+                rows.Add(row);
             }
+
+            DgBody.Rows.AddRange(rows.ToArray());
 
             MainForm.CurrentAssembly.Method.Method = method;
             ColorRules.MarkBlocks(DgBody);
             ColorRules.ApplyColors(DgBody);
-
-            foreach (DataGridViewRow row in DgBody.Rows)
-            {
-                string definition;
-                Functions.OpCodeDictionary.TryGetValue(Functions.GetOpCode(row.Cells["opcode"].Value.ToString().Trim()),
-                        out definition);
-
-                if (definition != null)
-                    row.Cells["opcode"].ToolTipText = definition;
-            }
         }
     }
 }

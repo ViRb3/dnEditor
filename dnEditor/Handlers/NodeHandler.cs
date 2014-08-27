@@ -61,7 +61,7 @@ namespace dnEditor.Handlers
 
             foreach (TreeNode child in children)
             {
-                TreeNode fullAccessChild = child; // Get rid of readonly exception
+                TreeNode fullAccessChild = child; // Get rid of readonly issue
 
                 if (fullAccessChild.Tag is TypeDef)
                 {

@@ -61,7 +61,7 @@ namespace dnEditor.Handlers
 
                 TreeViewHandler.NameSpaceList.Add(type.Namespace);
 
-                TreeViewHandler.CurrentModule.TreeView.BeginInvoke(new MethodInvoker(() =>
+                TreeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() =>
                 {
                     nameSpace.AddTo(TreeViewHandler.CurrentModule);
                     targetType.AddTo(nameSpace);
@@ -70,7 +70,7 @@ namespace dnEditor.Handlers
             }
             else
             {
-                TreeViewHandler.CurrentModule.TreeView.BeginInvoke(new MethodInvoker(() => targetType.AddTo(TreeViewHandler.CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == type.Namespace))));
+                TreeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() => targetType.AddTo(TreeViewHandler.CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == type.Namespace))));
             }
         }
     }

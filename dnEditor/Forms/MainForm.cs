@@ -19,12 +19,16 @@ namespace dnEditor.Forms
         public static CurrentAssembly CurrentAssembly;
         public static int EditedInstruction;
         public static Instruction NewInstruction;
+        public static TreeView TreeView;
+        public static ToolStrip ToolStrip;
 
         public MainForm()
         {
             InitializeComponent();
 
             DgBody = dgBody;
+            TreeView = treeView1;
+            ToolStrip = toolStrip1;
             InitializeBody();
 
             dgBody.RowTemplate.ContextMenuStrip = instructionMenu;
