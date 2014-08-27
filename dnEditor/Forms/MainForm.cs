@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
@@ -21,6 +18,7 @@ namespace dnEditor.Forms
         public static Instruction NewInstruction;
         public static TreeView TreeView;
         public static ToolStrip ToolStrip;
+        public new static ContextMenuStrip ContextMenuStrip;
 
         public MainForm()
         {
@@ -29,9 +27,8 @@ namespace dnEditor.Forms
             DgBody = dgBody;
             TreeView = treeView1;
             ToolStrip = toolStrip1;
+            ContextMenuStrip = instructionMenu;
             InitializeBody();
-
-            dgBody.RowTemplate.ContextMenuStrip = instructionMenu;
         }
 
         private void InitializeBody()
@@ -74,7 +71,7 @@ namespace dnEditor.Forms
                 NewInstruction = null;
                 EditedInstruction = e.RowIndex;
                 var form = new EditInstructionForm(CurrentAssembly.Method.Method.Body.Instructions[e.RowIndex]);
-                form.Show();
+                form.ShowDialog();
                 form.FormClosed += EditInstructionForm_FormClosed;
             }
         }
@@ -190,11 +187,6 @@ namespace dnEditor.Forms
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
         }
 
-        private void instructionMenu_Opening(object sender, CancelEventArgs e)
-        {
-
-        }
-
         private void dgBody_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
@@ -204,6 +196,11 @@ namespace dnEditor.Forms
 
             dgBody.Rows[e.RowIndex].Selected = true;
 
+        }
+
+        private void insertToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO: Implement
         }
     }
 }

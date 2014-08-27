@@ -141,6 +141,7 @@
             this.MaximizeBox = false;
             this.Name = "PickReferenceForm";
             this.Text = "Choose a reference...";
+            this.Shown += new System.EventHandler(this.PickReferenceForm_Shown);
             this.ResumeLayout(false);
 
         }

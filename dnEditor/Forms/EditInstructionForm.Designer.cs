@@ -150,7 +150,6 @@
             "Single",
             "Double",
             "String",
-            "Verbatim String",
             "-> Instruction reference",
             "-> Multiple instructions reference",
             "-> Variable reference",

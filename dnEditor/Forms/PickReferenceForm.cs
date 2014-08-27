@@ -13,12 +13,14 @@ namespace dnEditor.Forms
         {
             InitializeComponent();
             treeView1.AllowDrop = true;
-           
-
-            TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
 
             _reference = reference;
             EditInstructionForm.SelectedReference = null;
+        }
+
+        private void PickReferenceForm_Shown(object sender, System.EventArgs e)
+        {
+            TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
         }
 
         private void btnSelect_Click(object sender, System.EventArgs e)

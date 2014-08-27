@@ -79,6 +79,8 @@ namespace dnEditor.Handlers
                 row.Tag = instruction;
                 row.Height = 16;
 
+                row.ContextMenuStrip = MainForm.ContextMenuStrip;
+
                 rows.Add(row);
             }
 

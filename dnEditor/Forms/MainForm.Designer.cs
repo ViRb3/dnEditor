@@ -440,7 +440,6 @@
             this.insertToolStripMenuItem});
             this.instructionMenu.Name = "instructionMenu";
             this.instructionMenu.Size = new System.Drawing.Size(153, 70);
-            this.instructionMenu.Opening += new System.ComponentModel.CancelEventHandler(this.instructionMenu_Opening);
             // 
             // deleteToolStripMenuItem
             // 
@@ -454,6 +453,7 @@
             this.insertToolStripMenuItem.Name = "insertToolStripMenuItem";
             this.insertToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.insertToolStripMenuItem.Text = "Insert";
+            this.insertToolStripMenuItem.Click += new System.EventHandler(this.insertToolStripMenuItem_Click);
             // 
             // MainForm
             // 

@@ -47,25 +47,27 @@ namespace dnEditor.Forms
             switch (opCode.OperandType)
             {
                 case OperandType.InlineBrTarget:
-                    cbOperandType.SelectedIndex = 9;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Instruction reference");
                     InstructionReference();
                     cbOperand.SelectedIndex =
                         _addedOperands.Cast<Instruction>().ToList().IndexOf(instruction.Operand as Instruction);
                     break;
                 case OperandType.ShortInlineBrTarget:
-                    cbOperandType.SelectedIndex = 9;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Instruction reference");
                     InstructionReference();
                     cbOperand.SelectedIndex =
                         _addedOperands.Cast<Instruction>().ToList().IndexOf(instruction.Operand as Instruction);
                     break;
                 case OperandType.InlineString:
-                    cbOperandType.SelectedIndex = 7;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("String");
                     cbOperand.Enabled = true;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     cbOperand.Text = instruction.Operand.ToString();
                     break;
                 case OperandType.InlineNone:
-                    cbOperandType.SelectedIndex = 0;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("[None]");
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     break;
                 case OperandType.InlineI:
                     //TODO: Implement
@@ -76,26 +78,62 @@ namespace dnEditor.Forms
                 case OperandType.InlineR:
                     //TODO: Implement
                 case OperandType.ShortInlineR:
-                    //TODO: Implement
+
+                    #region Selected Item
+
+                    if (instruction.Operand is byte)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("Byte");
+                    }
+                    else if (instruction.Operand is sbyte)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("SByte");
+                    }
+                    else if (instruction.Operand is int)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("Int32");
+                    }
+                    else if (instruction.Operand is Int64)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("Int64");
+                    }
+                    else if (instruction.Operand is Single)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("Single");
+                    }
+                    else if (instruction.Operand is double)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("Double");
+                    }
+                    else if (instruction.Operand is string)
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("String");
+                    }
+
+                    #endregion Selected Item
+                    cbOperand.Enabled = true;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    cbOperand.Text = Functions.GetOperandText(instruction);
+                    break;
                 case OperandType.InlineSwitch:
                     //TODO: Implement
                     break;
                 case OperandType.InlineVar:
-                    cbOperandType.SelectedIndex = 11;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Variable reference");
                     VariableReference();
                     cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
                         .ToList()
                         .IndexOf(instruction.Operand as Local);
                     break;
                 case OperandType.ShortInlineVar:
-                    cbOperandType.SelectedIndex = 11;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Variable reference");
                     VariableReference();
                     cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
                         .ToList()
                         .IndexOf(instruction.Operand as Local);
                     break;
                 case OperandType.InlineField:
-                    cbOperandType.SelectedIndex = 13;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Field reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
@@ -104,7 +142,7 @@ namespace dnEditor.Forms
                     cbOperand.SelectedIndex = 0;
                     break;
                 case OperandType.InlineMethod:
-                    cbOperandType.SelectedIndex = 14;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Method reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
@@ -113,7 +151,7 @@ namespace dnEditor.Forms
                     cbOperand.SelectedIndex = 0;
                     break;
                 case OperandType.InlineType:
-                    cbOperandType.SelectedIndex = 15;
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Type reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
@@ -142,7 +180,7 @@ namespace dnEditor.Forms
         {
             try
             {
-                if (cbOperandType.SelectedIndex == 0) // None
+                if (cbOperandType.SelectedItem.ToString() == "[None]")
                 {
                     #region None
 
@@ -150,8 +188,10 @@ namespace dnEditor.Forms
 
                     #endregion None
                 }
-                else if (cbOperandType.SelectedIndex > 0 && cbOperandType.SelectedIndex < 9)
-                    // Byte, SByte, Int32, Int64, Single, Double, String, Verbatim String
+                else if (cbOperandType.SelectedItem.ToString() == "Byte" || cbOperandType.SelectedItem.ToString() == "SByte" ||
+                    cbOperandType.SelectedItem.ToString() == "Int32" || cbOperandType.SelectedItem.ToString() == "Int64" ||
+                    cbOperandType.SelectedItem.ToString() == "Single" || cbOperandType.SelectedItem.ToString() == "Double" ||
+                    cbOperandType.SelectedItem.ToString() == "String")
                 {
                     #region Value
 
@@ -159,7 +199,7 @@ namespace dnEditor.Forms
 
                     #endregion Value
                 }
-                else if (cbOperandType.SelectedIndex == 9) // Instruction ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Instruction reference")
                 {
                     #region Instruction
 
@@ -169,15 +209,15 @@ namespace dnEditor.Forms
 
                     #endregion Instruction
                 }
-                else if (cbOperandType.SelectedIndex == 10) // Multi instructions ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Multiple instructions reference")
                 {
                     #region Multi instructions
 
-                    //TODO: Implement
+                    throw new NotImplementedException();
 
                     #endregion Instruction
                 }
-                else if (cbOperandType.SelectedIndex == 11) // Variable ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Variable reference")
                 {
                     #region Variable
 
@@ -187,7 +227,7 @@ namespace dnEditor.Forms
 
                     #endregion Variable
                 }
-                else if (cbOperandType.SelectedIndex == 12) // Parameter ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Parameter reference")
                 {
                     #region Parameter
 
@@ -197,7 +237,7 @@ namespace dnEditor.Forms
 
                     #endregion Parameter
                 }
-                else if (cbOperandType.SelectedIndex == 13) // Field ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Field reference")
                 {
                     #region Field
 
@@ -206,7 +246,7 @@ namespace dnEditor.Forms
 
                     #endregion Field
                 }
-                else if (cbOperandType.SelectedIndex == 14) // Method ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Method reference")
                 {
                     #region Method
 
@@ -216,7 +256,7 @@ namespace dnEditor.Forms
                     #endregion Method
                 }
 
-                else if (cbOperandType.SelectedIndex == 15) // Type ref
+                else if (cbOperandType.SelectedItem.ToString() == "-> Type reference")
                 {
                     #region Type
 
@@ -245,22 +285,26 @@ namespace dnEditor.Forms
             if (!_enableOperandTypeChangedEvent) return;
 
             cbOperand.Items.Clear();
+            cbOperand.Text = "";
             _addedOperands.Clear();
 
-            if (cbOperandType.SelectedIndex == 0) // None
+            if (cbOperandType.SelectedItem.ToString() == "[None]")
             {
                 cbOperand.Enabled = false;
             }
-            else if (cbOperandType.SelectedIndex > 0 && cbOperandType.SelectedIndex < 9) // Value
+            else if (cbOperandType.SelectedItem.ToString() == "Byte" || cbOperandType.SelectedItem.ToString() == "SByte" ||
+                    cbOperandType.SelectedItem.ToString() == "Int32" || cbOperandType.SelectedItem.ToString() == "Int64" ||
+                    cbOperandType.SelectedItem.ToString() == "Single" || cbOperandType.SelectedItem.ToString() == "Double" ||
+                    cbOperandType.SelectedItem.ToString() == "String")
             {
                 cbOperand.Enabled = true;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
             }
-            else if (cbOperandType.SelectedIndex == 9) // Instruction ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Instruction reference")
             {
                 InstructionReference();
             }
-            else if (cbOperandType.SelectedIndex == 10) // Multi instructions ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Multiple instructions reference")
             {
                 var multiInstructionSelectForm =
                     new MultipleInstructionsSelectForm(
@@ -268,37 +312,37 @@ namespace dnEditor.Forms
 
                 multiInstructionSelectForm.Show();
             }
-            else if (cbOperandType.SelectedIndex == 11) // Variable ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Variable reference")
             {
                 VariableReference();
             }
-            else if (cbOperandType.SelectedIndex == 12) // Parameter ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Parameter reference")
             {
                 ParameterReference();
             }
-            else if (cbOperandType.SelectedIndex == 13) // Field ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Field reference")
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                 var form = new PickReferenceForm("Field");
-                form.Show();
+                form.ShowDialog();
                 form.FormClosed += form_FormClosedField;
             }
-            else if (cbOperandType.SelectedIndex == 14) // Method ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Method reference")
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                 var form = new PickReferenceForm("Method");
-                form.Show();
+                form.ShowDialog();
                 form.FormClosed += form_FormClosedMethod;
             }
 
-            else if (cbOperandType.SelectedIndex == 15) // Type ref
+            else if (cbOperandType.SelectedItem.ToString() == "-> Type reference")
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                 var form = new PickReferenceForm("Type");
-                form.Show();
+                form.ShowDialog();
                 form.FormClosed += form_FormClosedType;
             }
         }

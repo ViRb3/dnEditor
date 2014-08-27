@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -61,6 +59,8 @@ namespace dnEditor.Handlers
         public static void LoadAssembly(TreeView treeView, AssemblyDef currentAssembly, bool clear)
         {
             CurrentTreeView = treeView;
+            RefNode = null;
+            CurrentModule = null;
 
             if (clear)
                 treeView.Nodes.Clear();
@@ -74,14 +74,16 @@ namespace dnEditor.Handlers
 
                 TreeNode moduleNode = NewModule(module);
 
+                moduleNode.AddTo(file);
+
+                CurrentModule = moduleNode;
+
                 if (module.Types.Any())
                 {
                     var processor = new NodeHandler(moduleNode);
                     processor.ProcessNode();
                     moduleNode = processor.Node;
                 }
-
-                moduleNode.AddTo(file);
 
                 CurrentModule = moduleNode;
 
@@ -95,32 +97,6 @@ namespace dnEditor.Handlers
             processor2.ProcessNode();
             RefNode = processor2.Node;
         }
-
-        #region Functions
-
-        public static bool ExpandableType(TypeDef type)
-        {
-            return (type.HasNestedTypes || type.HasMethods || type.HasEvents || type.HasFields || type.HasProperties);
-        }
-
-        public static TreeNode FindMethod(TreeNode node, MethodDef method)
-        {
-            foreach (TreeNode subNode in node.Nodes)
-            {
-                if ((subNode.Tag is MethodDef) && (subNode.Tag as MethodDef) == method)
-                {
-                    return subNode;
-                }
-
-                TreeNode nodeResult = FindMethod(subNode, method);
-
-                if (nodeResult != null)
-                    return nodeResult;
-            }
-            return null;
-        }
-
-        #endregion Functions
 
         #region AddNode
 

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
 namespace dnEditor.Misc
@@ -132,88 +136,87 @@ namespace dnEditor.Misc
             return output;
         }
 
-        /*public static HashSet<MethodDef> GetAccessorMethods(this TypeDef type)
+        public static string GetOperandText(Instruction instruction)
         {
-            var accessorMethods = new HashSet<MethodDef>();
-            foreach (PropertyDef property in type.Properties)
-            {
-                accessorMethods.Add(property.GetMethod);
-                accessorMethods.Add(property.SetMethod);
-                if (property.HasOtherMethods)
-                {
-                    foreach (MethodDef m in property.OtherMethods)
-                        accessorMethods.Add(m);
-                }
-            }
-            foreach (EventDef ev in type.Events)
-            {
-                accessorMethods.Add(ev.AddMethod);
-                accessorMethods.Add(ev.RemoveMethod);
-                accessorMethods.Add(ev.InvokeMethod);
-                if (ev.HasOtherMethods)
-                {
-                    foreach (MethodDef m in ev.OtherMethods)
-                        accessorMethods.Add(m);
-                }
-            }
-            return accessorMethods;
-        }*/
+            string operandText = "";
 
-        /*public static string GetExtendedName(this TypeSig typeSig)
+            object operand = instruction.Operand;
+
+            if (operand == null)
+            {
+                return operandText;
+            }
+
+            switch (operand.GetType().FullName)
+            {
+                case "System.String":
+                    operandText = String.Format("\"{0}\"", operand);
+                    break;
+                case "System.Int32":
+                case "System.Int16":
+                case "System.Int64":
+                    long l = Convert.ToInt64(operand);
+                    operandText = l < 100 ? l.ToString() : String.Format("0x{0:x}", l);
+                    break;
+                case "System.UInt32":
+                case "System.UInt16":
+                case "System.UInt64":
+                    ulong ul = Convert.ToUInt64(operand);
+                    operandText = ul < 100 ? ul.ToString() : String.Format("0x{0:x}", ul);
+                    break;
+                case "System.Decimal":
+                    operandText = operand.ToString();
+                    break;
+                case "System.Double":
+                    operandText = operand.ToString();
+                    break;
+                case "System.Byte":
+                case "System.SByte":
+                    operandText = String.Format("0x{0:x}", operand);
+                    break;
+                case "System.Boolean":
+                    operandText = operand.ToString();
+                    break;
+                case "System.Char":
+                    operandText = String.Format("'{0}'", operand);
+                    break;
+                case "System.DateTime":
+                    //TODO: Add a date picker?
+                    operandText = operand.ToString();
+                    break;
+                default:
+                    operandText = operand.ToString();
+                    break;
+            }
+
+            return operandText;
+        }
+
+        public static object GetItemByText(this ComboBox comboBox, string text)
         {
-            var nothing = new List<Dictionary<Dictionary<Int32, Int32>, String>>();
+            return comboBox.Items.Cast<object>().First(item => item.ToString() == text);
+        }
 
-            string name = typeSig.TypeName;
+        public static bool ExpandableType(TypeDef type)
+        {
+            return (type.HasNestedTypes || type.HasMethods || type.HasEvents || type.HasFields || type.HasProperties);
+        }
 
-            if (typeSig.ToGenericInstSig() != null)
+        public static TreeNode FindMethod(TreeNode node, MethodDef method)
+        {
+            foreach (TreeNode subNode in node.Nodes)
             {
-                name += "<";
-
-                IList<TypeSig> args = typeSig.ToGenericInstSig().GenericArguments; // Dictionary`2 & String
-
-                for (int i = 0; i < args.Count; i++)
+                if ((subNode.Tag is MethodDef) && (subNode.Tag as MethodDef) == method)
                 {
-                    string newArgs = args[i].GetExtendedName();
-
-                    if (newArgs != string.Empty)
-                        name += newArgs;
-                    else
-                        name += args[i].TypeName;
-
-                    if (i < args.Count - 1)
-                        name += ", ";
+                    return subNode;
                 }
 
-                name += ">";
-            }
+                TreeNode nodeResult = FindMethod(subNode, method);
 
-            return name;
-        }*/
+                if (nodeResult != null)
+                    return nodeResult;
+            }
+            return null;
+        }
     }
 }
-
-/*string type = "";
-
-            type += typeSig.TypeName;
-
-            if (typeSig.ToGenericInstSig() != null)
-            {
-                IList<TypeSig> args = typeSig.ToGenericInstSig().GenericArguments;
-
-                if (args.Count > 0)
-                {
-                    type += "<";
-                    for (int i = 0; i < args.Count; i++)
-                    {
-                        if (i != args.Count - 1)
-                            type += string.Format("{0}, ", args[i].TypeName);
-                        else
-                            type += args[i].TypeName + ">";
-                    }
-                }
-            }
-
-            type += ", ";
-
-
-            return type.TrimEnd(new[] { ',', ' ' });*/

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using dnEditor.Misc;
 using dnlib.DotNet;
 
 namespace dnEditor.Handlers
@@ -13,7 +14,7 @@ namespace dnEditor.Handlers
         {
             foreach (TreeNode node in treeView.Nodes)
             {
-                TreeNode nodeResult = TreeViewHandler.FindMethod(node, method);
+                TreeNode nodeResult = Functions.FindMethod(node, method);
 
                 if (nodeResult != null)
                     return nodeResult;
