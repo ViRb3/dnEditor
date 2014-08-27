@@ -26,7 +26,8 @@ a ticket. And just wait. I will eventually get through it.
  - yck1509 (dnSpy) for the first dnlib-based assembly decompiler. That definitely served me as a
  reference and dictionary of all I wasn't sure how to do.
  - Sebastien LEBRETON (Reflexil) for the currently only fully-working and fully-featured assembly
- editor. If you find something similar in dnEditor's design: it's Reflexil that inspired(?) me.
+ editor. If you find something similar in dnEditor's design: it's either Reflexil that inspired me
+ or Reflexil that made me use the (almost) same design.
  
 ####All licenses can be found in the LICENSES.md file in this (the root) folder.
  
