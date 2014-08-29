@@ -41,10 +41,10 @@ namespace dnEditor.Handlers
 
                 if (instruction.Operand is Instruction)
                     cells.Add(string.Format("{0}",
-                        Functions.ResolveOperandInstructions(method.Body.Instructions.ToList(),
+                        Functions.FormatFullInstruction(method.Body.Instructions.ToList(),
                             method.Body.Instructions.IndexOf(instruction))));
                 else
-                    cells.Add(instruction.Operand);
+                    cells.Add(Functions.GetOperandText(method.Body.Instructions.ToList(), method.Body.Instructions.ToList().IndexOf(instruction)));
 
                 #endregion Column 4
 

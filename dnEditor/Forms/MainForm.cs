@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using dnEditor.Handlers;
@@ -49,7 +50,7 @@ namespace dnEditor.Forms
         private void treeView1_DragDrop(object sender, DragEventArgs e)
         {
             CurrentAssembly result = TreeViewHandler.DragDrop(sender, e);
-            if (result != null)
+            if (result != null && result.Assembly != null)
             {
                 CurrentAssembly = result;
                 LoadAssembly(false);
@@ -75,41 +76,31 @@ namespace dnEditor.Forms
 
             var assemblyRef = e.Node.Tag as AssemblyRef;
             string runtimeDirectory = RuntimeEnvironment.GetRuntimeDirectory();
+            string directory = Directory.GetParent(CurrentAssembly.Path).FullName;
 
             var paths = new List<string>
             {
-                Path.Combine(Environment.CurrentDirectory, assemblyRef.Name + ".dll"),
-                Path.Combine(Environment.CurrentDirectory, assemblyRef.Name + ".exe"),
+                Path.Combine(directory, assemblyRef.Name + ".dll"),
+                Path.Combine(directory, assemblyRef.Name + ".exe"),
+            };
+
+            var paths2 = new List<string>
+            {
                 Path.Combine(runtimeDirectory, assemblyRef.Name + ".exe"),
                 Path.Combine(runtimeDirectory, assemblyRef.Name + ".dll"),
             };
 
-            int result = 0;
 
-            if (File.Exists(paths[0]))
+            if (paths.Where(File.Exists).Count() == 1)
             {
-                OpenFile(paths[0]);
-                result++;
-            }
-            if (File.Exists(paths[1]))
-            {
-                OpenFile(paths[1]);
-                result++;
+                OpenFile(paths.First(File.Exists));
                 return;
             }
-
-            if (File.Exists(paths[2]))
+            if (paths2.Where(File.Exists).Count() == 1)
             {
-                OpenFile(paths[2]);
-                result++;
+                OpenFile(paths2.First(File.Exists));
+                return;
             }
-            if (File.Exists(paths[3]))
-            {
-                OpenFile(paths[3]);
-                result++;
-            }
-
-            if (result > 0) return;
 
             if (MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
@@ -176,10 +167,13 @@ namespace dnEditor.Forms
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
         }
 
-        private void OpenFile(string file, bool clear = false)
+        private bool OpenFile(string file, bool clear = false)
         {
             CurrentAssembly = new CurrentAssembly(file);
+            if (CurrentAssembly.Assembly == null) return false;
+
             LoadAssembly(clear);
+            return true;
         }        
 
         private void NewInstructionEditor(EditInstructionMode mode)

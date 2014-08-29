@@ -14,7 +14,7 @@ a ticket. And just wait. I will eventually get through it.
 
 #To-do:
  - [ ] Add search functions.
- - [ ] Finish support for "switch" opcode.
+ - [x] Finish support for "switch" opcode. //done
  - [ ] Add support for "try-catch".
  - [ ] Add member overview/preview.
  - [ ] Add member icons.

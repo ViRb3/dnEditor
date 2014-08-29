@@ -44,6 +44,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnSelectOperand = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cbOpCode
@@ -89,7 +90,7 @@
             this.cbOperand.FormattingEnabled = true;
             this.cbOperand.Location = new System.Drawing.Point(68, 179);
             this.cbOperand.Name = "cbOperand";
-            this.cbOperand.Size = new System.Drawing.Size(365, 21);
+            this.cbOperand.Size = new System.Drawing.Size(326, 21);
             this.cbOperand.TabIndex = 0;
             // 
             // lblOperand
@@ -212,11 +213,22 @@
             this.label4.TabIndex = 1;
             this.label4.Text = "OperandType:";
             // 
+            // btnSelectOperand
+            // 
+            this.btnSelectOperand.Location = new System.Drawing.Point(400, 179);
+            this.btnSelectOperand.Name = "btnSelectOperand";
+            this.btnSelectOperand.Size = new System.Drawing.Size(33, 21);
+            this.btnSelectOperand.TabIndex = 4;
+            this.btnSelectOperand.Text = "...";
+            this.btnSelectOperand.UseVisualStyleBackColor = true;
+            this.btnSelectOperand.Click += new System.EventHandler(this.btnSelectOperand_Click);
+            // 
             // EditInstructionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(451, 250);
+            this.Controls.Add(this.btnSelectOperand);
             this.Controls.Add(this.lblOpCodeDescription);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnOk);
@@ -260,5 +272,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnSelectOperand;
     }
 }

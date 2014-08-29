@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -100,30 +98,48 @@ namespace dnEditor.Misc
             return String.Format("L_{0:x04}", offset);
         }
 
-        public static string FormatInstruction(List<Instruction> instructions, int index)
+        public static string FormatFullInstruction(List<Instruction> instructions, int index)
         {
             if (index < 0) return "???";
 
             Instruction currentInstruction = instructions[index];
 
-            string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction), currentInstruction.OpCode);
+            string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction),
+                currentInstruction.OpCode);
 
             if (currentInstruction.Operand != null)
             {
                 if (currentInstruction.Operand is Instruction)
                 {
-                    output += string.Format(" {0}", ResolveOperandInstructions(instructions, index));
+                    output += string.Format("{0}", ResolveOperandInstructions(instructions, index));
                 }
                 else
                 {
-                    output += string.Format(" -> {0}", currentInstruction.Operand);
+                    output += string.Format(": {0}", GetOperandText(instructions, index));
                 }
             }
 
             return output;
         }
 
-        public static string ResolveOperandInstructions(List<Instruction> instructions, int index)
+        public static string FormatInstruction(List<Instruction> instructions, int index)
+        {
+            if (index < 0) return "???";
+
+            Instruction currentInstruction = instructions[index];
+
+            string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction),
+                currentInstruction.OpCode);
+
+            if (currentInstruction.Operand != null && (!(currentInstruction.Operand is Instruction)))
+            {
+                output += string.Format(": {0}", GetOperandText(instructions, index));
+            }
+
+            return output;
+        }
+
+        private static string ResolveOperandInstructions(List<Instruction> instructions, int index)
         {
             string output = "";
             Instruction currentInstruction = instructions[index];
@@ -131,18 +147,18 @@ namespace dnEditor.Misc
             while (currentInstruction.Operand is Instruction)
             {
                 var newInstruction = currentInstruction.Operand as Instruction;
-                output += string.Format("-> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
+                output += string.Format(" -> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
                 currentInstruction = newInstruction;
             }
 
             return output;
         }
 
-        public static string GetOperandText(Instruction instruction)
+        public static string GetOperandText(List<Instruction> instructions, int index)
         {
             string operandText = "";
 
-            object operand = instruction.Operand;
+            object operand = instructions[index].Operand;
 
             if (operand == null)
             {
@@ -186,12 +202,32 @@ namespace dnEditor.Misc
                     //TODO: Add a date picker?
                     operandText = operand.ToString();
                     break;
+                case "dnlib.DotNet.Emit.Instruction[]":
+                    operandText = GetSwitchText(instructions, (instructions[index].Operand as Instruction[]).ToList());
+                    break;
                 default:
                     operandText = operand.ToString();
                     break;
             }
 
             return operandText;
+        }
+
+        public static string GetSwitchText(List<Instruction> instructions, List<Instruction> switchInstructions)
+        {
+            var stringBuilder = new StringBuilder();
+
+            if (instructions.Count > 0)
+            {
+                foreach (Instruction instruction in switchInstructions)
+                {
+                    stringBuilder.AppendFormat("({0}) {1}, ", instructions.IndexOf(instruction), instruction.OpCode);
+                }
+
+                stringBuilder.Remove(stringBuilder.Length - 2, 2);
+            }
+
+            return stringBuilder.ToString();
         }
 
         public static object GetItemByText(this ComboBox comboBox, string text)
@@ -219,6 +255,14 @@ namespace dnEditor.Misc
                     return nodeResult;
             }
             return null;
+        }
+
+        public static void ClearSelection(this DataGridView dataGridView)
+        {
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                row.Selected = false;
+            }
         }
     }
 }

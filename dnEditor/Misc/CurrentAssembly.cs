@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
@@ -31,12 +32,21 @@ namespace dnEditor.Misc
 
         public void OpenAssembly(string path = null)
         {
-            Assembly = path == null ? AssemblyDef.Load(Path) : AssemblyDef.Load(path);
+            try
+            {
+                if (path == null)
+                    Assembly = AssemblyDef.Load(Path);
+                else
+                {
+                    Assembly = AssemblyDef.Load(path);
+                    Path = path;
+                }
+            }
+            catch (BadImageFormatException e)
+            {
+                MessageBox.Show(e.Message, "Error loading assembly!");
+                Assembly = null;
+            }
         }
-
-        /*public void LoadModule(string path = null)
-        {
-            Module = path == null ? ModuleDefMD.Load(Path) : ModuleDefMD.Load(path);
-        }*/
     }
 }

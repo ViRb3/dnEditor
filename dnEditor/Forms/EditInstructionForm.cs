@@ -67,18 +67,21 @@ namespace dnEditor.Forms
                     cbOperand.SelectedIndex =
                         _addedOperands.Cast<Instruction>().ToList().IndexOf(instruction.Operand as Instruction);
                     break;
+
                 case OperandType.ShortInlineBrTarget:
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Instruction reference");
                     InstructionReference();
                     cbOperand.SelectedIndex =
                         _addedOperands.Cast<Instruction>().ToList().IndexOf(instruction.Operand as Instruction);
                     break;
+
                 case OperandType.InlineString:
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("String");
                     cbOperand.Enabled = true;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     cbOperand.Text = instruction.Operand.ToString();
                     break;
+
                 case OperandType.InlineNone:
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("[None]");
                     cbOperand.Enabled = false;
@@ -92,6 +95,7 @@ namespace dnEditor.Forms
                     //TODO: Implement
                 case OperandType.InlineR:
                     //TODO: Implement
+
                 case OperandType.ShortInlineR:
 
                     #region Selected Item
@@ -126,27 +130,63 @@ namespace dnEditor.Forms
                     }
 
                     #endregion Selected Item
+
                     cbOperand.Enabled = true;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                    cbOperand.Text = Functions.GetOperandText(instruction);
+                    List<Instruction> instructions = MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList();
+                    cbOperand.Text = Functions.GetOperandText(instructions, instructions.IndexOf(instruction));
                     break;
+
                 case OperandType.InlineSwitch:
-                    //TODO: Implement
+                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Multiple instructions reference");
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    List<Instruction> instructions2 = MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList();
+                    cbOperand.Text = Functions.GetOperandText(instructions2, instructions2.IndexOf(instruction));
+
+                    if (instruction.Operand != null)
+                        _addedOperands.AddRange(instruction.Operand as Instruction[]);
+
                     break;
+
                 case OperandType.InlineVar:
-                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Variable reference");
-                    VariableReference();
-                    cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
-                        .ToList()
-                        .IndexOf(instruction.Operand as Local);
+                    if (opCode.Name.ToLower().StartsWith("ldarg"))
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Parameter reference");
+                        ParameterReference();
+                        cbOperand.SelectedIndex = _addedOperands.Cast<Parameter>()
+                            .ToList()
+                            .IndexOf(instruction.Operand as Parameter);
+                    }
+                    else
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Variable reference");
+                        VariableReference();
+                        cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
+                            .ToList()
+                            .IndexOf(instruction.Operand as Local);
+                    }
                     break;
+
                 case OperandType.ShortInlineVar:
-                    cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Variable reference");
-                    VariableReference();
-                    cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
-                        .ToList()
-                        .IndexOf(instruction.Operand as Local);
+                    if (opCode.Name.ToLower().StartsWith("ldarg"))
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Parameter reference");
+                        ParameterReference();
+                        cbOperand.SelectedIndex = _addedOperands.Cast<Parameter>()
+                            .ToList()
+                            .IndexOf(instruction.Operand as Parameter);
+                    }
+                    else
+                    {
+                        cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Variable reference");
+                        VariableReference();
+                        cbOperand.SelectedIndex = _addedOperands.Cast<Local>()
+                            .ToList()
+                            .IndexOf(instruction.Operand as Local);
+                    }
                     break;
+
                 case OperandType.InlineField:
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Field reference");
                     cbOperand.Enabled = false;
@@ -156,6 +196,7 @@ namespace dnEditor.Forms
                     cbOperand.Items.Add(SelectedReference as IField);
                     cbOperand.SelectedIndex = 0;
                     break;
+
                 case OperandType.InlineMethod:
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Method reference");
                     cbOperand.Enabled = false;
@@ -165,6 +206,7 @@ namespace dnEditor.Forms
                     cbOperand.Items.Add(SelectedReference as IMethod);
                     cbOperand.SelectedIndex = 0;
                     break;
+
                 case OperandType.InlineType:
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Type reference");
                     cbOperand.Enabled = false;
@@ -177,6 +219,7 @@ namespace dnEditor.Forms
             }
 
             _enableOperandTypeChangedEvent = true;
+            CheckEnableButton();
         }
 
         private void cbOpCode_SelectedIndexChanged(object sender, EventArgs e)
@@ -203,14 +246,17 @@ namespace dnEditor.Forms
 
                     #endregion None
                 }
-                else if (cbOperandType.SelectedItem.ToString() == "Byte" || cbOperandType.SelectedItem.ToString() == "SByte" ||
-                    cbOperandType.SelectedItem.ToString() == "Int32" || cbOperandType.SelectedItem.ToString() == "Int64" ||
-                    cbOperandType.SelectedItem.ToString() == "Single" || cbOperandType.SelectedItem.ToString() == "Double" ||
-                    cbOperandType.SelectedItem.ToString() == "String")
+                else if (cbOperandType.SelectedItem.ToString() == "Byte" ||
+                         cbOperandType.SelectedItem.ToString() == "SByte" ||
+                         cbOperandType.SelectedItem.ToString() == "Int32" ||
+                         cbOperandType.SelectedItem.ToString() == "Int64" ||
+                         cbOperandType.SelectedItem.ToString() == "Single" ||
+                         cbOperandType.SelectedItem.ToString() == "Double" ||
+                         cbOperandType.SelectedItem.ToString() == "String")
                 {
                     #region Value
 
-                    ValueReference();
+                    CreateValueInstruction();
 
                     #endregion Value
                 }
@@ -228,7 +274,8 @@ namespace dnEditor.Forms
                 {
                     #region Multi instructions
 
-                    throw new NotImplementedException();
+                    MainForm.NewInstruction =
+                        (cbOpCode.SelectedItem as OpCode).ToInstruction(SelectedReference as Instruction[]);
 
                     #endregion Instruction
                 }
@@ -287,7 +334,7 @@ namespace dnEditor.Forms
                                 Environment.NewLine + ex.Message, "Error");
                 return;
             }
-            this.Close();
+            Close();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -302,15 +349,18 @@ namespace dnEditor.Forms
             cbOperand.Items.Clear();
             cbOperand.Text = "";
             _addedOperands.Clear();
+            btnSelectOperand.Enabled = false;
 
             if (cbOperandType.SelectedItem.ToString() == "[None]")
             {
                 cbOperand.Enabled = false;
+                cbOperand.DropDownStyle = ComboBoxStyle.Simple;
             }
             else if (cbOperandType.SelectedItem.ToString() == "Byte" || cbOperandType.SelectedItem.ToString() == "SByte" ||
-                    cbOperandType.SelectedItem.ToString() == "Int32" || cbOperandType.SelectedItem.ToString() == "Int64" ||
-                    cbOperandType.SelectedItem.ToString() == "Single" || cbOperandType.SelectedItem.ToString() == "Double" ||
-                    cbOperandType.SelectedItem.ToString() == "String")
+                     cbOperandType.SelectedItem.ToString() == "Int32" || cbOperandType.SelectedItem.ToString() == "Int64" ||
+                     cbOperandType.SelectedItem.ToString() == "Single" ||
+                     cbOperandType.SelectedItem.ToString() == "Double" ||
+                     cbOperandType.SelectedItem.ToString() == "String")
             {
                 cbOperand.Enabled = true;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
@@ -321,11 +371,8 @@ namespace dnEditor.Forms
             }
             else if (cbOperandType.SelectedItem.ToString() == "-> Multiple instructions reference")
             {
-                var multiInstructionSelectForm =
-                    new MultipleInstructionsSelectForm(
-                        MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToArray());
-
-                multiInstructionSelectForm.Show();
+                cbOperand.Enabled = false;
+                cbOperand.DropDownStyle = ComboBoxStyle.Simple;
             }
             else if (cbOperandType.SelectedItem.ToString() == "-> Variable reference")
             {
@@ -335,36 +382,43 @@ namespace dnEditor.Forms
             {
                 ParameterReference();
             }
-            else if (cbOperandType.SelectedItem.ToString() == "-> Field reference")
+            else if (cbOperandType.SelectedItem.ToString() == "-> Field reference" || 
+                cbOperandType.SelectedItem.ToString() == "-> Method reference" ||
+                cbOperandType.SelectedItem.ToString() == "-> Type reference")
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                var form = new PickReferenceForm("Field");
-                form.FormClosed += form_FormClosedField;
-                form.ShowDialog();
+            }
+
+            CheckEnableButton();
+        }
+
+        private void CheckEnableButton()
+        {
+            if (cbOperandType.SelectedItem.ToString() == "-> Multiple instructions reference")
+            {
+                btnSelectOperand.Enabled = true;
+            }
+            else if (cbOperandType.SelectedItem.ToString() == "-> Field reference")
+            {
+                btnSelectOperand.Enabled = true;
             }
             else if (cbOperandType.SelectedItem.ToString() == "-> Method reference")
             {
-                cbOperand.Enabled = false;
-                cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                var form = new PickReferenceForm("Method");
-                form.FormClosed += form_FormClosedMethod;
-                form.ShowDialog();
+                btnSelectOperand.Enabled = true;
             }
 
             else if (cbOperandType.SelectedItem.ToString() == "-> Type reference")
             {
-                cbOperand.Enabled = false;
-                cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                var form = new PickReferenceForm("Type");
-                form.FormClosed += form_FormClosedType;
-                form.ShowDialog();
+                btnSelectOperand.Enabled = true;
             }
         }
 
         private void form_FormClosedField(object sender, FormClosedEventArgs e)
         {
             if (SelectedReference == null) return;
+
+            cbOperand.Items.Clear();
 
             SelectedReference =
                 MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IField);
@@ -377,6 +431,8 @@ namespace dnEditor.Forms
         {
             if (SelectedReference == null) return;
 
+            cbOperand.Items.Clear();
+
             SelectedReference =
                 MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IMethod);
             cbOperand.Items.Add(SelectedReference as IMethod);
@@ -388,10 +444,22 @@ namespace dnEditor.Forms
         {
             if (SelectedReference == null) return;
 
+            cbOperand.Items.Clear();
+
             SelectedReference =
                 MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
             cbOperand.Items.Add(SelectedReference as ITypeDefOrRef);
 
+            cbOperand.SelectedIndex = 0;
+        }
+
+        private void form_FormClosedMultipleInstructions(object sender, FormClosedEventArgs e)
+        {
+            if (SelectedReference == null) return;
+
+            cbOperand.Items.Clear();
+
+            cbOperand.Items.Add(Functions.GetSwitchText(MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList(), (SelectedReference as Instruction[]).ToList()));
             cbOperand.SelectedIndex = 0;
         }
 
@@ -400,11 +468,12 @@ namespace dnEditor.Forms
             cbOperand.Enabled = true;
             cbOperand.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            int i = 0;
-            foreach (Instruction instruction in MainForm.CurrentAssembly.Method.Method.Body.Instructions)
+            List<Instruction> instructions = MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList();
+
+            for (int i = 0; i < instructions.Count; i++)
             {
-                _addedOperands.Add(instruction);
-                cbOperand.Items.Add(string.Format("{0} -> {1} {2}", i++, instruction.OpCode, instruction.Operand));
+                _addedOperands.Add(instructions[i]);
+                cbOperand.Items.Add(Functions.FormatFullInstruction(instructions, i));
             }
         }
 
@@ -446,7 +515,7 @@ namespace dnEditor.Forms
             }
         }
 
-        private void ValueReference()
+        private void CreateValueInstruction()
         {
             switch (cbOperandType.Text)
             {
@@ -494,6 +563,49 @@ namespace dnEditor.Forms
                 {
                     throw new NotImplementedException();
                 }
+            }
+        }
+
+        private void btnSelectOperand_Click(object sender, EventArgs e)
+        {
+            switch (cbOperandType.Text)
+            {
+                case ("-> Multiple instructions reference"):
+                    Instruction[] selectedInstructions = null;
+
+                    if (_addedOperands.Count > 0)
+                        selectedInstructions = _addedOperands.Cast<Instruction>().ToArray();
+
+                    var form =
+                        new MultipleInstructionsSelectForm(
+                            MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToArray(), selectedInstructions);
+                    form.FormClosed += form_FormClosedMultipleInstructions;
+                    form.ShowDialog();
+                    break;
+
+                case ("-> Field reference"):
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    var form2 = new PickReferenceForm("Field");
+                    form2.FormClosed += form_FormClosedField;
+                    form2.ShowDialog();
+                    break;
+
+                case ("-> Method reference"):
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    var form3 = new PickReferenceForm("Method");
+                    form3.FormClosed += form_FormClosedMethod;
+                    form3.ShowDialog();
+                    break;
+
+                case ("-> Type reference"):
+                    cbOperand.Enabled = false;
+                    cbOperand.DropDownStyle = ComboBoxStyle.Simple;
+                    var form4 = new PickReferenceForm("Type");
+                    form4.FormClosed += form_FormClosedType;
+                    form4.ShowDialog();
+                    break;
             }
         }
     }
