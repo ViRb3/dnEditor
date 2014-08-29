@@ -217,7 +217,7 @@ namespace dnEditor.Misc
         {
             var stringBuilder = new StringBuilder();
 
-            if (instructions.Count > 0)
+            if (switchInstructions.Count > 0)
             {
                 foreach (Instruction instruction in switchInstructions)
                 {

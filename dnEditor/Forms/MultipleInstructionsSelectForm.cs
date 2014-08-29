@@ -64,7 +64,9 @@ namespace dnEditor.Forms
             foreach (Instruction selectedInstruction in selectedInstructions)
             {
                 DataGridViewRow item =
-                    rightGridView.Rows.Cast<DataGridViewRow>().First(r => r.Tag as Instruction == selectedInstruction);
+                    rightGridView.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => r.Tag as Instruction == selectedInstruction);
+
+                if (item == null) return;
 
                 leftGridView.Rows.Add(NewInstructionRow(item.Cells[0].Value.ToString(), item.Tag as Instruction));
             }
@@ -72,6 +74,8 @@ namespace dnEditor.Forms
 
         private void btnLeft_Click(object sender, EventArgs e)
         {
+            if (rightGridView.SelectedRows.Count < 1) return;
+
             List<DataGridViewRow> rowList = rightGridView.SelectedRows.Cast<DataGridViewRow>().ToList();
             rowList.Reverse();
 
@@ -84,6 +88,8 @@ namespace dnEditor.Forms
 
         private void btnRight_Click(object sender, EventArgs e)
         {
+            if (leftGridView.SelectedRows.Count < 1) return;
+
             foreach (DataGridViewRow selectedRow in leftGridView.SelectedRows)
             {
                 leftGridView.Rows.Remove(selectedRow);
@@ -92,6 +98,8 @@ namespace dnEditor.Forms
 
         private void btnTop_Click(object sender, EventArgs e)
         {
+            if (leftGridView.SelectedRows.Count < 1) return;
+
             DataGridViewRow selectedRow = leftGridView.SelectedRows[0];
 
             leftGridView.Rows.Remove(selectedRow);
@@ -103,6 +111,8 @@ namespace dnEditor.Forms
 
         private void btnUp_Click(object sender, EventArgs e)
         {
+            if (leftGridView.SelectedRows.Count < 1) return;
+
             DataGridViewRow row = leftGridView.SelectedRows[0];
             int index = leftGridView.SelectedRows[0].Index;
             leftGridView.Rows.Remove(row);
@@ -114,6 +124,8 @@ namespace dnEditor.Forms
 
         private void btnDown_Click(object sender, EventArgs e)
         {
+            if (leftGridView.SelectedRows.Count < 1) return;
+
             DataGridViewRow row = leftGridView.SelectedRows[0];
             int index = leftGridView.SelectedRows[0].Index;
             leftGridView.Rows.Remove(row);
@@ -125,6 +137,8 @@ namespace dnEditor.Forms
 
         private void btnBottom_Click(object sender, EventArgs e)
         {
+            if (leftGridView.SelectedRows.Count < 1) return;
+
             DataGridViewRow selectedRow = leftGridView.SelectedRows[0];
 
             leftGridView.Rows.Remove(selectedRow);
