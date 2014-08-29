@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.Utils;
@@ -68,7 +67,7 @@ namespace dnEditor.Handlers
 
                 if (module.Types.Any())
                 {
-                    foreach (var type in module.Types)
+                    foreach (TypeDef type in module.Types)
                     {
                         TypeHandler.HandleType(type, false);
                     }

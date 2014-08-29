@@ -336,5 +336,26 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         {
             TreeViewHandler.treeView1_AfterExpand(sender, e);
         }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
+
+            //TODO: Implement
+        }
+
+        private void txtSearchCase_Click(object sender, EventArgs e)
+        {
+            if (txtSearchCase.Text == "[X] Case sensitive")
+            {
+                txtSearchCase.Text = "[ ] Not case sensitive";
+                txtSearchCase.Tag = 0;
+            }
+            else
+            {
+                txtSearchCase.Text = "[X] Case sensitive";
+                txtSearchCase.Tag = 1;
+            }
+        }
     }
 }
