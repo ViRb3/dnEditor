@@ -331,5 +331,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
         #endregion ContextToolStrip       
+
+        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            TreeViewHandler.treeView1_AfterExpand(sender, e);
+        }
     }
 }

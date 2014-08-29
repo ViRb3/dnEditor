@@ -2,28 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.Utils;
 
 namespace dnEditor.Handlers
 {
-    /*
-     * NOTE: Main module is ALWAYS the first module and is Manifest Module!
-     * 
-     * TODO:
-     * 01. File nodes X
-     * 02. Module nodes X
-     * 03. Reference nodes X
-     * 04. NS nodes X
-     * 05. Type nodes X
-     * 06. Method nodes X
-     * 07. Property nodes X
-     * 08. Event nodes X
-     * 09. Field nodes X
-     * 10. Nested type nodes X
-     * 11. Resources
-     */
+    public class VirtualNode
+    {
+        public static string Name = "VIRTNODE";
+    }
 
     public static class TreeViewHandler
     {
@@ -79,9 +68,13 @@ namespace dnEditor.Handlers
 
                 if (module.Types.Any())
                 {
-                    var processor = new NodeHandler(moduleNode);
-                    processor.ProcessNode();
-                    moduleNode = processor.Node;
+                    foreach (var type in module.Types)
+                    {
+                        TypeHandler.HandleType(type, false);
+                    }
+                    //var processor = new VirtualNodeHandler(moduleNode);
+                    //processor.ProcessNode();
+                    //moduleNode = processor.Node;
                 }
 
                 CurrentModule = moduleNode;
@@ -92,9 +85,41 @@ namespace dnEditor.Handlers
                 }
             }
 
-            var processor2 = new NodeHandler(RefNode);
+            var processor2 = new VirtualNodeHandler(RefNode);
             processor2.ProcessNode();
             RefNode = processor2.Node;
+        }
+
+        public static void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.HasVirtualNode())
+            {
+                var processor = new VirtualNodeHandler(e.Node);
+                processor.ProcessNode();
+                e.Node.Nodes.Remove(e.Node.FindVirtualNode());
+            }
+        }
+
+        public static TreeNode NewVirtualNode()
+        {
+            var node = new TreeNode(VirtualNode.Name);
+            node.Tag = new VirtualNode();
+
+            return node;
+        }
+
+        public static TreeNode FindVirtualNode(this TreeNode node)
+        {
+            return node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode);
+        }
+
+        public static bool HasVirtualNode(this TreeNode node)
+        {
+            if (node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode) !=
+                null)
+                return true;
+
+            return false;
         }
 
         #region AddNode

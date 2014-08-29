@@ -235,7 +235,7 @@ namespace dnEditor.Misc
             return comboBox.Items.Cast<object>().First(item => item.ToString() == text);
         }
 
-        public static bool ExpandableType(TypeDef type)
+        public static bool IsExpandable(this TypeDef type)
         {
             return (type.HasNestedTypes || type.HasMethods || type.HasEvents || type.HasFields || type.HasProperties);
         }

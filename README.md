@@ -13,12 +13,14 @@ a ticket. And just wait. I will eventually get through it.
 #####Cheers!
 
 #To-do (sorted by priority):
- - [x] ~~Finish support for "switch" opcode.~~ //done
- - [ ] Switch back to virtual TreeNode.
+ - [x] ~~Finish support for "switch" opcode.~~
+ - [x] ~~Switch back to virtual TreeNode.~~
  - [ ] Add search functions.
  - [ ] Add member overview/preview.
+ - [ ] Add TreeView context menu with helpful options.
  - [ ] Add support for "try-catch".
  - [ ] Add member icons.
+ - [ ] Add resources support.
 
 ##Credits:
  - WiCKY Hu (Simple Assembly Explorer) for his awesome piece of work. I "borrowed" many ideas and features

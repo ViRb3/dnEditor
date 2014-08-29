@@ -8,11 +8,11 @@ using dnlib.DotNet;
 
 namespace dnEditor.Handlers
 {
-    public class NodeHandler
+    public class VirtualNodeHandler
     {
         public TreeNode Node;
 
-        public NodeHandler(TreeNode node)
+        public VirtualNodeHandler(TreeNode node)
         {
             Node = node;
         }
@@ -40,7 +40,7 @@ namespace dnEditor.Handlers
             {
                 foreach (TypeDef type in (node.Tag as ModuleDefMD).Types)
                 {
-                    TypeHandler.HandleType(type);
+                    TypeHandler.HandleType(type, true);
                 }
             }
             else if (node.Tag is TypeDef) // Type
@@ -61,20 +61,7 @@ namespace dnEditor.Handlers
 
             foreach (TreeNode child in children)
             {
-                TreeNode fullAccessChild = child; // Get rid of readonly issue
-
-                if (fullAccessChild.Tag is TypeDef)
-                {
-                    var type = fullAccessChild.Tag as TypeDef;
-
-                    if (type.IsNested)
-                    {
-                        TypeHandler.HandleType(fullAccessChild.Tag as TypeDef);
-                        continue;
-                    }
-                }
-
-                Node.Nodes.Add(fullAccessChild);
+                Node.Nodes.Add(child);
             }
         }
     }

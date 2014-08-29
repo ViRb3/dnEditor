@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.Utils;
 
@@ -16,12 +17,7 @@ namespace dnEditor.Handlers
             foreach (TypeDef nestedType in type.NestedTypes)
             {
                 TreeNode newTypeNode = TreeViewHandler.NewType(nestedType);
-                
-                var subChildren = new List<TreeNode>();
-                ProcessTypeMembers(newTypeNode, ref subChildren);
-
-                foreach (var child in subChildren)
-                    newTypeNode.Nodes.Add(child);
+                TreeViewHandler.NewVirtualNode().AddTo(newTypeNode);
 
                 children.Add(newTypeNode);
             }
@@ -45,15 +41,21 @@ namespace dnEditor.Handlers
                 children.Add(TreeViewHandler.NewEvent(@event));
         }
 
-        public static void HandleType(TypeDef type)
+        public static void HandleType(TypeDef type, bool processChildren)
         {
             TreeNode targetType = TreeViewHandler.NewType(type);
 
-            var children = new List<TreeNode>();
-            ProcessTypeMembers(targetType, ref children);
+            if (processChildren)
+            {
+                var children = new List<TreeNode>();
+                ProcessTypeMembers(targetType, ref children);
 
-            foreach (var child in children)
-                targetType.Nodes.Add(child);
+                foreach (var child in children)
+                    targetType.Nodes.Add(child);
+            }
+
+            if (type.IsExpandable())
+                TreeViewHandler.NewVirtualNode().AddTo(targetType);
 
             if (!TreeViewHandler.NameSpaceList.Contains(type.Namespace))
             {
