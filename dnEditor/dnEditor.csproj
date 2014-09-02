@@ -86,15 +86,11 @@
     </Compile>
     <Compile Include="Misc\Functions.cs" />
     <Compile Include="Handlers\TreeViewHandler.cs" />
-    <Compile Include="Images\AccessOverlayIcon.cs" />
-    <Compile Include="Images\MemberIcon.cs" />
-    <Compile Include="Images\TypeIcon.cs" />
     <Compile Include="Misc\InstructionBlock.cs" />
     <Compile Include="Misc\InsUtils.cs" />
     <Compile Include="Misc\MethodHolder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Misc\TokenUtils.cs" />
     <EmbeddedResource Include="Forms\EditInstructionForm.resx">
       <DependentUpon>EditInstructionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,7 +112,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Images\ILSpy.pdn" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

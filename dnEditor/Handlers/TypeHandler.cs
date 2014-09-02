@@ -17,7 +17,7 @@ namespace dnEditor.Handlers
             foreach (TypeDef nestedType in type.NestedTypes)
             {
                 TreeNode newTypeNode = TreeViewHandler.NewType(nestedType);
-                TreeViewHandler.NewVirtualNode().AddTo(newTypeNode);
+                VirtualNodeUtilities.NewVirtualNode().AddTo(newTypeNode);
 
                 children.Add(newTypeNode);
             }
@@ -55,7 +55,7 @@ namespace dnEditor.Handlers
             }
 
             if (type.IsExpandable())
-                TreeViewHandler.NewVirtualNode().AddTo(targetType);
+                VirtualNodeUtilities.NewVirtualNode().AddTo(targetType);
 
             if (!TreeViewHandler.NameSpaceList.Contains(type.Namespace))
             {

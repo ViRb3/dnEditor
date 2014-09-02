@@ -33,6 +33,8 @@ namespace dnEditor.Forms
             ToolStrip = toolStrip1;
             ContextMenuStrip = instructionMenu;
             InitializeBody();
+
+            cbSearchType.SelectedIndex = 0;
         }
 
         private void InitializeBody()
@@ -234,13 +236,13 @@ namespace dnEditor.Forms
 
         private void btnAbout_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(@"dnEditor is a dotNET assembly editor based on dnlib.
+            MessageBox.Show(@"dnEditor is a .NET assembly editor based on dnlib.
 
 Coded, maintained and organized by ViRb3
 
 GitHub project page: https://github.com/ViRb3/dnEditor
 
-Copyright (C) 2014-2015 ViRb3/darkunited (darkunited@hotmail.co.uk)
+Copyright (C) 2014-2015 ViRb3
 Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
@@ -342,20 +344,6 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
 
             //TODO: Implement
-        }
-
-        private void txtSearchCase_Click(object sender, EventArgs e)
-        {
-            if (txtSearchCase.Text == "[X] Case sensitive")
-            {
-                txtSearchCase.Text = "[ ] Not case sensitive";
-                txtSearchCase.Tag = 0;
-            }
-            else
-            {
-                txtSearchCase.Text = "[X] Case sensitive";
-                txtSearchCase.Tag = 1;
-            }
         }
     }
 }

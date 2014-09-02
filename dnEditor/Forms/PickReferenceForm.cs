@@ -54,5 +54,10 @@ namespace dnEditor.Forms
         {
             TreeViewHandler.DragEnter(sender, e);
         }
+
+        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            VirtualNodeUtilities.ExpandHandler(e.Node);
+        }
     }
 }
