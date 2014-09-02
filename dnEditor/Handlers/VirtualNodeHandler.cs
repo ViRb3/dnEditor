@@ -65,4 +65,39 @@ namespace dnEditor.Handlers
             }
         }
     }
+
+    public static class VirtualNodeUtilities
+    {
+        public static TreeNode NewVirtualNode()
+        {
+            var node = new TreeNode(VirtualNode.Name);
+            node.Tag = new VirtualNode();
+
+            return node;
+        }
+
+        public static TreeNode FindVirtualNode(this TreeNode node)
+        {
+            return node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode);
+        }
+
+        public static bool HasVirtualNode(this TreeNode node)
+        {
+            if (node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode) !=
+                null)
+                return true;
+
+            return false;
+        }
+
+        public static void ExpandHandler(TreeNode expandedNode)
+        {
+            if (expandedNode.HasVirtualNode())
+            {
+                var processor = new VirtualNodeHandler(expandedNode);
+                processor.ProcessNode();
+                expandedNode.Nodes.Remove(expandedNode.FindVirtualNode());
+            }
+        }
+    }
 }

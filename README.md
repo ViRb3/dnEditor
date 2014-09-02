@@ -1,7 +1,7 @@
 dnEditor
 ========
 
-A dotNET assembly editor based on dnlib.
+A .NET assembly editor based on dnlib.
 
 All kind of help from any sources is greatly appreciated. Feel free to upgrade, fix touch or hack
 this project by submitting a pull request and I will make sure to approve and merge it.

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.Utils;
@@ -68,7 +67,7 @@ namespace dnEditor.Handlers
 
                 if (module.Types.Any())
                 {
-                    foreach (var type in module.Types)
+                    foreach (TypeDef type in module.Types)
                     {
                         TypeHandler.HandleType(type, false);
                     }
@@ -92,34 +91,7 @@ namespace dnEditor.Handlers
 
         public static void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            if (e.Node.HasVirtualNode())
-            {
-                var processor = new VirtualNodeHandler(e.Node);
-                processor.ProcessNode();
-                e.Node.Nodes.Remove(e.Node.FindVirtualNode());
-            }
-        }
-
-        public static TreeNode NewVirtualNode()
-        {
-            var node = new TreeNode(VirtualNode.Name);
-            node.Tag = new VirtualNode();
-
-            return node;
-        }
-
-        public static TreeNode FindVirtualNode(this TreeNode node)
-        {
-            return node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode);
-        }
-
-        public static bool HasVirtualNode(this TreeNode node)
-        {
-            if (node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode) !=
-                null)
-                return true;
-
-            return false;
+            VirtualNodeUtilities.ExpandHandler(e.Node);
         }
 
         #region AddNode
