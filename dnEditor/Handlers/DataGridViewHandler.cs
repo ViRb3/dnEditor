@@ -44,7 +44,8 @@ namespace dnEditor.Handlers
                         Functions.FormatFullInstruction(method.Body.Instructions.ToList(),
                             method.Body.Instructions.IndexOf(instruction))));
                 else
-                    cells.Add(Functions.GetOperandText(method.Body.Instructions.ToList(), method.Body.Instructions.ToList().IndexOf(instruction)));
+                    cells.Add(Functions.GetOperandText(method.Body.Instructions.ToList(),
+                        method.Body.Instructions.ToList().IndexOf(instruction)));
 
                 #endregion Column 4
 

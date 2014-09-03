@@ -1,21 +1,43 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
+using dnlib.DotNet;
 
 namespace dnEditor.Handlers
 {
-    public static class SearchHandler
+    public enum SearchType
     {
-        public enum SearchType
+        Any,
+        Type,
+        Method,
+        Field,
+        String,
+        OpCode,
+        Operand,
+    }
+
+    public class SearchHandler
+    {
+        public delegate void EventHandler(TreeNode foundNode);
+
+        private readonly SearchType _searchType;
+        private readonly string _text;
+
+        public TreeNode FoundNode = null;
+        private TreeNode _searchNode;
+
+        public SearchHandler(TreeNode searchNode, string text, SearchType searchType)
         {
-            Any,
-            Type,
-            Method,
-            Field,
-            String,
-            OpCode,
-            Operand,
+            if (!(searchNode.Tag is ModuleDefMD))
+                throw new ArgumentException("TreeNode must be ModuleDefMD!");
+
+            _searchNode = searchNode;
+            _text = text;
+            _searchType = searchType;
         }
 
-        public static TreeNode DoSearch(TreeNode node, string text, SearchType searchType)
+        public event EventHandler SearchFinished;
+
+        public static TreeNode Search(TreeNode node, string text, SearchType searchType)
         {
             switch (searchType)
             {

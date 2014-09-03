@@ -5,6 +5,7 @@ namespace dnEditor.Misc
     public class MethodHolder
     {
         private readonly MethodDef _originalMethod;
+        public MethodDef Method;
 
         public MethodHolder()
         {
@@ -20,7 +21,5 @@ namespace dnEditor.Misc
         {
             get { return _originalMethod; }
         }
-
-        public MethodDef Method;
     }
 }

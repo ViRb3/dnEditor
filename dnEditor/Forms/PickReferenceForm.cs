@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
 using dnlib.DotNet;
@@ -18,12 +19,12 @@ namespace dnEditor.Forms
             EditInstructionForm.SelectedReference = null;
         }
 
-        private void PickReferenceForm_Shown(object sender, System.EventArgs e)
+        private void PickReferenceForm_Shown(object sender, EventArgs e)
         {
             TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
         }
 
-        private void btnSelect_Click(object sender, System.EventArgs e)
+        private void btnSelect_Click(object sender, EventArgs e)
         {
             EditInstructionForm.SelectedReference = treeView1.SelectedNode.Tag;
             Close();

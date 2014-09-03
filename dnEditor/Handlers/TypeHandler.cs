@@ -22,7 +22,6 @@ namespace dnEditor.Handlers
                 children.Add(newTypeNode);
             }
                 
-
             foreach (MethodDef method in type.Methods)
             {
                 List<MethodDef> accessorMethods = type.GetAccessorMethods();

@@ -382,9 +382,9 @@ namespace dnEditor.Forms
             {
                 ParameterReference();
             }
-            else if (cbOperandType.SelectedItem.ToString() == "-> Field reference" || 
-                cbOperandType.SelectedItem.ToString() == "-> Method reference" ||
-                cbOperandType.SelectedItem.ToString() == "-> Type reference")
+            else if (cbOperandType.SelectedItem.ToString() == "-> Field reference" ||
+                     cbOperandType.SelectedItem.ToString() == "-> Method reference" ||
+                     cbOperandType.SelectedItem.ToString() == "-> Type reference")
             {
                 cbOperand.Enabled = false;
                 cbOperand.DropDownStyle = ComboBoxStyle.Simple;
@@ -459,7 +459,9 @@ namespace dnEditor.Forms
 
             cbOperand.Items.Clear();
 
-            cbOperand.Items.Add(Functions.GetSwitchText(MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList(), (SelectedReference as Instruction[]).ToList()));
+            cbOperand.Items.Add(
+                Functions.GetSwitchText(MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList(),
+                    (SelectedReference as Instruction[]).ToList()));
             cbOperand.SelectedIndex = 0;
         }
 

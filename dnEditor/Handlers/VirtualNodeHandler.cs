@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using dnlib.DotNet;
 
@@ -10,12 +8,16 @@ namespace dnEditor.Handlers
 {
     public class VirtualNodeHandler
     {
+        public delegate void EventHandler(TreeNode processedNode);
+
         public TreeNode Node;
 
         public VirtualNodeHandler(TreeNode node)
         {
             Node = node;
         }
+
+        public event EventHandler WorkerFinished;
 
         public void ProcessNode()
         {
@@ -28,7 +30,7 @@ namespace dnEditor.Handlers
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            var node = Node;
+            TreeNode node = Node;
 
             var children = new List<TreeNode>();
 
@@ -49,7 +51,7 @@ namespace dnEditor.Handlers
             }
 
             Node = node;
-            e.Result = new object[] { children.ToArray() };
+            e.Result = new object[] {children.ToArray()};
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -63,6 +65,9 @@ namespace dnEditor.Handlers
             {
                 Node.Nodes.Add(child);
             }
+
+            if (WorkerFinished != null)
+                WorkerFinished.Invoke(Node);
         }
     }
 
@@ -98,6 +103,12 @@ namespace dnEditor.Handlers
                 processor.ProcessNode();
                 expandedNode.Nodes.Remove(expandedNode.FindVirtualNode());
             }
+        }
+
+        public static void VirtualizeNode(TreeNode node)
+        {
+            node.Nodes.Clear();
+            NewVirtualNode().AddTo(node);
         }
     }
 }

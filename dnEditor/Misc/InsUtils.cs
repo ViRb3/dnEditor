@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using dnlib.DotNet.Emit;
 
 namespace dnEditor.Misc

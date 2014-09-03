@@ -9,20 +9,21 @@ namespace dnEditor.Forms
 {
     public partial class MultipleInstructionsSelectForm : Form
     {
-        private void MultipleInstructionsSelectForm_Load(object sender, EventArgs e)
-        {
-            EditInstructionForm.SelectedReference = null;
-        }
-
-        public MultipleInstructionsSelectForm(Instruction[] instructions, Instruction[] selectedInstructions = null)
+        public MultipleInstructionsSelectForm(IEnumerable<Instruction> instructions, IEnumerable<Instruction> selectedInstructions = null)
         {
             InitializeComponent();
             Initialize(instructions, selectedInstructions);
         }
 
+        private void MultipleInstructionsSelectForm_Load(object sender, EventArgs e)
+        {
+            EditInstructionForm.SelectedReference = null;
+        }
+
         private DataGridViewRow NewInstructionRow(IEnumerable<Instruction> instructions, Instruction instruction)
         {
-            string row = Functions.FormatFullInstruction(instructions.ToList(), instructions.ToList().IndexOf(instruction));
+            string row = Functions.FormatFullInstruction(instructions.ToList(),
+                instructions.ToList().IndexOf(instruction));
 
             var item = new DataGridViewRow();
             var cell = new DataGridViewTextBoxCell
@@ -64,7 +65,8 @@ namespace dnEditor.Forms
             foreach (Instruction selectedInstruction in selectedInstructions)
             {
                 DataGridViewRow item =
-                    rightGridView.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => r.Tag as Instruction == selectedInstruction);
+                    rightGridView.Rows.Cast<DataGridViewRow>()
+                        .FirstOrDefault(r => r.Tag as Instruction == selectedInstruction);
 
                 if (item == null) return;
 
@@ -150,14 +152,15 @@ namespace dnEditor.Forms
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            Instruction[] instructions = leftGridView.Rows.Cast<DataGridViewRow>().Select(row => (row.Tag as Instruction)).ToArray();
+            Instruction[] instructions =
+                leftGridView.Rows.Cast<DataGridViewRow>().Select(row => (row.Tag as Instruction)).ToArray();
             EditInstructionForm.SelectedReference = instructions;
-            this.Close();
+            Close();
         }
 
         private void leftGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -169,8 +172,8 @@ namespace dnEditor.Forms
         {
             DataGridViewRow row = rightGridView.Rows[e.RowIndex];
 
-                leftGridView.Rows.Add(NewInstructionRow(row.Cells[0].Value.ToString(),
-                    row.Tag as Instruction));
+            leftGridView.Rows.Add(NewInstructionRow(row.Cells[0].Value.ToString(),
+                row.Tag as Instruction));
         }
     }
 }

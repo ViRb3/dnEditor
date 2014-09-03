@@ -47,107 +47,6 @@ namespace dnEditor.Forms
             TreeViewHandler.LoadAssembly(treeView1, CurrentAssembly.Assembly, clear);
         }
 
-        #region TreeView Events
-
-        private void treeView1_DragDrop(object sender, DragEventArgs e)
-        {
-            CurrentAssembly result = TreeViewHandler.DragDrop(sender, e);
-            if (result != null && result.Assembly != null)
-            {
-                CurrentAssembly = result;
-                LoadAssembly(false);
-            }
-        }
-
-        private void treeView1_DragEnter(object sender, DragEventArgs e)
-        {
-            TreeViewHandler.DragEnter(sender, e);
-        }
-
-        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (e.Node.Tag is MethodDef)
-                DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
-            else
-                dgBody.Rows.Clear();
-        }
-
-        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (!(e.Node.Tag is AssemblyRef)) return;
-
-            var assemblyRef = e.Node.Tag as AssemblyRef;
-            string runtimeDirectory = RuntimeEnvironment.GetRuntimeDirectory();
-            string directory = Directory.GetParent(CurrentAssembly.Path).FullName;
-
-            var paths = new List<string>
-            {
-                Path.Combine(directory, assemblyRef.Name + ".dll"),
-                Path.Combine(directory, assemblyRef.Name + ".exe"),
-            };
-
-            var paths2 = new List<string>
-            {
-                Path.Combine(runtimeDirectory, assemblyRef.Name + ".exe"),
-                Path.Combine(runtimeDirectory, assemblyRef.Name + ".dll"),
-            };
-
-
-            if (paths.Where(File.Exists).Count() == 1)
-            {
-                OpenFile(paths.First(File.Exists));
-                return;
-            }
-            if (paths2.Where(File.Exists).Count() == 1)
-            {
-                OpenFile(paths2.First(File.Exists));
-                return;
-            }
-
-            if (MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-
-            var dialog = new OpenFileDialog
-            {
-                Title = string.Format("Browse for the reference \"{0}\"", assemblyRef.Name),
-                Filter = "Executable Files (*.exe)|*.exe|Library Files (*.dll)|*.dll"
-            };
-
-            if (dialog.ShowDialog() != DialogResult.OK && File.Exists(dialog.FileName))
-                return;
-
-            OpenFile(dialog.FileName);
-        }
-
-        #endregion TreeView Events
-
-        #region DataGridView Events
-
-        private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == 2 || e.ColumnIndex == 3)
-            {
-                NewInstructionEditor(EditInstructionMode.Edit);
-            }
-        }
-
-        private void dgBody_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right) return;
-
-            foreach (DataGridViewRow selectedRow in dgBody.SelectedRows)
-            {
-                if (selectedRow.Index == e.RowIndex) return;
-            }
-
-            foreach (DataGridViewRow row in dgBody.Rows)
-                row.Selected = false;
-
-            dgBody.Rows[e.RowIndex].Selected = true;
-        }
-
-        #endregion DataGridView Events 
-
         private void EditInstructionForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (NewInstruction == null) return;
@@ -176,7 +75,7 @@ namespace dnEditor.Forms
 
             LoadAssembly(clear);
             return true;
-        }        
+        }
 
         private void NewInstructionEditor(EditInstructionMode mode)
         {
@@ -198,6 +97,27 @@ namespace dnEditor.Forms
                 form.FormClosed += EditInstructionForm_FormClosed;
                 form.ShowDialog();
             }
+        }
+
+        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            TreeViewHandler.treeView1_AfterExpand(sender, e);
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
+            return;
+
+            var searchHandler = new SearchHandler(TreeViewHandler.CurrentModule, txtSearch.Text, SearchType.Any);
+            searchHandler.SearchFinished += SearchFinished;
+
+            //TODO: Implement   
+        }
+
+        private void SearchFinished(TreeNode foundNode)
+        {
+            MessageBox.Show(foundNode == null ? "" : foundNode.FullPath);
         }
 
         #region ToolStrip
@@ -334,16 +254,105 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #endregion ContextToolStrip       
 
-        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        #region TreeView Events
+
+        private void treeView1_DragDrop(object sender, DragEventArgs e)
         {
-            TreeViewHandler.treeView1_AfterExpand(sender, e);
+            CurrentAssembly result = TreeViewHandler.DragDrop(sender, e);
+            if (result != null && result.Assembly != null)
+            {
+                CurrentAssembly = result;
+                LoadAssembly(false);
+            }
         }
 
-        private void btnSearch_Click(object sender, EventArgs e)
+        private void treeView1_DragEnter(object sender, DragEventArgs e)
         {
-            if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
-
-            //TODO: Implement
+            TreeViewHandler.DragEnter(sender, e);
         }
+
+        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Tag is MethodDef)
+                DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
+            else
+                dgBody.Rows.Clear();
+        }
+
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (!(e.Node.Tag is AssemblyRef)) return;
+
+            var assemblyRef = e.Node.Tag as AssemblyRef;
+            string runtimeDirectory = RuntimeEnvironment.GetRuntimeDirectory();
+            string directory = Directory.GetParent(CurrentAssembly.Path).FullName;
+
+            var paths = new List<string>
+            {
+                Path.Combine(directory, assemblyRef.Name + ".dll"),
+                Path.Combine(directory, assemblyRef.Name + ".exe"),
+            };
+
+            var paths2 = new List<string>
+            {
+                Path.Combine(runtimeDirectory, assemblyRef.Name + ".exe"),
+                Path.Combine(runtimeDirectory, assemblyRef.Name + ".dll"),
+            };
+
+
+            if (paths.Where(File.Exists).Count() == 1)
+            {
+                OpenFile(paths.First(File.Exists));
+                return;
+            }
+            if (paths2.Where(File.Exists).Count() == 1)
+            {
+                OpenFile(paths2.First(File.Exists));
+                return;
+            }
+
+            if (MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+
+            var dialog = new OpenFileDialog
+            {
+                Title = string.Format("Browse for the reference \"{0}\"", assemblyRef.Name),
+                Filter = "Executable Files (*.exe)|*.exe|Library Files (*.dll)|*.dll"
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK && File.Exists(dialog.FileName))
+                return;
+
+            OpenFile(dialog.FileName);
+        }
+
+        #endregion TreeView Events
+
+        #region DataGridView Events
+
+        private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2 || e.ColumnIndex == 3)
+            {
+                NewInstructionEditor(EditInstructionMode.Edit);
+            }
+        }
+
+        private void dgBody_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            foreach (DataGridViewRow selectedRow in dgBody.SelectedRows)
+            {
+                if (selectedRow.Index == e.RowIndex) return;
+            }
+
+            foreach (DataGridViewRow row in dgBody.Rows)
+                row.Selected = false;
+
+            dgBody.Rows[e.RowIndex].Selected = true;
+        }
+
+        #endregion DataGridView Events 
     }
 }

@@ -44,7 +44,7 @@ namespace dnEditor.Misc
                     }
 
                     row.DefaultCellStyle.BackColor = newColor;
-                }  
+                }
             }
         }
 
