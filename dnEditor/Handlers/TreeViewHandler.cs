@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using dnEditor.Forms;
 using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.Utils;
@@ -13,17 +16,21 @@ namespace dnEditor.Handlers
         public static string Name = "VIRTNODE";
     }
 
-    public static class TreeViewHandler
+    public class TreeViewHandler : ITreeMenu
     {
-        public static TreeNode RefNode;
-        public static TreeNode CurrentModule;
-        public static TreeView CurrentTreeView;
+        public TreeNode CurrentMethod = null;
+        public TreeNode CurrentModule;
+        public ContextMenuStrip CurrentTreeMenu;
+        public TreeView CurrentTreeView;
 
-        public static List<string> NameSpaceList = new List<string>();
+        public List<string> NameSpaceList = new List<string>();
+        public TreeNode RefNode;
+
+        public TreeNode SelectedNode;
 
         #region Interface
 
-        public static CurrentAssembly DragDrop(object sender, DragEventArgs e)
+        public CurrentAssembly DragDrop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -36,24 +43,74 @@ namespace dnEditor.Handlers
             return new CurrentAssembly(Path.GetFullPath(fileLoc));
         }
 
-        public static void DragEnter(object sender, DragEventArgs e)
+        public void DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
         }
 
         #endregion Interface
 
-        public static void LoadAssembly(TreeView treeView, AssemblyDef currentAssembly, bool clear)
+        #region TreeMenuStrip
+
+        public void treeMenu_Opened(object sender, EventArgs e)
         {
-            CurrentTreeView = treeView;
+            if (SelectedNode == null || SelectedNode.Nodes.Count < 1)
+                CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Collapse all").Enabled = false;
+            else
+                CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Collapse all").Enabled = true;
+        }
+
+        public void expandToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedNode != null)
+                SelectedNode.Expand();
+        }
+
+        public void collapseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedNode != null)
+                SelectedNode.Collapse();
+        }
+
+        public void collapseAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedNode == null)
+                CurrentTreeView.CollapseAll();
+            else
+                SelectedNode.Collapse(false);
+        }
+
+        public void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        public void closeToolStripMenuItem_Click(object sender, EventArgs e, ref CurrentAssembly currentAssembly)
+        {
+            if (SelectedNode == null) return;
+
+            TreeNode assembly = SelectedNode.FirstParentNode();
+            if (assembly == null) return;
+
+            CurrentMethod = null;
+            CurrentModule = null;
+            currentAssembly = null;
+            assembly.Remove();
+        }
+
+        #endregion TreeMenuStrip
+
+        #region TreeView Events
+
+        public void LoadAssembly(AssemblyDef currentAssembly, string path, bool clear)
+        {
             RefNode = null;
             CurrentModule = null;
 
             if (clear)
-                treeView.Nodes.Clear();
+                CurrentTreeView.Nodes.Clear();
 
-            TreeNode file = NewFile(currentAssembly); // AssemblyDef
-            file.AddTo(treeView);
+            TreeNode file = NewFile(currentAssembly, path); // AssemblyDef
+            file.AddTo(CurrentTreeView);
 
             foreach (ModuleDefMD module in currentAssembly.Modules)
             {
@@ -69,58 +126,141 @@ namespace dnEditor.Handlers
                 {
                     foreach (TypeDef type in module.Types)
                     {
-                        TypeHandler.HandleType(type, false);
+                        new TypeHandler(this).HandleType(type, false);
                     }
-                    //var processor = new VirtualNodeHandler(moduleNode);
-                    //processor.ProcessNode();
-                    //moduleNode = processor.Node;
                 }
 
                 CurrentModule = moduleNode;
 
                 if (module.GetAssemblyRefs().Any())
                 {
-                    ReferenceHandler.HandleReferences(module.GetAssemblyRefs());
+                    new ReferenceHandler(this).HandleReferences(module.GetAssemblyRefs());
                 }
             }
 
-            var processor2 = new VirtualNodeHandler(RefNode);
+            var processor2 = new VirtualNodeHandler(RefNode, this);
             processor2.ProcessNode();
             RefNode = processor2.Node;
         }
 
-        public static void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        public void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            VirtualNodeUtilities.ExpandHandler(e.Node);
+            VirtualNodeUtilities.ExpandHandler(e.Node, this);
         }
 
-        #region AddNode
-
-        public static void AddTo(this TreeNode node, TreeView view)
+        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e,
+            ref CurrentAssembly currentAssembly)
         {
-            view.Nodes.Add(node);
+            SelectedNode = null;
+            TreeNode assemblyNode = e.Node.FirstParentNode();
+
+            if (currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
+            {
+                currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef);
+                currentAssembly.Path = assemblyNode.ToolTipText;
+            }
+
+            if (e.Node.Tag is MethodDef)
+            {
+                DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
+                CurrentMethod = e.Node;
+            }
+            else MainForm.DgBody.Rows.Clear();
+
+            if (e.Button == MouseButtons.Right)
+            {
+                SelectedNode = e.Node;
+            }
         }
 
-        public static void AddTo(this TreeNode node, TreeNode parentNode)
+        public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e,
+            ref CurrentAssembly currentAssembly)
         {
-            parentNode.Nodes.Add(node);
+            if (!(e.Node.Tag is AssemblyRef))
+            {
+                return;
+            }
+
+            var assemblyRef = e.Node.Tag as AssemblyRef;
+            string runtimeDirectory = RuntimeEnvironment.GetRuntimeDirectory();
+            string directory = Directory.GetParent(currentAssembly.Path).FullName;
+
+            var paths = new List<string>
+            {
+                Path.Combine(directory, assemblyRef.Name + ".dll"),
+                Path.Combine(directory, assemblyRef.Name + ".exe"),
+            };
+
+            var paths2 = new List<string>
+            {
+                Path.Combine(runtimeDirectory, assemblyRef.Name + ".exe"),
+                Path.Combine(runtimeDirectory, assemblyRef.Name + ".dll"),
+            };
+
+
+            if (paths.Where(File.Exists).Count() == 1)
+            {
+                Functions.OpenFile(this, paths.First(File.Exists), out currentAssembly);
+                return;
+            }
+            if (paths2.Where(File.Exists).Count() == 1)
+            {
+                Functions.OpenFile(this, paths2.First(File.Exists), out currentAssembly);
+                return;
+            }
+
+            if (MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            {
+                currentAssembly = null;
+                return;
+            }
+
+            var dialog = new OpenFileDialog
+            {
+                Title = String.Format("Browse for the reference \"{0}\"", assemblyRef.Name),
+                Filter = "Executable Files (*.exe)|*.exe|Library Files (*.dll)|*.dll"
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK && File.Exists(dialog.FileName))
+            {
+                currentAssembly = null;
+                return;
+            }
+
+            Functions.OpenFile(this, dialog.FileName, out currentAssembly);
         }
 
-        public static TreeNode NewNode(string text)
+        #endregion TreeView Events
+
+        public TreeViewHandler(TreeView currentTreeView, ContextMenuStrip currentTreeMenu)
         {
-            return new TreeNode(text);
+            CurrentTreeView = currentTreeView;
+            CurrentTreeMenu = currentTreeMenu;
         }
 
-        public static TreeNode NewFile(AssemblyDef file)
+        public TreeNode NewNode(string text)
         {
-            TreeNode node = NewNode(file.Name);
-            node.Tag = file;
-            node.ImageIndex = node.SelectedImageIndex = 0;
+            var node = new TreeNode(text);
+            node.ContextMenuStrip = CurrentTreeMenu;
 
             return node;
         }
 
-        public static TreeNode NewModule(ModuleDefMD module)
+        public TreeNode NewFile(AssemblyDef file, string path)
+        {
+            if (String.IsNullOrEmpty(path))
+                throw new ArgumentException("Path is invalid!");
+
+            TreeNode node = NewNode(file.Name);
+            node.Tag = file;
+            node.ImageIndex = node.SelectedImageIndex = 0;
+            node.ToolTipText = path;
+
+            return node;
+        }
+
+        public TreeNode NewModule(ModuleDefMD module)
         {
             TreeNode node = NewNode(module.FullName);
             node.Tag = module;
@@ -129,7 +269,15 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewAssemblyRef(AssemblyRef assemblyRef)
+        public TreeNode NewReferenceFolder()
+        {
+            TreeNode node = NewNode("References");
+            node.ImageIndex = node.SelectedImageIndex = 44;
+
+            return node;
+        }
+
+        public TreeNode NewAssemblyRef(AssemblyRef assemblyRef)
         {
             TreeNode node = NewNode(assemblyRef.FullName);
             node.Tag = assemblyRef;
@@ -138,7 +286,7 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewNameSpace(string nameSpace)
+        public TreeNode NewNameSpace(string nameSpace)
         {
             TreeNode node = NewNode(nameSpace);
             node.Tag = nameSpace;
@@ -147,7 +295,7 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewType(TypeDef type) // (Class)
+        public TreeNode NewType(TypeDef type) // (Class)
         {
             TreeNode node = NewNode(type.Name); //TODO: Extended name
             node.Tag = type;
@@ -156,7 +304,7 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewMethod(MethodDef method)
+        public TreeNode NewMethod(MethodDef method)
         {
             string parameters = "";
 
@@ -166,9 +314,9 @@ namespace dnEditor.Handlers
                 parameters += ", ";
             }
 
-            parameters = parameters.TrimEnd(new[] {',', ' '});
+            parameters = parameters.TrimEnd(new[] { ',', ' ' });
 
-            TreeNode node = NewNode(string.Format("{0}({1}): {2}", method.Name, parameters,
+            TreeNode node = NewNode(String.Format("{0}({1}): {2}", method.Name, parameters,
                 method.ReturnType.GetExtendedName()));
             node.Tag = method;
             node.ImageIndex = node.SelectedImageIndex = 30;
@@ -176,9 +324,9 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewProperty(PropertyDef property)
+        public TreeNode NewProperty(PropertyDef property)
         {
-            TreeNode node = NewNode(string.Format(property.Name));
+            TreeNode node = NewNode(String.Format(property.Name));
 
             node.Tag = property;
             node.ImageIndex = node.SelectedImageIndex = 43;
@@ -188,7 +336,7 @@ namespace dnEditor.Handlers
                 string type = property.GetMethod.ReturnType.GetExtendedName();
 
                 node.Nodes.Add(NewMethod(property.GetMethod));
-                node.Text = string.Format("{0}: {1}", property.Name, type);
+                node.Text = String.Format("{0}: {1}", property.Name, type);
             }
 
             if (property.SetMethod != null)
@@ -204,9 +352,9 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewEvent(EventDef @event)
+        public TreeNode NewEvent(EventDef @event)
         {
-            TreeNode node = NewNode(string.Format("{0}: {1}", @event.Name, "EventHandler"));
+            TreeNode node = NewNode(String.Format("{0}: {1}", @event.Name, "EventHandler"));
 
             node.Tag = @event;
             node.ImageIndex = node.SelectedImageIndex = 15;
@@ -234,18 +382,29 @@ namespace dnEditor.Handlers
             return node;
         }
 
-        public static TreeNode NewField(FieldDef field)
+        public TreeNode NewField(FieldDef field)
         {
             string type = field.FieldType.GetExtendedName();
 
             TreeNode node =
-                NewNode(string.Format("{0}: {1}", field.Name, type));
+                NewNode(String.Format("{0}: {1}", field.Name, type));
             node.Tag = field;
             node.ImageIndex = node.SelectedImageIndex = 17;
 
             return node;
         }
+    }
 
-        #endregion AddNode
+    public static class NodeEmitter
+    {
+        public static void AddTo(this TreeNode node, TreeView view)
+        {
+            view.Nodes.Add(node);
+        }
+
+        public static void AddTo(this TreeNode node, TreeNode parentNode)
+        {
+            parentNode.Nodes.Add(node);
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace dnEditor.Misc
     public class MethodHolder
     {
         private readonly MethodDef _originalMethod;
-        public MethodDef Method;
+        public MethodDef NewMethod;
 
         public MethodHolder()
         {
@@ -13,7 +13,7 @@ namespace dnEditor.Misc
 
         public MethodHolder(MethodDef method)
         {
-            Method = _originalMethod = method;
+            NewMethod = _originalMethod = method;
         }
 
 

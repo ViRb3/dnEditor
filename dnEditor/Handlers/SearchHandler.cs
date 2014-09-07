@@ -1,5 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
+using dnEditor.Forms;
 using dnlib.DotNet;
 
 namespace dnEditor.Handlers
@@ -17,19 +19,17 @@ namespace dnEditor.Handlers
 
     public class SearchHandler
     {
-        public delegate void EventHandler(TreeNode foundNode);
+        public delegate void EventHandler(object result);
+
+        private readonly TreeNode _searchNode;
 
         private readonly SearchType _searchType;
         private readonly string _text;
 
         public TreeNode FoundNode = null;
-        private TreeNode _searchNode;
 
         public SearchHandler(TreeNode searchNode, string text, SearchType searchType)
         {
-            if (!(searchNode.Tag is ModuleDefMD))
-                throw new ArgumentException("TreeNode must be ModuleDefMD!");
-
             _searchNode = searchNode;
             _text = text;
             _searchType = searchType;
@@ -37,24 +37,78 @@ namespace dnEditor.Handlers
 
         public event EventHandler SearchFinished;
 
-        public static TreeNode Search(TreeNode node, string text, SearchType searchType)
+        public void Search()
         {
-            switch (searchType)
-            {
-                case SearchType.Type: //TODO: Implement
-                case SearchType.Method: //TODO: Implement
-                case SearchType.Field: //TODO: Implement
-                case SearchType.Any:
-                    if (node.Text.Contains(text))
-                    {
-                        return node;
-                    }
-                    break;
+            object result = DoSearch();
+            SearchFinished.Invoke(result);
+        }
 
-                case SearchType.OpCode: //TODO: Implement
-                case SearchType.String: //TODO: Implement
-                case SearchType.Operand: //TODO: Implement
-                    break;
+        private object DoSearch()
+        {
+            if (_searchType == SearchType.Type) //TODO: Implement
+            {
+            }
+            if (_searchType == SearchType.Method) //TODO: Implement
+            {
+            }
+            if (_searchType == SearchType.Field) //TODO: Implement
+            {
+            }
+            if (_searchType == SearchType.Any) //TODO: Implement
+            {
+            }
+
+            if (_searchType == SearchType.OpCode)
+            {
+                if (!(_searchNode.Tag is MethodDef)) return null;
+
+                DataGridView dgBody = MainForm.DgBody;
+
+                List<DataGridViewRow> resultRows =
+                    dgBody.Rows.Cast<DataGridViewRow>()
+                        .Where(r => r.Cells["OpCode"].Value.ToString().ToLower().Trim() == _text.ToLower())
+                        .ToList();
+
+                DataGridViewRow matchingRow = resultRows
+                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
+
+                return matchingRow == null ? null : matchingRow.Index as object;
+            }
+
+            if (_searchType == SearchType.String)
+            {
+                if (!(_searchNode.Tag is MethodDef)) return null;
+
+                DataGridView dgBody = MainForm.DgBody;
+
+                List<DataGridViewRow> resultRows =
+                    dgBody.Rows.Cast<DataGridViewRow>()
+                        .Where(
+                            r =>
+                                r.Cells["OpCode"].Value.ToString().Trim() == "ldstr" &&
+                                r.Cells["Operand"].Value.ToString().ToLower().Contains(_text))
+                        .ToList();
+
+                DataGridViewRow matchingRow = resultRows
+                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
+
+                return matchingRow == null ? null : matchingRow.Index as object;
+            }
+
+            if (_searchType == SearchType.Operand)
+            {
+                if (!(_searchNode.Tag is MethodDef)) return null;
+
+                DataGridView dgBody = MainForm.DgBody;
+
+                List<DataGridViewRow> resultRows =
+                    dgBody.Rows.Cast<DataGridViewRow>()
+                        .Where(r => r.Cells["Operand"].Value.ToString().ToLower().Contains(_text)).ToList();
+
+                DataGridViewRow matchingRow = resultRows
+                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
+
+                return matchingRow == null ? null : matchingRow.Index as object;
             }
 
             return null;

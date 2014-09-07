@@ -52,7 +52,7 @@ namespace dnEditor.Misc
         {
             if (dgView == null || dgView.ColumnCount == 0 || dgView.RowCount == 0) return;
 
-            List<InstructionBlock> list = InstructionBlock.Find(MainForm.CurrentAssembly.Method.Method);
+            List<InstructionBlock> list = InstructionBlock.Find(MainForm.CurrentAssembly.Method.NewMethod);
 
             bool changeColor = false;
             foreach (InstructionBlock ib in list)

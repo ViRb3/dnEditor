@@ -11,10 +11,12 @@ namespace dnEditor.Handlers
         public delegate void EventHandler(TreeNode processedNode);
 
         public TreeNode Node;
+        private TreeViewHandler _treeViewHandler;
 
-        public VirtualNodeHandler(TreeNode node)
+        public VirtualNodeHandler(TreeNode node, TreeViewHandler treeViewHandler)
         {
             Node = node;
+            _treeViewHandler = treeViewHandler;
         }
 
         public event EventHandler WorkerFinished;
@@ -34,20 +36,21 @@ namespace dnEditor.Handlers
 
             var children = new List<TreeNode>();
 
-            if (node == TreeViewHandler.RefNode || node.Tag is AssemblyRef) // Assembly Reference
+            if (node == _treeViewHandler.RefNode || node.Tag is AssemblyRef) // Assembly Reference
             {
-                ReferenceHandler.ProcessAssemblyRefs(out children);
+                var referenceHandler = new ReferenceHandler(_treeViewHandler);
+                referenceHandler.ProcessAssemblyRefs(out children);
             }
             else if (node.Tag is ModuleDefMD) // Module
             {
                 foreach (TypeDef type in (node.Tag as ModuleDefMD).Types)
                 {
-                    TypeHandler.HandleType(type, true);
+                    new TypeHandler(_treeViewHandler).HandleType(type, true);
                 }
             }
             else if (node.Tag is TypeDef) // Type
             {
-                TypeHandler.ProcessTypeMembers(node, ref children);
+                new TypeHandler(_treeViewHandler).ProcessTypeMembers(node, ref children);
             }
 
             Node = node;
@@ -95,11 +98,11 @@ namespace dnEditor.Handlers
             return false;
         }
 
-        public static void ExpandHandler(TreeNode expandedNode)
+        public static void ExpandHandler(TreeNode expandedNode, TreeViewHandler treeViewHandler)
         {
             if (expandedNode.HasVirtualNode())
             {
-                var processor = new VirtualNodeHandler(expandedNode);
+                var processor = new VirtualNodeHandler(expandedNode, treeViewHandler);
                 processor.ProcessNode();
                 expandedNode.Nodes.Remove(expandedNode.FindVirtualNode());
             }

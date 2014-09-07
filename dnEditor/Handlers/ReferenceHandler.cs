@@ -5,39 +5,46 @@ using dnlib.DotNet;
 
 namespace dnEditor.Handlers
 {
-    public static class ReferenceHandler
+    public class ReferenceHandler
     {
-        public static void HandleReferences(IEnumerable<AssemblyRef> references)
+        private readonly TreeViewHandler _treeViewHandler;
+
+        public ReferenceHandler(TreeViewHandler treeViewHandler)
         {
-            if (TreeViewHandler.RefNode == null)
+            _treeViewHandler = treeViewHandler;
+        }
+
+        public void HandleReferences(IEnumerable<AssemblyRef> references)
+        {
+            if (_treeViewHandler.RefNode == null)
             {
-                TreeViewHandler.RefNode = TreeViewHandler.CurrentModule.Nodes.Add("References");
-                TreeViewHandler.RefNode.ImageIndex = TreeViewHandler.RefNode.SelectedImageIndex = 44;
+                _treeViewHandler.RefNode = _treeViewHandler.NewReferenceFolder();
+                _treeViewHandler.RefNode.AddTo(_treeViewHandler.CurrentModule);
             }
 
             var assemblyRefs = new List<AssemblyRef>();
 
-            if (TreeViewHandler.RefNode.Tag as AssemblyRef[] != null)
-                assemblyRefs = (TreeViewHandler.RefNode.Tag as AssemblyRef[]).ToList();
+            if (_treeViewHandler.RefNode.Tag as AssemblyRef[] != null)
+                assemblyRefs = (_treeViewHandler.RefNode.Tag as AssemblyRef[]).ToList();
 
             assemblyRefs.AddRange(references.ToArray());
 
-            TreeViewHandler.RefNode.Tag = assemblyRefs.ToArray();
+            _treeViewHandler.RefNode.Tag = assemblyRefs.ToArray();
         }
 
-        public static void ProcessAssemblyRefs(out List<TreeNode> children)
+        public void ProcessAssemblyRefs(out List<TreeNode> children)
         {
-            if (TreeViewHandler.RefNode == null)
+            if (_treeViewHandler.RefNode == null)
             {
                 children = new List<TreeNode>();
                 return;
             }
 
             children = new List<TreeNode>();
-            var refs = TreeViewHandler.RefNode.Tag as AssemblyRef[];
+            var refs = _treeViewHandler.RefNode.Tag as AssemblyRef[];
 
             foreach (AssemblyRef @ref in refs)
-                children.Add(TreeViewHandler.NewAssemblyRef(@ref));
+                children.Add(_treeViewHandler.NewAssemblyRef(@ref));
         }
     }
 }

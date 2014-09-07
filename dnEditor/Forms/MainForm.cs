@@ -11,7 +11,7 @@ using dnlib.DotNet.Emit;
 
 namespace dnEditor.Forms
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, ITreeView, ITreeMenu
     {
         public static DataGridView DgBody;
         public static CurrentAssembly CurrentAssembly;
@@ -19,19 +19,25 @@ namespace dnEditor.Forms
         public static Instruction NewInstruction;
         public static TreeView TreeView;
         public static ToolStrip ToolStrip;
-        public new static ContextMenuStrip ContextMenuStrip;
+        public static ContextMenuStrip InsructionMenuStrip;
+        public static ContextMenuStrip TreeMenuStrip;
 
         private readonly List<Instruction> _copiedInstructions = new List<Instruction>();
         private EditInstructionMode _editInstructionMode;
 
+        private readonly TreeViewHandler _treeViewHandler;
+
         public MainForm()
         {
             InitializeComponent();
+            _treeViewHandler = new TreeViewHandler(treeView1, treeMenu);
 
             DgBody = dgBody;
             TreeView = treeView1;
             ToolStrip = toolStrip1;
-            ContextMenuStrip = instructionMenu;
+            InsructionMenuStrip = instructionMenu;
+            TreeMenuStrip = treeMenu;
+
             InitializeBody();
 
             cbSearchType.SelectedIndex = 0;
@@ -42,11 +48,6 @@ namespace dnEditor.Forms
             DataGridViewHandler.InitializeBody();
         }
 
-        private void LoadAssembly(bool clear)
-        {
-            TreeViewHandler.LoadAssembly(treeView1, CurrentAssembly.Assembly, clear);
-        }
-
         private void EditInstructionForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (NewInstruction == null) return;
@@ -54,28 +55,19 @@ namespace dnEditor.Forms
             switch (_editInstructionMode)
             {
                 case EditInstructionMode.Edit:
-                    CurrentAssembly.Method.Method.Body.Instructions[EditedInstructionIndex] = NewInstruction;
+                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex] = NewInstruction;
                     break;
                 case EditInstructionMode.InsertAfter:
-                    CurrentAssembly.Method.Method.Body.Instructions.Insert(EditedInstructionIndex + 1, NewInstruction);
+                    CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(EditedInstructionIndex + 1, NewInstruction);
                     break;
                 case EditInstructionMode.InsertBefore:
-                    CurrentAssembly.Method.Method.Body.Instructions.Insert(EditedInstructionIndex, NewInstruction);
+                    CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(EditedInstructionIndex, NewInstruction);
                     break;
             }
 
-            CurrentAssembly.Method.Method.Body.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
-        }
-
-        private bool OpenFile(string file, bool clear = false)
-        {
-            CurrentAssembly = new CurrentAssembly(file);
-            if (CurrentAssembly.Assembly == null) return false;
-
-            LoadAssembly(clear);
-            return true;
-        }
+            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }    
 
         private void NewInstructionEditor(EditInstructionMode mode)
         {
@@ -87,7 +79,7 @@ namespace dnEditor.Forms
             {
                 var form =
                     new EditInstructionForm(
-                        CurrentAssembly.Method.Method.Body.Instructions[dgBody.SelectedRows[0].Index]);
+                        CurrentAssembly.Method.NewMethod.Body.Instructions[dgBody.SelectedRows[0].Index]);
                 form.FormClosed += EditInstructionForm_FormClosed;
                 form.ShowDialog();
             }
@@ -99,25 +91,41 @@ namespace dnEditor.Forms
             }
         }
 
-        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
-        {
-            TreeViewHandler.treeView1_AfterExpand(sender, e);
-        }
-
         private void btnSearch_Click(object sender, EventArgs e)
         {
             if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
-            return;
 
-            var searchHandler = new SearchHandler(TreeViewHandler.CurrentModule, txtSearch.Text, SearchType.Any);
-            searchHandler.SearchFinished += SearchFinished;
+            SearchType searchType;
+            TreeNode searchNode;
 
-            //TODO: Implement   
-        }
+            switch (cbSearchType.Text)
+            {
+                case "String":
+                    searchType = SearchType.String;
+                    searchNode = _treeViewHandler.CurrentMethod;
+                    break;
 
-        private void SearchFinished(TreeNode foundNode)
-        {
-            MessageBox.Show(foundNode == null ? "" : foundNode.FullPath);
+                case "OpCode":
+                    searchType = SearchType.OpCode;
+                    searchNode = _treeViewHandler.CurrentMethod;
+                    break;
+
+                case "Operand":
+                    searchType = SearchType.Operand;
+                    searchNode = _treeViewHandler.CurrentMethod;
+                    break;
+
+                default:
+                    searchType = SearchType.Any;
+                    searchNode = _treeViewHandler.CurrentModule;
+                    break;
+            }
+
+            if (searchNode == null) return;
+
+            var searchHandler = new SearchHandler(searchNode, txtSearch.Text, searchType);
+            searchHandler.SearchFinished += DataGridViewHandler.SearchFinished;
+            searchHandler.Search();
         }
 
         #region ToolStrip
@@ -151,7 +159,7 @@ namespace dnEditor.Forms
             if (dialog.ShowDialog() != DialogResult.OK || !File.Exists(dialog.FileName))
                 return;
 
-            OpenFile(dialog.FileName);
+            Functions.OpenFile(_treeViewHandler, dialog.FileName, out CurrentAssembly);
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
@@ -168,7 +176,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #endregion ToolStrip
 
-        #region ContextToolStrip
+        #region InstructionMenuStrip
 
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -191,14 +199,14 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                int instructionIndex = CurrentAssembly.Method.Method.Body.Instructions.IndexOf(row.Tag as Instruction);
-                CurrentAssembly.Method.Method.Body.Instructions.RemoveAt(instructionIndex);
-                CurrentAssembly.Method.Method.Body.Instructions.Insert(instructionIndex, OpCodes.Nop.ToInstruction());
+                int instructionIndex = CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(row.Tag as Instruction);
+                CurrentAssembly.Method.NewMethod.Body.Instructions.RemoveAt(instructionIndex);
+                CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, OpCodes.Nop.ToInstruction());
             }
 
-            CurrentAssembly.Method.Method.Body.UpdateInstructionOffsets();
+            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
         }
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -208,11 +216,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             foreach (DataGridViewRow selectedRow in dgBody.SelectedRows)
             {
                 _copiedInstructions.Add(selectedRow.Tag as Instruction);
-                CurrentAssembly.Method.Method.Body.Instructions.RemoveAt(selectedRow.Index);
+                CurrentAssembly.Method.NewMethod.Body.Instructions.RemoveAt(selectedRow.Index);
             }
 
-            CurrentAssembly.Method.Method.Body.Instructions.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
+            CurrentAssembly.Method.NewMethod.Body.Instructions.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -231,11 +239,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (Instruction instruction in _copiedInstructions)
             {
-                CurrentAssembly.Method.Method.Body.Instructions.Insert(instructionIndex, instruction);
+                CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, instruction);
             }
 
-            CurrentAssembly.Method.Method.Body.Instructions.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
+            CurrentAssembly.Method.NewMethod.Body.Instructions.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -244,86 +252,75 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                CurrentAssembly.Method.Method.Body.Instructions.Remove(row.Tag as Instruction);
+                CurrentAssembly.Method.NewMethod.Body.Instructions.Remove(row.Tag as Instruction);
             }
 
-            CurrentAssembly.Method.Method.Body.UpdateInstructionOffsets();
+            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.Method);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
         }
 
-        #endregion ContextToolStrip       
+        #endregion InstructionMenuStrip
+
+        #region TreeMenuStrip
+
+        public void treeMenu_Opened(object sender, EventArgs e)
+        {
+            _treeViewHandler.treeMenu_Opened(sender, e);
+        }
+
+        public void expandToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.expandToolStripMenuItem_Click(sender, e);
+        }
+
+        public void collapseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.collapseToolStripMenuItem_Click(sender, e);
+        }
+
+        public void collapseAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.collapseAllToolStripMenuItem_Click(sender, e);
+        }
+
+        public void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.closeToolStripMenuItem_Click(sender, e, ref CurrentAssembly);
+        }
+
+        #endregion TreeMenuStrip
 
         #region TreeView Events
 
-        private void treeView1_DragDrop(object sender, DragEventArgs e)
+        public void treeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            CurrentAssembly result = TreeViewHandler.DragDrop(sender, e);
+            _treeViewHandler.treeView1_AfterExpand(sender, e);
+        }
+
+        public void treeView_DragDrop(object sender, DragEventArgs e)
+        {
+            CurrentAssembly result = _treeViewHandler.DragDrop(sender, e);
             if (result != null && result.Assembly != null)
             {
                 CurrentAssembly = result;
-                LoadAssembly(false);
+                _treeViewHandler.LoadAssembly(CurrentAssembly.Assembly, result.Path, false);
             }
         }
 
-        private void treeView1_DragEnter(object sender, DragEventArgs e)
+        public void treeView_DragEnter(object sender, DragEventArgs e)
         {
-            TreeViewHandler.DragEnter(sender, e);
+            _treeViewHandler.DragEnter(sender, e);
         }
 
-        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Node.Tag is MethodDef)
-                DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
-            else
-                dgBody.Rows.Clear();
+            _treeViewHandler.treeView_NodeMouseClick(sender, e, ref CurrentAssembly);
         }
 
-        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (!(e.Node.Tag is AssemblyRef)) return;
-
-            var assemblyRef = e.Node.Tag as AssemblyRef;
-            string runtimeDirectory = RuntimeEnvironment.GetRuntimeDirectory();
-            string directory = Directory.GetParent(CurrentAssembly.Path).FullName;
-
-            var paths = new List<string>
-            {
-                Path.Combine(directory, assemblyRef.Name + ".dll"),
-                Path.Combine(directory, assemblyRef.Name + ".exe"),
-            };
-
-            var paths2 = new List<string>
-            {
-                Path.Combine(runtimeDirectory, assemblyRef.Name + ".exe"),
-                Path.Combine(runtimeDirectory, assemblyRef.Name + ".dll"),
-            };
-
-
-            if (paths.Where(File.Exists).Count() == 1)
-            {
-                OpenFile(paths.First(File.Exists));
-                return;
-            }
-            if (paths2.Where(File.Exists).Count() == 1)
-            {
-                OpenFile(paths2.First(File.Exists));
-                return;
-            }
-
-            if (MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-
-            var dialog = new OpenFileDialog
-            {
-                Title = string.Format("Browse for the reference \"{0}\"", assemblyRef.Name),
-                Filter = "Executable Files (*.exe)|*.exe|Library Files (*.dll)|*.dll"
-            };
-
-            if (dialog.ShowDialog() != DialogResult.OK && File.Exists(dialog.FileName))
-                return;
-
-            OpenFile(dialog.FileName);
+            _treeViewHandler.treeView_NodeMouseDoubleClick(sender, e, ref CurrentAssembly);
         }
 
         #endregion TreeView Events

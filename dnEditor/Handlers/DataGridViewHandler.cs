@@ -11,18 +11,16 @@ namespace dnEditor.Handlers
 {
     public static class DataGridViewHandler
     {
-        private static readonly DataGridView DgBody = MainForm.DgBody;
-
         public static void InitializeBody()
         {
-            DgBody.Columns["index"].DefaultCellStyle.ForeColor = Color.Blue;
-            DgBody.Columns["opcode"].DefaultCellStyle.ForeColor = Color.Green;
-            DgBody.DefaultCellStyle.BackColor = ColorRules.DefaultColor;
+            MainForm.DgBody.Columns["index"].DefaultCellStyle.ForeColor = Color.Blue;
+            MainForm.DgBody.Columns["opcode"].DefaultCellStyle.ForeColor = Color.Green;
+            MainForm.DgBody.DefaultCellStyle.BackColor = ColorRules.DefaultColor;
         }
 
         public static void ReadMethod(MethodDef method)
         {
-            DgBody.Rows.Clear();
+            MainForm.DgBody.Rows.Clear();
 
             if (!method.HasBody || !method.Body.HasInstructions) return;
 
@@ -80,16 +78,28 @@ namespace dnEditor.Handlers
                 row.Tag = instruction;
                 row.Height = 16;
 
-                row.ContextMenuStrip = MainForm.ContextMenuStrip;
+                row.ContextMenuStrip = MainForm.InsructionMenuStrip;
 
                 rows.Add(row);
             }
 
-            DgBody.Rows.AddRange(rows.ToArray());
+            MainForm.DgBody.Rows.AddRange(rows.ToArray());
 
-            MainForm.CurrentAssembly.Method.Method = method;
-            ColorRules.MarkBlocks(DgBody);
-            ColorRules.ApplyColors(DgBody);
+            MainForm.CurrentAssembly.Method.NewMethod = method;
+            ColorRules.MarkBlocks(MainForm.DgBody);
+            ColorRules.ApplyColors(MainForm.DgBody);
+        }
+
+        public static void SearchFinished(object result)
+        {
+            if (result is int) // row index
+            {
+                int i = int.Parse(result.ToString());
+
+                MainForm.DgBody.ClearSelection();
+                MainForm.DgBody.FirstDisplayedScrollingRowIndex = i;
+                MainForm.DgBody.Rows[i].Selected = true;
+            }
         }
     }
 }

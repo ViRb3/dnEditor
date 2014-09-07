@@ -133,7 +133,7 @@ namespace dnEditor.Forms
 
                     cbOperand.Enabled = true;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                    List<Instruction> instructions = MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList();
+                    List<Instruction> instructions = MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToList();
                     cbOperand.Text = Functions.GetOperandText(instructions, instructions.IndexOf(instruction));
                     break;
 
@@ -141,7 +141,7 @@ namespace dnEditor.Forms
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Multiple instructions reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                    List<Instruction> instructions2 = MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList();
+                    List<Instruction> instructions2 = MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToList();
                     cbOperand.Text = Functions.GetOperandText(instructions2, instructions2.IndexOf(instruction));
 
                     if (instruction.Operand != null)
@@ -266,7 +266,7 @@ namespace dnEditor.Forms
 
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(
-                            MainForm.CurrentAssembly.Method.Method.Body.Instructions[cbOperand.SelectedIndex]);
+                            MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbOperand.SelectedIndex]);
 
                     #endregion Instruction
                 }
@@ -285,7 +285,7 @@ namespace dnEditor.Forms
 
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(
-                            MainForm.CurrentAssembly.Method.Method.Body.Variables[cbOperand.SelectedIndex]);
+                            MainForm.CurrentAssembly.Method.NewMethod.Body.Variables[cbOperand.SelectedIndex]);
 
                     #endregion Variable
                 }
@@ -295,7 +295,7 @@ namespace dnEditor.Forms
 
                     MainForm.NewInstruction =
                         (cbOpCode.SelectedItem as OpCode).ToInstruction(
-                            MainForm.CurrentAssembly.Method.Method.Parameters[cbOperand.SelectedIndex]);
+                            MainForm.CurrentAssembly.Method.NewMethod.Parameters[cbOperand.SelectedIndex]);
 
                     #endregion Parameter
                 }
@@ -460,7 +460,7 @@ namespace dnEditor.Forms
             cbOperand.Items.Clear();
 
             cbOperand.Items.Add(
-                Functions.GetSwitchText(MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList(),
+                Functions.GetSwitchText(MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToList(),
                     (SelectedReference as Instruction[]).ToList()));
             cbOperand.SelectedIndex = 0;
         }
@@ -470,7 +470,7 @@ namespace dnEditor.Forms
             cbOperand.Enabled = true;
             cbOperand.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            List<Instruction> instructions = MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToList();
+            List<Instruction> instructions = MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToList();
 
             for (int i = 0; i < instructions.Count; i++)
             {
@@ -485,7 +485,7 @@ namespace dnEditor.Forms
             cbOperand.DropDownStyle = ComboBoxStyle.DropDownList;
 
             int i = 0;
-            foreach (Parameter parameter in MainForm.CurrentAssembly.Method.Method.Parameters)
+            foreach (Parameter parameter in MainForm.CurrentAssembly.Method.NewMethod.Parameters)
             {
                 _addedOperands.Add(parameter);
 
@@ -504,7 +504,7 @@ namespace dnEditor.Forms
             cbOperand.DropDownStyle = ComboBoxStyle.DropDownList;
 
             int i = 0;
-            foreach (Local variable in MainForm.CurrentAssembly.Method.Method.Body.Variables)
+            foreach (Local variable in MainForm.CurrentAssembly.Method.NewMethod.Body.Variables)
             {
                 _addedOperands.Add(variable);
 
@@ -580,7 +580,7 @@ namespace dnEditor.Forms
 
                     var form =
                         new MultipleInstructionsSelectForm(
-                            MainForm.CurrentAssembly.Method.Method.Body.Instructions.ToArray(), selectedInstructions);
+                            MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToArray(), selectedInstructions);
                     form.FormClosed += form_FormClosedMultipleInstructions;
                     form.ShowDialog();
                     break;

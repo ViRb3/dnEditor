@@ -6,32 +6,36 @@ using dnlib.DotNet;
 
 namespace dnEditor.Forms
 {
-    public partial class PickReferenceForm : Form
+    public partial class PickReferenceForm : Form, ITreeView, ITreeMenu
     {
         private readonly string _reference;
+        private readonly TreeViewHandler _treeViewHandler;
+        private CurrentAssembly _currentAssembly = MainForm.CurrentAssembly;
 
         public PickReferenceForm(string reference)
         {
             InitializeComponent();
+            _treeViewHandler = new TreeViewHandler(treeView1, treeMenu);
+
             treeView1.AllowDrop = true;
 
             _reference = reference;
             EditInstructionForm.SelectedReference = null;
         }
 
-        private void PickReferenceForm_Shown(object sender, EventArgs e)
-        {
-            TreeViewHandler.LoadAssembly(treeView1, MainForm.CurrentAssembly.Assembly, true);
-        }
+        #region TreeView Events
 
-        private void btnSelect_Click(object sender, EventArgs e)
+        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            EditInstructionForm.SelectedReference = treeView1.SelectedNode.Tag;
-            Close();
-        }
+            _treeViewHandler.SelectedNode = null;
+            TreeNode assemblyNode = e.Node.FirstParentNode();
 
-        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
+            if (_currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
+            {
+                _currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef);
+                _currentAssembly.Path = assemblyNode.ToolTipText;
+            }
+
             if (e.Node.Tag is MethodDef && _reference == "Method")
                 btnSelect.Enabled = true;
             else if (e.Node.Tag is FieldDef && _reference == "Field")
@@ -40,25 +44,77 @@ namespace dnEditor.Forms
                 btnSelect.Enabled = true;
             else
                 btnSelect.Enabled = false;
-        }
 
-        private void treeView1_DragDrop(object sender, DragEventArgs e)
-        {
-            CurrentAssembly result = TreeViewHandler.DragDrop(sender, e);
-            if (result != null)
+            if (e.Button == MouseButtons.Right)
             {
-                TreeViewHandler.LoadAssembly(treeView1, result.Assembly, false);
+                _treeViewHandler.SelectedNode = e.Node;
             }
         }
 
-        private void treeView1_DragEnter(object sender, DragEventArgs e)
+        public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            TreeViewHandler.DragEnter(sender, e);
+            _treeViewHandler.treeView_NodeMouseDoubleClick(sender, e, ref _currentAssembly);
         }
 
-        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        public void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            VirtualNodeUtilities.ExpandHandler(e.Node);
+            CurrentAssembly result = _treeViewHandler.DragDrop(sender, e);
+            if (result != null)
+            {
+                _treeViewHandler.LoadAssembly(result.Assembly, result.Path, false);
+            }
         }
+
+        public void treeView_DragEnter(object sender, DragEventArgs e)
+        {
+            _treeViewHandler.DragEnter(sender, e);
+        }
+
+        public void treeView_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            VirtualNodeUtilities.ExpandHandler(e.Node, _treeViewHandler);
+        }
+
+        private void PickReferenceForm_Shown(object sender, EventArgs e)
+        {
+            Functions.OpenFile(_treeViewHandler, _currentAssembly.Path, out _currentAssembly);
+        }
+
+        private void btnSelect_Click(object sender, EventArgs e)
+        {
+            EditInstructionForm.SelectedReference = treeView1.SelectedNode.Tag;
+            Close();
+        }
+
+        #endregion TreeView Events
+
+        #region TreeMenuStrip
+
+        public void treeMenu_Opened(object sender, EventArgs e)
+        {
+            _treeViewHandler.treeMenu_Opened(sender, e);
+        }
+
+        public void expandToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.expandToolStripMenuItem_Click(sender, e);
+        }
+
+        public void collapseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.collapseToolStripMenuItem_Click(sender, e);
+        }
+
+        public void collapseAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.collapseAllToolStripMenuItem_Click(sender, e);
+        }
+
+        public void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.closeToolStripMenuItem_Click(sender, e, ref _currentAssembly);
+        }
+
+        #endregion TreeMenuStrip
     }
 }

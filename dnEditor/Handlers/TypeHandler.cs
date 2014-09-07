@@ -8,15 +8,21 @@ using dnlib.Utils;
 
 namespace dnEditor.Handlers
 {
-    public static class TypeHandler
+    public class TypeHandler
     {
-        public static void ProcessTypeMembers(TreeNode parentNode, ref List<TreeNode> children)
+        private TreeViewHandler _treeViewHandler;
+
+        public TypeHandler(TreeViewHandler treeViewHandler)
+        {
+            _treeViewHandler = treeViewHandler;
+        }
+        public void ProcessTypeMembers(TreeNode parentNode, ref List<TreeNode> children)
         {
             var type = parentNode.Tag as TypeDef;
 
             foreach (TypeDef nestedType in type.NestedTypes)
             {
-                TreeNode newTypeNode = TreeViewHandler.NewType(nestedType);
+                TreeNode newTypeNode = _treeViewHandler.NewType(nestedType);
                 VirtualNodeUtilities.NewVirtualNode().AddTo(newTypeNode);
 
                 children.Add(newTypeNode);
@@ -27,22 +33,22 @@ namespace dnEditor.Handlers
                 List<MethodDef> accessorMethods = type.GetAccessorMethods();
 
                 if (!accessorMethods.Contains(method))
-                    children.Add(TreeViewHandler.NewMethod(method));
+                    children.Add(_treeViewHandler.NewMethod(method));
             }
 
             foreach (PropertyDef property in type.Properties)
-                children.Add(TreeViewHandler.NewProperty(property));
+                children.Add(_treeViewHandler.NewProperty(property));
 
             foreach (FieldDef field in type.Fields)
-                children.Add(TreeViewHandler.NewField(field));
+                children.Add(_treeViewHandler.NewField(field));
 
             foreach (EventDef @event in type.Events)
-                children.Add(TreeViewHandler.NewEvent(@event));
+                children.Add(_treeViewHandler.NewEvent(@event));
         }
 
-        public static void HandleType(TypeDef type, bool processChildren)
+        public void HandleType(TypeDef type, bool processChildren)
         {
-            TreeNode targetType = TreeViewHandler.NewType(type);
+            TreeNode targetType = _treeViewHandler.NewType(type);
 
             if (processChildren)
             {
@@ -56,22 +62,22 @@ namespace dnEditor.Handlers
             if (type.IsExpandable())
                 VirtualNodeUtilities.NewVirtualNode().AddTo(targetType);
 
-            if (!TreeViewHandler.NameSpaceList.Contains(type.Namespace))
+            if (!_treeViewHandler.NameSpaceList.Contains(type.Namespace))
             {
-                TreeNode nameSpace = TreeViewHandler.NewNameSpace(type.Namespace);
+                TreeNode nameSpace = _treeViewHandler.NewNameSpace(type.Namespace);
 
-                TreeViewHandler.NameSpaceList.Add(type.Namespace);
+                _treeViewHandler.NameSpaceList.Add(type.Namespace);
 
-                TreeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() =>
+                _treeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() =>
                 {
-                    nameSpace.AddTo(TreeViewHandler.CurrentModule);
+                    nameSpace.AddTo(_treeViewHandler.CurrentModule);
                     targetType.AddTo(nameSpace);
                 }));
 
             }
             else
             {
-                TreeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() => targetType.AddTo(TreeViewHandler.CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == type.Namespace))));
+                _treeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() => targetType.AddTo(_treeViewHandler.CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == type.Namespace))));
             }
         }
     }

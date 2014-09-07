@@ -88,6 +88,8 @@
     <Compile Include="Handlers\TreeViewHandler.cs" />
     <Compile Include="Misc\InstructionBlock.cs" />
     <Compile Include="Misc\InsUtils.cs" />
+    <Compile Include="Misc\ITreeMenu.cs" />
+    <Compile Include="Misc\ITreeView.cs" />
     <Compile Include="Misc\MethodHolder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

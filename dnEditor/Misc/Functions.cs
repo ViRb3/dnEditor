@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using dnEditor.Forms;
+using dnEditor.Handlers;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
@@ -104,18 +106,18 @@ namespace dnEditor.Misc
 
             Instruction currentInstruction = instructions[index];
 
-            string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction),
+            string output = String.Format("({0}) {1}", instructions.IndexOf(currentInstruction),
                 currentInstruction.OpCode);
 
             if (currentInstruction.Operand != null)
             {
                 if (currentInstruction.Operand is Instruction)
                 {
-                    output += string.Format("{0}", ResolveOperandInstructions(instructions, index));
+                    output += String.Format("{0}", ResolveOperandInstructions(instructions, index));
                 }
                 else
                 {
-                    output += string.Format(": {0}", GetOperandText(instructions, index));
+                    output += String.Format(": {0}", GetOperandText(instructions, index));
                 }
             }
 
@@ -128,12 +130,12 @@ namespace dnEditor.Misc
 
             Instruction currentInstruction = instructions[index];
 
-            string output = string.Format("({0}) {1}", instructions.IndexOf(currentInstruction),
+            string output = String.Format("({0}) {1}", instructions.IndexOf(currentInstruction),
                 currentInstruction.OpCode);
 
             if (currentInstruction.Operand != null && (!(currentInstruction.Operand is Instruction)))
             {
-                output += string.Format(": {0}", GetOperandText(instructions, index));
+                output += String.Format(": {0}", GetOperandText(instructions, index));
             }
 
             return output;
@@ -147,7 +149,7 @@ namespace dnEditor.Misc
             while (currentInstruction.Operand is Instruction)
             {
                 var newInstruction = currentInstruction.Operand as Instruction;
-                output += string.Format(" -> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
+                output += String.Format(" -> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
                 currentInstruction = newInstruction;
             }
 
@@ -263,6 +265,26 @@ namespace dnEditor.Misc
             {
                 row.Selected = false;
             }
+        }
+
+        public static bool OpenFile(TreeViewHandler treeViewHandler, string file, out CurrentAssembly currentAssembly, bool clear = false)
+        {
+            if (string.IsNullOrEmpty(file))
+                throw new ArgumentException("No path provided!");
+
+            currentAssembly = new CurrentAssembly(file);
+            if (currentAssembly.Assembly == null) return false;
+
+            treeViewHandler.LoadAssembly(currentAssembly.Assembly, file, clear);
+            return true;
+        }
+
+        public static TreeNode FirstParentNode(this TreeNode node)
+        {
+            while (node.Parent != null)
+                node = node.Parent;
+
+            return node;
         }
     }
 }

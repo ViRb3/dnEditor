@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
@@ -15,6 +16,9 @@ namespace dnEditor.Misc
 
         public CurrentAssembly(string path)
         {
+            if (!File.Exists(path))
+                throw new FileNotFoundException("Assembly does not exist!");
+
             Path = path;
             OpenAssembly();
         }
