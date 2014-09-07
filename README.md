@@ -15,9 +15,9 @@ a ticket. And just wait. I will eventually get through it.
 #To-do (sorted by priority):
  - [x] ~~Finish support for "switch" opcode.~~
  - [x] ~~Switch back to virtual TreeNode.~~
- - [ ] Add search functions.
+ - [x] ~~Add TreeView context menu with helpful options.~~
+ - [x] Add search functions.
  - [ ] Add member overview/preview.
- - [ ] Add TreeView context menu with helpful options.
  - [ ] Add support for "try-catch".
  - [ ] Add member icons.
  - [ ] Add resources support.
