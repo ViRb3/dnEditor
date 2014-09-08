@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using dnEditor.Forms;
 using dnEditor.Handlers;
+using dnEditor.Properties;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
@@ -57,7 +58,7 @@ namespace dnEditor.Misc
             else
                 OpCodeDictionary.Clear();
 
-            string[] dictionary = Regex.Split(File.ReadAllText("MSIL Dictionary.txt"), Environment.NewLine);
+            string[] dictionary = Regex.Split(Resources.MSIL_Dictionary, Environment.NewLine);
 
             foreach (string line in dictionary)
             {

@@ -113,6 +113,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -188,9 +189,7 @@
     <Content Include="Images\SuperTypes.png" />
     <Content Include="Images\ViewCode.png" />
     <Content Include="Images\VirtualMethod.png" />
-    <Content Include="MSIL Dictionary.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="Resources\MSIL Dictionary.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dnlib\src\dnlib.csproj">
