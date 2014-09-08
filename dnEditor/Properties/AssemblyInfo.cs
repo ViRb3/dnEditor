@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("dnEditor")]
-[assembly: AssemblyDescription("A dotNET assembly editor based on dnlib.")]
+[assembly: AssemblyDescription("A .NET assembly editor based on dnlib.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DarkUnitedProjects")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("dnEditor")]
 [assembly: AssemblyCopyright("Copyright 2014-2099")]
 [assembly: AssemblyTrademark("")]

@@ -151,7 +151,6 @@ namespace dnEditor.Handlers
         public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e,
             ref CurrentAssembly currentAssembly)
         {
-            SelectedNode = null;
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
             if (currentAssembly == null || currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
@@ -167,10 +166,7 @@ namespace dnEditor.Handlers
             }
             else MainForm.DgBody.Rows.Clear();
 
-            if (e.Button == MouseButtons.Right)
-            {
-                SelectedNode = e.Node;
-            }
+            SelectedNode = e.Node;
         }
 
         public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e,

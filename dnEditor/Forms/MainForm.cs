@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
@@ -24,9 +22,9 @@ namespace dnEditor.Forms
         public static ContextMenuStrip TreeMenuStrip;
 
         private readonly List<Instruction> _copiedInstructions = new List<Instruction>();
-        private EditInstructionMode _editInstructionMode;
 
         private readonly TreeViewHandler _treeViewHandler;
+        private EditInstructionMode _editInstructionMode;
 
         public MainForm()
         {
@@ -69,7 +67,7 @@ namespace dnEditor.Forms
 
             CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
-        }    
+        }
 
         private void NewInstructionEditor(EditInstructionMode mode)
         {
@@ -128,6 +126,21 @@ namespace dnEditor.Forms
             var searchHandler = new SearchHandler(searchNode, txtSearch.Text, searchType);
             searchHandler.SearchFinished += DataGridViewHandler.SearchFinished;
             searchHandler.Search();
+        }
+
+        private void txtMagicRegex_TextChanged(object sender, EventArgs e)
+        {
+            Settings.Default.MagicRegex = txtMagicRegex.Text;
+            Settings.Default.Save();
+        }
+
+        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete && _treeViewHandler.SelectedNode != null &&
+                _treeViewHandler.SelectedNode.Tag is AssemblyDef)
+            {
+                closeToolStripMenuItem_Click(sender, e);
+            }
         }
 
         #region ToolStrip
@@ -352,11 +365,5 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
         #endregion DataGridView Events 
-
-        private void txtMagicRegex_TextChanged(object sender, EventArgs e)
-        {
-            Settings.Default.MagicRegex = txtMagicRegex.Text;
-            Settings.Default.Save();
-        }
     }
 }
