@@ -30,7 +30,7 @@ namespace dnEditor.Handlers
 
         #region Interface
 
-        public CurrentAssembly DragDrop(object sender, DragEventArgs e)
+        public string DragDrop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -40,7 +40,7 @@ namespace dnEditor.Handlers
             string fileLoc = filePath.FirstOrDefault(File.Exists);
             if (fileLoc == null) return null;
 
-            return new CurrentAssembly(Path.GetFullPath(fileLoc));
+            return Path.GetFullPath(fileLoc);
         }
 
         public void DragEnter(object sender, DragEventArgs e)
@@ -154,7 +154,7 @@ namespace dnEditor.Handlers
             SelectedNode = null;
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
-            if (currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
+            if (currentAssembly == null || currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
             {
                 currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef);
                 currentAssembly.Path = assemblyNode.ToolTipText;
@@ -200,12 +200,12 @@ namespace dnEditor.Handlers
 
             if (paths.Where(File.Exists).Count() == 1)
             {
-                Functions.OpenFile(this, paths.First(File.Exists), out currentAssembly);
+                Functions.OpenFile(this, paths.First(File.Exists), ref currentAssembly);
                 return;
             }
             if (paths2.Where(File.Exists).Count() == 1)
             {
-                Functions.OpenFile(this, paths2.First(File.Exists), out currentAssembly);
+                Functions.OpenFile(this, paths2.First(File.Exists), ref currentAssembly);
                 return;
             }
 
@@ -228,7 +228,7 @@ namespace dnEditor.Handlers
                 return;
             }
 
-            Functions.OpenFile(this, dialog.FileName, out currentAssembly);
+            Functions.OpenFile(this, dialog.FileName, ref currentAssembly);
         }
 
         #endregion TreeView Events
@@ -241,7 +241,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewNode(string text)
         {
-            var node = new TreeNode(text);
+            var node = new TreeNode(text.ShortenTreeNodeText());
             node.ContextMenuStrip = CurrentTreeMenu;
 
             return node;

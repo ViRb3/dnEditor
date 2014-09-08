@@ -91,6 +91,7 @@
     <Compile Include="Misc\ITreeMenu.cs" />
     <Compile Include="Misc\ITreeView.cs" />
     <Compile Include="Misc\MethodHolder.cs" />
+    <Compile Include="Misc\ObfuscationHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\EditInstructionForm.resx">
@@ -115,6 +116,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

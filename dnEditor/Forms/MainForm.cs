@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
+using dnEditor.Properties;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
@@ -37,6 +38,7 @@ namespace dnEditor.Forms
             ToolStrip = toolStrip1;
             InsructionMenuStrip = instructionMenu;
             TreeMenuStrip = treeMenu;
+            txtMagicRegex.Text = Settings.Default.MagicRegex;
 
             InitializeBody();
 
@@ -159,7 +161,7 @@ namespace dnEditor.Forms
             if (dialog.ShowDialog() != DialogResult.OK || !File.Exists(dialog.FileName))
                 return;
 
-            Functions.OpenFile(_treeViewHandler, dialog.FileName, out CurrentAssembly);
+            Functions.OpenFile(_treeViewHandler, dialog.FileName, ref CurrentAssembly);
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
@@ -300,11 +302,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         public void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            CurrentAssembly result = _treeViewHandler.DragDrop(sender, e);
-            if (result != null && result.Assembly != null)
+            string result = _treeViewHandler.DragDrop(sender, e);
+            if (!string.IsNullOrEmpty(result))
             {
-                CurrentAssembly = result;
-                _treeViewHandler.LoadAssembly(CurrentAssembly.Assembly, result.Path, false);
+                Functions.OpenFile(_treeViewHandler, result, ref CurrentAssembly);
             }
         }
 
@@ -351,5 +352,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
         #endregion DataGridView Events 
+
+        private void txtMagicRegex_TextChanged(object sender, EventArgs e)
+        {
+            Settings.Default.MagicRegex = txtMagicRegex.Text;
+            Settings.Default.Save();
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace dnEditor.Forms
             _treeViewHandler.SelectedNode = null;
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
-            if (_currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
+            if (_currentAssembly == null || _currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
             {
                 _currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef);
                 _currentAssembly.Path = assemblyNode.ToolTipText;
@@ -58,10 +58,10 @@ namespace dnEditor.Forms
 
         public void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            CurrentAssembly result = _treeViewHandler.DragDrop(sender, e);
-            if (result != null)
+            string result = _treeViewHandler.DragDrop(sender, e);
+            if (!string.IsNullOrEmpty(result))
             {
-                _treeViewHandler.LoadAssembly(result.Assembly, result.Path, false);
+                Functions.OpenFile(_treeViewHandler, result, ref _currentAssembly);
             }
         }
 
@@ -77,7 +77,7 @@ namespace dnEditor.Forms
 
         private void PickReferenceForm_Shown(object sender, EventArgs e)
         {
-            Functions.OpenFile(_treeViewHandler, _currentAssembly.Path, out _currentAssembly);
+            Functions.OpenFile(_treeViewHandler, _currentAssembly.Path, ref _currentAssembly);
         }
 
         private void btnSelect_Click(object sender, EventArgs e)

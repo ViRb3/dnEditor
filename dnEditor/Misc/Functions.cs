@@ -202,7 +202,6 @@ namespace dnEditor.Misc
                     operandText = String.Format("'{0}'", operand);
                     break;
                 case "System.DateTime":
-                    //TODO: Add a date picker?
                     operandText = operand.ToString();
                     break;
                 case "dnlib.DotNet.Emit.Instruction[]":
@@ -212,8 +211,7 @@ namespace dnEditor.Misc
                     operandText = operand.ToString();
                     break;
             }
-
-            return operandText;
+            return operandText.ShortenOperandText();
         }
 
         public static string GetSwitchText(List<Instruction> instructions, List<Instruction> switchInstructions)
@@ -268,13 +266,15 @@ namespace dnEditor.Misc
             }
         }
 
-        public static bool OpenFile(TreeViewHandler treeViewHandler, string file, out CurrentAssembly currentAssembly, bool clear = false)
+        public static bool OpenFile(TreeViewHandler treeViewHandler, string file, ref CurrentAssembly currentAssembly, bool clear = false)
         {
             if (string.IsNullOrEmpty(file))
                 throw new ArgumentException("No path provided!");
 
-            currentAssembly = new CurrentAssembly(file);
-            if (currentAssembly.Assembly == null) return false;
+            var newCurrentAssembly = new CurrentAssembly(file);
+
+            if (newCurrentAssembly.Assembly == null) return false;
+            currentAssembly = newCurrentAssembly;
 
             treeViewHandler.LoadAssembly(currentAssembly.Assembly, file, clear);
             return true;
