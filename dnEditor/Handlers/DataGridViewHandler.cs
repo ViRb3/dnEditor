@@ -90,6 +90,11 @@ namespace dnEditor.Handlers
             ColorRules.ApplyColors(MainForm.DgBody);
         }
 
+        public static void ClearRows()
+        {
+            MainForm.DgBody.Rows.Clear();
+        }
+
         public static void SearchFinished(object result)
         {
             if (result is int) // row index

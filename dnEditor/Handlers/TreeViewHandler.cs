@@ -54,10 +54,17 @@ namespace dnEditor.Handlers
 
         public void treeMenu_Opened(object sender, EventArgs e)
         {
-            if (SelectedNode == null || SelectedNode.Nodes.Count < 1)
-                CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Collapse all").Enabled = false;
-            else
-                CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Collapse all").Enabled = true;
+            CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Collapse all").Enabled = false;
+            CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Close assembly").Enabled = false;
+
+            if (SelectedNode != null)
+            {
+                if (SelectedNode.Nodes.Count > 0)
+                    CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Collapse all").Enabled = true;
+
+                if (SelectedNode.Tag is AssemblyDef)
+                    CurrentTreeMenu.Items.Cast<ToolStripItem>().First(i => i.Text == "Close assembly").Enabled = true;
+            }
         }
 
         public void expandToolStripMenuItem_Click(object sender, EventArgs e)
@@ -94,6 +101,7 @@ namespace dnEditor.Handlers
             CurrentMethod = null;
             CurrentModule = null;
             currentAssembly = null;
+            DataGridViewHandler.ClearRows();
             assembly.Remove();
         }
 
@@ -310,7 +318,7 @@ namespace dnEditor.Handlers
                 parameters += ", ";
             }
 
-            parameters = parameters.TrimEnd(new[] { ',', ' ' });
+            parameters = parameters.TrimEnd(new[] {',', ' '});
 
             TreeNode node = NewNode(String.Format("{0}({1}): {2}", method.Name, parameters,
                 method.ReturnType.GetExtendedName()));
