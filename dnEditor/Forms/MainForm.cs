@@ -168,7 +168,7 @@ namespace dnEditor.Forms
             var dialog = new OpenFileDialog
             {
                 Title = "Choose an assembly to open...",
-                Filter = "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll"
+                Filter = ".NET Assemblies (*.exe;*.dll)|*.exe;*.dll"
             };
 
             if (dialog.ShowDialog() != DialogResult.OK || !File.Exists(dialog.FileName))

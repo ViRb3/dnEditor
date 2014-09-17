@@ -301,7 +301,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewType(TypeDef type) // (Class)
         {
-            TreeNode node = NewNode(type.Name); //TODO: Extended name
+            TreeNode node = NewNode(type.GetExtendedName());
             node.Tag = type;
             node.ImageIndex = node.SelectedImageIndex = 6;
 

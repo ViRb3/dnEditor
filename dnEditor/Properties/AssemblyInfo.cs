@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("dnEditor")]
-[assembly: AssemblyCopyright("Copyright 2014-2099")]
+[assembly: AssemblyCopyright("Copyright ViRb3, 2014-2099")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

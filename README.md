@@ -3,12 +3,13 @@ dnEditor
 
 A .NET assembly editor based on dnlib.
 
-All kind of help from any sources is greatly appreciated. Feel free to upgrade, fix touch or hack
-this project by submitting a pull request and I will make sure to approve and merge it.
+Want to help with the development? You are more than welcome to do so!
+Feel free to upgrade, fix or touch this project by submitting a pull request and I will 
+make sure to approve and merge it.
 
-Please note that I am working on this project during my free time, and as just a teenager doing all
-alone, I cannot do everything at will. If your favourite feature is not found in dnEditor - submit
-a ticket. And just wait. I will eventually get through it.
+Please note that I am working on this project during my free time, and as just a teenager doing everything
+here alone, I cannot do it all instantly or at will. If your favourite feature is not found in dnEditor - submit
+a ticket. And wait. I will eventually get through it.
 
 #####Cheers!
 
