@@ -21,6 +21,7 @@ namespace dnEditor.Handlers
         public static void ReadMethod(MethodDef method)
         {
             MainForm.DgBody.Rows.Clear();
+            MainForm.CurrentAssembly.Method.NewMethod = method;
 
             if (!method.HasBody || !method.Body.HasInstructions) return;
 
@@ -85,7 +86,6 @@ namespace dnEditor.Handlers
 
             MainForm.DgBody.Rows.AddRange(rows.ToArray());
 
-            MainForm.CurrentAssembly.Method.NewMethod = method;
             ColorRules.MarkBlocks(MainForm.DgBody);
             ColorRules.ApplyColors(MainForm.DgBody);
         }

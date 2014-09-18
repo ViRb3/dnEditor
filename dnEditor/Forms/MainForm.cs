@@ -79,7 +79,7 @@ namespace dnEditor.Forms
         {
             NewInstruction = null;
             _editInstructionMode = mode;
-            var selectedRows = dgBody.SelectedRows;
+            DataGridViewSelectedRowCollection selectedRows = dgBody.SelectedRows;
 
             if (selectedRows.Count > 0)
                 EditedInstructionIndex = selectedRows[0].Index;
@@ -167,7 +167,16 @@ namespace dnEditor.Forms
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            CurrentAssembly.Assembly.Write(dialog.FileName);
+            try
+            {
+                CurrentAssembly.Assembly.Write(dialog.FileName);
+            }
+            catch (Exception o)
+            {
+                MessageBox.Show("Could not write assembly!" + Environment.NewLine + Environment.NewLine + o.Message,
+                    "Error");
+                return;
+            }
 
             MessageBox.Show("Assembly written to:" + Environment.NewLine + dialog.FileName, "Success");
         }
