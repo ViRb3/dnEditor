@@ -147,7 +147,7 @@ namespace dnEditor.Misc
             string output = "";
             Instruction currentInstruction = instructions[index];
 
-            while (currentInstruction.Operand is Instruction)
+            while (currentInstruction.Operand is Instruction && (currentInstruction.Operand as Instruction) != currentInstruction)
             {
                 var newInstruction = currentInstruction.Operand as Instruction;
                 output += String.Format(" -> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
