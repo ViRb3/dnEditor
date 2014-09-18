@@ -17,7 +17,8 @@ a ticket. And wait. I will eventually get through it.
  - [x] ~~Finish support for "switch" opcode.~~
  - [x] ~~Switch back to virtual TreeNode.~~
  - [x] ~~Add TreeView context menu with helpful options.~~
- - [x] Add search functions.
+ - [x] ~~Add search functions.~~ //to be continued
+ - [ ] Add variables support.
  - [ ] Add member overview/preview.
  - [ ] Add support for "try-catch".
  - [ ] Add member icons.

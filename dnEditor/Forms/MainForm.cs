@@ -52,8 +52,14 @@ namespace dnEditor.Forms
         {
             if (NewInstruction == null) return;
 
+            if (!CurrentAssembly.Method.NewMethod.HasBody)
+                CurrentAssembly.Method.NewMethod.Body = new CilBody();
+
             switch (_editInstructionMode)
             {
+                case EditInstructionMode.Add:
+                    CurrentAssembly.Method.NewMethod.Body.Instructions.Add(NewInstruction);
+                    break;
                 case EditInstructionMode.Edit:
                     CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex] = NewInstruction;
                     break;
@@ -73,7 +79,10 @@ namespace dnEditor.Forms
         {
             NewInstruction = null;
             _editInstructionMode = mode;
-            EditedInstructionIndex = dgBody.SelectedRows[0].Index;
+            var selectedRows = dgBody.SelectedRows;
+
+            if (selectedRows.Count > 0)
+                EditedInstructionIndex = selectedRows[0].Index;
 
             if (mode == EditInstructionMode.Edit)
             {
@@ -306,6 +315,26 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #endregion TreeMenuStrip
 
+        #region EmptyInstructionsMenu
+
+        private void createNewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewInstructionEditor(EditInstructionMode.Add);
+        }
+
+        private void emptyBodyMenu_Opened(object sender, EventArgs e)
+        {
+            if (CurrentAssembly == null || CurrentAssembly.Method == null || CurrentAssembly.Method.NewMethod == null)
+            {
+                emptyBodyMenu.Items[0].Enabled = false;
+                return;
+            }
+
+            emptyBodyMenu.Items[0].Enabled = true;
+        }
+
+        #endregion EmptyInstructionsMenu
+
         #region TreeView Events
 
         public void treeView_AfterExpand(object sender, TreeViewEventArgs e)
@@ -362,6 +391,14 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                 row.Selected = false;
 
             dgBody.Rows[e.RowIndex].Selected = true;
+        }
+
+        private void dgBody_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                emptyBodyMenu.Show();
+            }
         }
 
         #endregion DataGridView Events 

@@ -71,6 +71,8 @@
             this.collapseAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.emptyBodyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createNewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -79,6 +81,7 @@
             this.toolStrip1.SuspendLayout();
             this.instructionMenu.SuspendLayout();
             this.treeMenu.SuspendLayout();
+            this.emptyBodyMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -186,6 +189,7 @@
             this.offset,
             this.opcode,
             this.operand});
+            this.dgBody.ContextMenuStrip = this.emptyBodyMenu;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -204,6 +208,7 @@
             this.dgBody.TabIndex = 1;
             this.dgBody.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgBody_CellDoubleClick);
             this.dgBody.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgBody_CellMouseDown);
+            this.dgBody.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgBody_MouseClick);
             // 
             // index
             // 
@@ -675,6 +680,21 @@
             this.closeToolStripMenuItem.Text = "Close assembly";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
+            // emptyBodyMenu
+            // 
+            this.emptyBodyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createNewToolStripMenuItem});
+            this.emptyBodyMenu.Name = "emptyBodyMenu";
+            this.emptyBodyMenu.Size = new System.Drawing.Size(153, 48);
+            this.emptyBodyMenu.Opened += new System.EventHandler(this.emptyBodyMenu_Opened);
+            // 
+            // createNewToolStripMenuItem
+            // 
+            this.createNewToolStripMenuItem.Name = "createNewToolStripMenuItem";
+            this.createNewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.createNewToolStripMenuItem.Text = "Create new";
+            this.createNewToolStripMenuItem.Click += new System.EventHandler(this.createNewToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -693,6 +713,7 @@
             this.toolStrip1.PerformLayout();
             this.instructionMenu.ResumeLayout(false);
             this.treeMenu.ResumeLayout(false);
+            this.emptyBodyMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -740,6 +761,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripLabel lblMagicRegex;
         private System.Windows.Forms.ToolStripTextBox txtMagicRegex;
+        private System.Windows.Forms.ContextMenuStrip emptyBodyMenu;
+        private System.Windows.Forms.ToolStripMenuItem createNewToolStripMenuItem;
     }
 }
 

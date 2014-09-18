@@ -11,6 +11,7 @@ namespace dnEditor.Forms
 {
     public enum EditInstructionMode
     {
+        Add,
         Edit,
         InsertBefore,
         InsertAfter
