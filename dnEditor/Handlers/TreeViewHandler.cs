@@ -16,6 +16,11 @@ namespace dnEditor.Handlers
         public static string Name = "VIRTNODE";
     }
 
+    public class DeVirtualNode
+    {
+        public static string Name = "DEVIRTNODE";
+    }
+
     public class TreeViewHandler : ITreeMenu
     {
         public TreeNode CurrentMethod = null;

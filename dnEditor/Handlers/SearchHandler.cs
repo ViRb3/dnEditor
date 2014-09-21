@@ -21,18 +21,31 @@ namespace dnEditor.Handlers
     {
         public delegate void EventHandler(object result);
 
+        private readonly TreeView _searchTreeView;
         private readonly TreeNode _searchNode;
 
         private readonly SearchType _searchType;
         private readonly string _text;
+        private readonly TreeViewHandler _treeViewHandler;
 
         public TreeNode FoundNode = null;
 
-        public SearchHandler(TreeNode searchNode, string text, SearchType searchType)
+        public SearchHandler(TreeNode searchNode, string text, SearchType searchType, TreeViewHandler treeViewHandler)
         {
             _searchNode = searchNode;
+            _searchTreeView = searchNode.TreeView;
+
             _text = text;
             _searchType = searchType;
+            _treeViewHandler = treeViewHandler;
+        }
+
+        public SearchHandler(TreeView searchTreeView, string text, SearchType searchType, TreeViewHandler treeViewHandler)
+        {
+            _searchTreeView = searchTreeView;
+            _text = text;
+            _searchType = searchType;
+            _treeViewHandler = treeViewHandler;
         }
 
         public event EventHandler SearchFinished;
@@ -60,6 +73,8 @@ namespace dnEditor.Handlers
 
             if (_searchType == SearchType.OpCode)
             {
+                #region OpCode
+
                 if (!(_searchNode.Tag is MethodDef)) return null;
 
                 DataGridView dgBody = MainForm.DgBody;
@@ -73,10 +88,14 @@ namespace dnEditor.Handlers
                     .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
+
+                #endregion OpCode
             }
 
             if (_searchType == SearchType.String)
             {
+                #region String
+
                 if (!(_searchNode.Tag is MethodDef)) return null;
 
                 DataGridView dgBody = MainForm.DgBody;
@@ -93,10 +112,14 @@ namespace dnEditor.Handlers
                     .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
+
+                #endregion String
             }
 
             if (_searchType == SearchType.Operand)
             {
+                #region Operand
+
                 if (!(_searchNode.Tag is MethodDef)) return null;
 
                 DataGridView dgBody = MainForm.DgBody;
@@ -109,6 +132,8 @@ namespace dnEditor.Handlers
                     .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
+
+                #endregion Operand
             }
 
             return null;

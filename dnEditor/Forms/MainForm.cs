@@ -132,7 +132,7 @@ namespace dnEditor.Forms
 
             if (searchNode == null) return;
 
-            var searchHandler = new SearchHandler(searchNode, txtSearch.Text, searchType);
+            var searchHandler = new SearchHandler(searchNode, txtSearch.Text, searchType, _treeViewHandler);
             searchHandler.SearchFinished += DataGridViewHandler.SearchFinished;
             searchHandler.Search();
         }

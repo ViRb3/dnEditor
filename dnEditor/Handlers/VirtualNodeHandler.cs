@@ -10,8 +10,8 @@ namespace dnEditor.Handlers
     {
         public delegate void EventHandler(TreeNode processedNode);
 
+        private readonly TreeViewHandler _treeViewHandler;
         public TreeNode Node;
-        private TreeViewHandler _treeViewHandler;
 
         public VirtualNodeHandler(TreeNode node, TreeViewHandler treeViewHandler)
         {
@@ -60,13 +60,16 @@ namespace dnEditor.Handlers
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var result = e.Result as object[];
-            var children = result[0] as TreeNode[];
-
-            if (children == null || children.Length == 0) return;
-
-            foreach (TreeNode child in children)
+            if (result != null)
             {
-                Node.Nodes.Add(child);
+                var children = result[0] as TreeNode[];
+
+                if (children == null || children.Length == 0) return;
+
+                foreach (TreeNode child in children)
+                {
+                    Node.Nodes.Add(child);
+                }
             }
 
             if (WorkerFinished != null)
@@ -78,8 +81,20 @@ namespace dnEditor.Handlers
     {
         public static TreeNode NewVirtualNode()
         {
-            var node = new TreeNode(VirtualNode.Name);
-            node.Tag = new VirtualNode();
+            var node = new TreeNode(VirtualNode.Name)
+            {
+                Tag = new VirtualNode()
+            };
+
+            return node;
+        }
+
+        public static TreeNode NewDeVirtualNode()
+        {
+            var node = new TreeNode(DeVirtualNode.Name)
+            {
+                Tag = new DeVirtualNode()
+            };
 
             return node;
         }
@@ -89,10 +104,22 @@ namespace dnEditor.Handlers
             return node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode);
         }
 
+        public static TreeNode FindDeVirtualNode(this TreeNode node)
+        {
+            return node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == DeVirtualNode.Name && n.Tag is DeVirtualNode);
+        }
+
         public static bool HasVirtualNode(this TreeNode node)
         {
-            if (node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == VirtualNode.Name && n.Tag is VirtualNode) !=
-                null)
+            if (node.FindVirtualNode() !=  null)
+                return true;
+
+            return false;
+        }
+
+        public static bool HasDeVirtualNode(this TreeNode node)
+        {
+            if (node.FindDeVirtualNode() != null)
                 return true;
 
             return false;
@@ -108,7 +135,7 @@ namespace dnEditor.Handlers
             }
         }
 
-        public static void VirtualizeNode(TreeNode node)
+        public static void Virtualize(this TreeNode node)
         {
             node.Nodes.Clear();
             NewVirtualNode().AddTo(node);

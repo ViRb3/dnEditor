@@ -38,6 +38,8 @@
             this.offset = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.opcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.operand = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.emptyBodyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createNewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -71,9 +73,8 @@
             this.collapseAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.emptyBodyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createNewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).BeginInit();
+            this.emptyBodyMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -81,7 +82,6 @@
             this.toolStrip1.SuspendLayout();
             this.instructionMenu.SuspendLayout();
             this.treeMenu.SuspendLayout();
-            this.emptyBodyMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -244,6 +244,21 @@
             this.operand.Name = "operand";
             this.operand.ReadOnly = true;
             this.operand.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // emptyBodyMenu
+            // 
+            this.emptyBodyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createNewToolStripMenuItem});
+            this.emptyBodyMenu.Name = "emptyBodyMenu";
+            this.emptyBodyMenu.Size = new System.Drawing.Size(134, 26);
+            this.emptyBodyMenu.Opened += new System.EventHandler(this.emptyBodyMenu_Opened);
+            // 
+            // createNewToolStripMenuItem
+            // 
+            this.createNewToolStripMenuItem.Name = "createNewToolStripMenuItem";
+            this.createNewToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.createNewToolStripMenuItem.Text = "Create new";
+            this.createNewToolStripMenuItem.Click += new System.EventHandler(this.createNewToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -496,6 +511,7 @@
             // 
             this.cbSearchType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbSearchType.Items.AddRange(new object[] {
+            "Any name",
             "String",
             "OpCode",
             "Operand"});
@@ -680,21 +696,6 @@
             this.closeToolStripMenuItem.Text = "Close assembly";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
-            // emptyBodyMenu
-            // 
-            this.emptyBodyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createNewToolStripMenuItem});
-            this.emptyBodyMenu.Name = "emptyBodyMenu";
-            this.emptyBodyMenu.Size = new System.Drawing.Size(153, 48);
-            this.emptyBodyMenu.Opened += new System.EventHandler(this.emptyBodyMenu_Opened);
-            // 
-            // createNewToolStripMenuItem
-            // 
-            this.createNewToolStripMenuItem.Name = "createNewToolStripMenuItem";
-            this.createNewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.createNewToolStripMenuItem.Text = "Create new";
-            this.createNewToolStripMenuItem.Click += new System.EventHandler(this.createNewToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -705,6 +706,7 @@
             this.Name = "MainForm";
             this.Text = "dnEditor v0.63 Beta ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
+            this.emptyBodyMenu.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -713,7 +715,6 @@
             this.toolStrip1.PerformLayout();
             this.instructionMenu.ResumeLayout(false);
             this.treeMenu.ResumeLayout(false);
-            this.emptyBodyMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
