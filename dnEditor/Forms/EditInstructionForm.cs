@@ -146,7 +146,7 @@ namespace dnEditor.Forms
                     cbOperand.Text = Functions.GetOperandText(instructions2, instructions2.IndexOf(instruction));
 
                     if (instruction.Operand != null)
-                        _addedOperands.AddRange(instruction.Operand as Instruction[]);
+                        _addedOperands.AddRange((Instruction[]) instruction.Operand);
 
                     break;
 
@@ -194,7 +194,7 @@ namespace dnEditor.Forms
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
                         MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
-                    cbOperand.Items.Add(SelectedReference as IField);
+                    cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
 
@@ -204,7 +204,7 @@ namespace dnEditor.Forms
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
                         MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
-                    cbOperand.Items.Add(SelectedReference as IMethod);
+                    cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
 
@@ -214,7 +214,7 @@ namespace dnEditor.Forms
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
                         MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
-                    cbOperand.Items.Add(SelectedReference as ITypeDefOrRef);
+                    cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
             }
@@ -243,7 +243,7 @@ namespace dnEditor.Forms
                 {
                     #region None
 
-                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction();
+                    MainForm.NewInstruction = ((OpCode) cbOpCode.SelectedItem).ToInstruction();
 
                     #endregion None
                 }
@@ -266,7 +266,7 @@ namespace dnEditor.Forms
                     #region Instruction
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(
                             MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbOperand.SelectedIndex]);
 
                     #endregion Instruction
@@ -276,7 +276,7 @@ namespace dnEditor.Forms
                     #region Multi instructions
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(SelectedReference as Instruction[]);
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(SelectedReference as Instruction[]);
 
                     #endregion Instruction
                 }
@@ -285,7 +285,7 @@ namespace dnEditor.Forms
                     #region Variable
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(
                             MainForm.CurrentAssembly.Method.NewMethod.Body.Variables[cbOperand.SelectedIndex]);
 
                     #endregion Variable
@@ -295,7 +295,7 @@ namespace dnEditor.Forms
                     #region Parameter
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(
                             MainForm.CurrentAssembly.Method.NewMethod.Parameters[cbOperand.SelectedIndex]);
 
                     #endregion Parameter
@@ -305,7 +305,7 @@ namespace dnEditor.Forms
                     #region Field
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as IField);
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.SelectedItem as IField);
 
                     #endregion Field
                 }
@@ -314,7 +314,7 @@ namespace dnEditor.Forms
                     #region Method
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as IMethod);
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.SelectedItem as IMethod);
 
                     #endregion Method
                 }
@@ -324,7 +324,7 @@ namespace dnEditor.Forms
                     #region Type
 
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.SelectedItem as ITypeDefOrRef);
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.SelectedItem as ITypeDefOrRef);
 
                     #endregion Type
                 }
@@ -423,7 +423,7 @@ namespace dnEditor.Forms
 
             SelectedReference =
                 MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IField);
-            cbOperand.Items.Add(SelectedReference as IField);
+            cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
         }
@@ -436,7 +436,7 @@ namespace dnEditor.Forms
 
             SelectedReference =
                 MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IMethod);
-            cbOperand.Items.Add(SelectedReference as IMethod);
+            cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
         }
@@ -449,7 +449,7 @@ namespace dnEditor.Forms
 
             SelectedReference =
                 MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
-            cbOperand.Items.Add(SelectedReference as ITypeDefOrRef);
+            cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
         }
@@ -462,7 +462,7 @@ namespace dnEditor.Forms
 
             cbOperand.Items.Add(
                 Functions.GetSwitchText(MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToList(),
-                    (SelectedReference as Instruction[]).ToList()));
+                    ((Instruction[]) SelectedReference).ToList()));
             cbOperand.SelectedIndex = 0;
         }
 
@@ -524,42 +524,42 @@ namespace dnEditor.Forms
             {
                 case "Byte":
                 {
-                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(byte.Parse(cbOperand.Text));
+                    MainForm.NewInstruction = ((OpCode) cbOpCode.SelectedItem).ToInstruction(byte.Parse(cbOperand.Text));
                     break;
                 }
                 case "SByte":
                 {
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(sbyte.Parse(cbOperand.Text));
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(sbyte.Parse(cbOperand.Text));
                     break;
                 }
                 case "Int32":
                 {
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Int32.Parse(cbOperand.Text));
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(Int32.Parse(cbOperand.Text));
                     break;
                 }
                 case "Int64":
                 {
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Int64.Parse(cbOperand.Text));
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(Int64.Parse(cbOperand.Text));
                     break;
                 }
                 case "Single":
                 {
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Single.Parse(cbOperand.Text));
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(Single.Parse(cbOperand.Text));
                     break;
                 }
                 case "Double":
                 {
                     MainForm.NewInstruction =
-                        (cbOpCode.SelectedItem as OpCode).ToInstruction(Double.Parse(cbOperand.Text));
+                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(Double.Parse(cbOperand.Text));
                     break;
                 }
                 case "String":
                 {
-                    MainForm.NewInstruction = (cbOpCode.SelectedItem as OpCode).ToInstruction(cbOperand.Text);
+                    MainForm.NewInstruction = ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.Text);
                     break;
                 }
                 default:

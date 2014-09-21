@@ -32,8 +32,10 @@ namespace dnEditor.Forms
 
             if (_currentAssembly == null || _currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
             {
-                _currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef);
-                _currentAssembly.Path = assemblyNode.ToolTipText;
+                _currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef)
+                {
+                    Path = assemblyNode.ToolTipText
+                };
             }
 
             if (e.Node.Tag is MethodDef && _reference == "Method")

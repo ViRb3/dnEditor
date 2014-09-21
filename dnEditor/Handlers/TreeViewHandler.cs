@@ -125,8 +125,9 @@ namespace dnEditor.Handlers
             TreeNode file = NewFile(currentAssembly, path); // AssemblyDef
             file.AddTo(CurrentTreeView);
 
-            foreach (ModuleDefMD module in currentAssembly.Modules)
+            foreach (var moduleDef in currentAssembly.Modules)
             {
+                var module = (ModuleDefMD) moduleDef;
                 NameSpaceList.Clear();
 
                 TreeNode moduleNode = NewModule(module);
@@ -151,9 +152,9 @@ namespace dnEditor.Handlers
                 }
             }
 
-            var processor2 = new VirtualNodeHandler(RefNode, this);
-            processor2.ProcessNode();
-            RefNode = processor2.Node;
+            var processor = new NodeDevirtualizer(RefNode, this);
+            processor.ProcessNode();
+            RefNode = processor.Node;
         }
 
         public void treeView1_AfterExpand(object sender, TreeViewEventArgs e)

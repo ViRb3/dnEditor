@@ -6,14 +6,14 @@ using dnlib.DotNet;
 
 namespace dnEditor.Handlers
 {
-    public class VirtualNodeHandler
+    public class NodeDevirtualizer
     {
         public delegate void EventHandler(TreeNode processedNode);
 
         private readonly TreeViewHandler _treeViewHandler;
         public TreeNode Node;
 
-        public VirtualNodeHandler(TreeNode node, TreeViewHandler treeViewHandler)
+        public NodeDevirtualizer(TreeNode node, TreeViewHandler treeViewHandler)
         {
             Node = node;
             _treeViewHandler = treeViewHandler;
@@ -129,7 +129,7 @@ namespace dnEditor.Handlers
         {
             if (expandedNode.HasVirtualNode())
             {
-                var processor = new VirtualNodeHandler(expandedNode, treeViewHandler);
+                var processor = new NodeDevirtualizer(expandedNode, treeViewHandler);
                 processor.ProcessNode();
                 expandedNode.Nodes.Remove(expandedNode.FindVirtualNode());
             }

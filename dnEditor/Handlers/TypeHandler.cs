@@ -10,7 +10,7 @@ namespace dnEditor.Handlers
 {
     public class TypeHandler
     {
-        private TreeViewHandler _treeViewHandler;
+        private readonly TreeViewHandler _treeViewHandler;
 
         public TypeHandler(TreeViewHandler treeViewHandler)
         {

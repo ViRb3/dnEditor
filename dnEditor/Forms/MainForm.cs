@@ -272,7 +272,12 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (Instruction instruction in _copiedInstructions)
             {
-                CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, instruction);
+                var newInstruction = new Instruction(instruction.OpCode);
+
+                if (instruction.Operand != null)
+                    newInstruction.Operand = instruction.Operand;
+
+                CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, newInstruction);
             }
 
             CurrentAssembly.Method.NewMethod.Body.Instructions.UpdateInstructionOffsets();
