@@ -258,14 +258,6 @@ namespace dnEditor.Misc
             return null;
         }
 
-        public static void ClearSelection(this DataGridView dataGridView)
-        {
-            foreach (DataGridViewRow row in dataGridView.Rows)
-            {
-                row.Selected = false;
-            }
-        }
-
         public static bool OpenFile(TreeViewHandler treeViewHandler, string file, ref CurrentAssembly currentAssembly, bool clear = false)
         {
             if (string.IsNullOrEmpty(file))

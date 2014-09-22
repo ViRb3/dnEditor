@@ -275,6 +275,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(module.FullName);
             node.Tag = module;
             node.ImageIndex = node.SelectedImageIndex = 28;
+            node.ToolTipText = module.MDToken.FullMetadataTokenString();
 
             return node;
         }
@@ -292,6 +293,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(assemblyRef.FullName);
             node.Tag = assemblyRef;
             node.ImageIndex = node.SelectedImageIndex = 0;
+            node.ToolTipText = assemblyRef.MDToken.FullMetadataTokenString();
 
             return node;
         }
@@ -310,6 +312,7 @@ namespace dnEditor.Handlers
             TreeNode node = NewNode(type.GetExtendedName());
             node.Tag = type;
             node.ImageIndex = node.SelectedImageIndex = 6;
+            node.ToolTipText = type.MDToken.FullMetadataTokenString();
 
             return node;
         }
@@ -330,6 +333,7 @@ namespace dnEditor.Handlers
                 method.ReturnType.GetExtendedName()));
             node.Tag = method;
             node.ImageIndex = node.SelectedImageIndex = 30;
+            node.ToolTipText = method.MDToken.FullMetadataTokenString();
 
             return node;
         }
@@ -340,6 +344,7 @@ namespace dnEditor.Handlers
 
             node.Tag = property;
             node.ImageIndex = node.SelectedImageIndex = 43;
+            node.ToolTipText = property.MDToken.FullMetadataTokenString();
 
             if (property.GetMethod != null)
             {
@@ -368,6 +373,7 @@ namespace dnEditor.Handlers
 
             node.Tag = @event;
             node.ImageIndex = node.SelectedImageIndex = 15;
+            node.ToolTipText = @event.MDToken.FullMetadataTokenString();
 
             if (@event.AddMethod != null)
             {
@@ -400,6 +406,7 @@ namespace dnEditor.Handlers
                 NewNode(String.Format("{0}: {1}", field.Name, type));
             node.Tag = field;
             node.ImageIndex = node.SelectedImageIndex = 17;
+            node.ToolTipText = field.MDToken.FullMetadataTokenString();
 
             return node;
         }

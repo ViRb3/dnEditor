@@ -13,9 +13,9 @@ namespace dnEditor.Handlers
     {
         public static void InitializeBody()
         {
-            MainForm.DgBody.Columns["index"].DefaultCellStyle.ForeColor = Color.Blue;
-            MainForm.DgBody.Columns["opcode"].DefaultCellStyle.ForeColor = Color.Green;
-            MainForm.DgBody.DefaultCellStyle.BackColor = ColorRules.DefaultColor;
+            MainForm.DgBody.Columns["index"].DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
+            MainForm.DgBody.Columns["opcode"].DefaultCellStyle.ForeColor = DefaultColors.OpCodeTextColor;
+            MainForm.DgBody.DefaultCellStyle.BackColor = DefaultColors.RowColor;
         }
 
         public static void ReadMethod(MethodDef method)
@@ -52,6 +52,9 @@ namespace dnEditor.Handlers
 
                 for (int j = 0; j < cells.Count; j++)
                 {
+                    if (string.IsNullOrEmpty(cells[j].ToString()))
+                        continue;
+
                     cells[j] = "   " + cells[j];
                 }
 

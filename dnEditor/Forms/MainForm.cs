@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
@@ -386,9 +387,28 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 2 || e.ColumnIndex == 3)
+            if (e.ColumnIndex == 2)
             {
                 NewInstructionEditor(EditInstructionMode.Edit);
+            }
+            else if (e.ColumnIndex == 3)
+            {
+                var instruction = dgBody.Rows[e.RowIndex].Tag as Instruction;
+
+                if (!(instruction.Operand is Instruction))
+                    return;
+
+                foreach (DataGridViewRow row in dgBody.Rows)
+                {
+                    if (row.Tag == instruction.Operand as Instruction)
+                    {
+                        dgBody.FirstDisplayedScrollingRowIndex = row.Index;
+                        dgBody.ClearSelection();
+                        row.Selected = true;
+
+                        return;
+                    }
+                }
             }
         }
 
@@ -396,10 +416,8 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         {
             if (e.Button != MouseButtons.Right) return;
 
-            foreach (DataGridViewRow selectedRow in dgBody.SelectedRows)
-            {
-                if (selectedRow.Index == e.RowIndex) return;
-            }
+            if (dgBody.SelectedRows.Cast<DataGridViewRow>().Any(selectedRow => selectedRow.Index == e.RowIndex))
+                return;
 
             foreach (DataGridViewRow row in dgBody.Rows)
                 row.Selected = false;

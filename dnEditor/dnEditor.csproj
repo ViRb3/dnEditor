@@ -63,6 +63,7 @@
     <Compile Include="Handlers\ResourceHandler.cs" />
     <Compile Include="Handlers\TypeHandler.cs" />
     <Compile Include="Misc\ByteUtils.cs" />
+    <Compile Include="Misc\ColoredRow.cs" />
     <Compile Include="Misc\ColorRules.cs" />
     <Compile Include="Misc\CurrentAssembly.cs" />
     <Compile Include="Forms\EditInstructionForm.cs">
@@ -92,6 +93,7 @@
     <Compile Include="Misc\ITreeView.cs" />
     <Compile Include="Misc\MethodHolder.cs" />
     <Compile Include="Misc\ObfuscationHelper.cs" />
+    <Compile Include="Misc\TokenUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\EditInstructionForm.resx">
