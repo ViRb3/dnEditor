@@ -24,7 +24,7 @@ a ticket. And wait. I will eventually get through it.
  - [ ] Add member icons.
  - [ ] Add resources support.
 
-##Credits:
+##Credits and thanks:
  - WiCKY Hu (Simple Assembly Explorer) for his awesome piece of work. I "borrowed" many ideas and features
  from there, for which I hope I won't have done bad.
  - 0xd4d (dnlib) for the epic library that made this whole project possible. Yes, if that didn't exist,
@@ -35,9 +35,8 @@ a ticket. And wait. I will eventually get through it.
  editor. If you find something similar in dnEditor's design: it's either Reflexil that inspired me
  or Reflexil that made me use the (almost) same design.
  
-####All licenses can be found in the LICENSES.md file in this (the root) folder.
+####All licenses can be found in the LICENSES.md file in the project root directory.
  
 ##Greetings:
- - To you for contributing, reading or simply using this tool.
- - To all of my friends that helped or tested dnEditor and those who motivated me.
- - To all boards, teams and individuals that support this.
+ - To you for contributing, bug reporting or using this tool.
+ - To all boards, teams and individuals that support this work.
