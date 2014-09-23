@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using dnEditor.Handlers;
 using dnEditor.Misc;
@@ -297,6 +298,86 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
 
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
+        private void saveInstructionsToFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!CurrentAssembly.Method.NewMethod.HasBody || !CurrentAssembly.Method.NewMethod.Body.HasInstructions)
+                return;
+            
+            var code = new StringBuilder();
+            code.AppendLine("//===================================");
+            code.AppendLine("//dnlib");
+            code.AppendLine("//===================================");
+            code.AppendLine("");
+            int i = 0;
+
+            if (CurrentAssembly.Method.NewMethod.Body.Variables.Count > 0)
+            {
+                code.AppendLine(string.Format("List<Local> locals = new List<Local>();"));
+
+                foreach (Local local in CurrentAssembly.Method.NewMethod.Body.Variables)
+                {
+                    code.AppendLine(string.Format("locals.Add(new Local(\"{0}\"));", local.Type.FullName.Replace("\"", "``")));
+                    i++;
+                }
+
+                code.AppendLine("");
+                code.AppendLine("");
+                i = 0;
+            }
+
+            code.AppendLine(string.Format("List<Instruction> instructions = new List<Instruction>();"));
+
+            foreach (Instruction instruction in CurrentAssembly.Method.NewMethod.Body.Instructions)
+            {
+                OpCode opCode = Functions.OpCodes.First(o => o.Name == instruction.OpCode.Name);
+
+                if (instruction.Operand != null)
+                    code.AppendLine(string.Format("instructions.Add(OpCodes.{0}.ToInstruction(\"{1}\"));", opCode.Code,
+                        instruction.Operand.ToString().Replace("\"", "``")));
+                else
+                    code.AppendLine(string.Format("instructions.Add(OpCodes.{1}.ToInstruction());", i, opCode.Code));
+
+                i++;
+            }
+
+            code.AppendLine("");
+            code.AppendLine("");
+            code.AppendLine("");
+            code.AppendLine("//===================================");
+            code.AppendLine("//System.Reflection");
+            code.AppendLine("//===================================");
+            code.AppendLine("");
+
+            if (CurrentAssembly.Method.NewMethod.Body.Variables.Count > 0)
+            {
+                foreach (Local local in CurrentAssembly.Method.NewMethod.Body.Variables)
+                {
+                    code.AppendLine(string.Format("il.DeclareLocal(\"{0}\"));", local.Type.FullName.Replace("\"", "``")));
+                    i++;
+                }
+
+                code.AppendLine("");
+                code.AppendLine("");
+                i = 0;
+            }
+            
+            foreach (Instruction instruction in CurrentAssembly.Method.NewMethod.Body.Instructions)
+            {
+                OpCode opCode = Functions.OpCodes.First(o => o.Name == instruction.OpCode.Name);
+
+                if (instruction.Operand != null)
+                    code.AppendLine(string.Format("il.Emit(OpCodes.{0}, \"{1}\");", opCode.Code,
+                        instruction.Operand.ToString().Replace("\"", "``")));
+                else
+                    code.AppendLine(string.Format("il.Emit(OpCodes.{0});", opCode.Code));
+
+                i++;
+            }
+
+            File.WriteAllText("instructions.txt", code.ToString());
+            MessageBox.Show("Instructions saved to \"instructions.txt\"!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #endregion InstructionMenuStrip
