@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using dnEditor.Forms;
 using dnEditor.Handlers;
 using dnEditor.Properties;
 using dnlib.DotNet;
@@ -147,11 +145,15 @@ namespace dnEditor.Misc
             string output = "";
             Instruction currentInstruction = instructions[index];
 
-            while (currentInstruction.Operand is Instruction && (currentInstruction.Operand as Instruction) != currentInstruction)
+            int repeats = 0;
+            while (currentInstruction.Operand is Instruction &&
+                   (currentInstruction.Operand as Instruction) != currentInstruction && repeats < 5)
             {
                 var newInstruction = currentInstruction.Operand as Instruction;
                 output += String.Format(" -> {0}", FormatInstruction(instructions, instructions.IndexOf(newInstruction)));
                 currentInstruction = newInstruction;
+
+                repeats++;
             }
 
             return output;
@@ -258,7 +260,8 @@ namespace dnEditor.Misc
             return null;
         }
 
-        public static bool OpenFile(TreeViewHandler treeViewHandler, string file, ref CurrentAssembly currentAssembly, bool clear = false)
+        public static bool OpenFile(TreeViewHandler treeViewHandler, string file, ref CurrentAssembly currentAssembly,
+            bool clear = false)
         {
             if (string.IsNullOrEmpty(file))
                 throw new ArgumentException("No path provided!");
