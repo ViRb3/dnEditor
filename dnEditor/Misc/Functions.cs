@@ -178,14 +178,12 @@ namespace dnEditor.Misc
                 case "System.Int32":
                 case "System.Int16":
                 case "System.Int64":
-                    long l = Convert.ToInt64(operand);
-                    operandText = l < 100 ? l.ToString() : String.Format("0x{0:x}", l);
+                    operandText = operand.ToString();
                     break;
                 case "System.UInt32":
                 case "System.UInt16":
                 case "System.UInt64":
-                    ulong ul = Convert.ToUInt64(operand);
-                    operandText = ul < 100 ? ul.ToString() : String.Format("0x{0:x}", ul);
+                    operandText = operand.ToString();
                     break;
                 case "System.Decimal":
                     operandText = operand.ToString();
