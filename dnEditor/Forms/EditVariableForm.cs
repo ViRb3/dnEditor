@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Forms;
 using dnEditor.Misc;
 using dnlib.DotNet;
@@ -73,7 +72,9 @@ namespace dnEditor.Forms
             if (variable.Type == null)
                 return;
 
-            while (variable.Type.Next != null && !variable.Type.Next.IsClassSig)
+            while (variable.Type.Next != null &&
+                   ((variable.Type.IsArray || variable.Type.IsByRef || variable.Type.IsPointer ||
+                     variable.Type.IsSZArray)))
             {
                 variable.Type = variable.Type.Next;
             }

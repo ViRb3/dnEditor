@@ -672,11 +672,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         {
             if (CurrentAssembly == null || CurrentAssembly.Method.NewMethod == null)
             {
-                emptyBodyMenu.Items[0].Enabled = false;
+                emptyVariableMenu.Items[0].Enabled = false;
                 return;
             }
 
-            emptyBodyMenu.Items[0].Enabled = true;
+            emptyVariableMenu.Items[0].Enabled = true;
         }
 
         #endregion EmptyInstructionsMenu        
