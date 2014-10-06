@@ -23,6 +23,15 @@ namespace dnEditor.Forms
             EditInstructionForm.SelectedReference = null;
         }
 
+        private void btnSelect_Click(object sender, EventArgs e)
+        {
+            //TODO: Add detection to remove useless assignment
+            EditInstructionForm.SelectedReference = treeView1.SelectedNode.Tag;
+            EditVariableForm.SelectedReference = treeView1.SelectedNode.Tag;
+
+            Close();
+        }
+
         #region TreeView Events
 
         public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -80,12 +89,6 @@ namespace dnEditor.Forms
         private void PickReferenceForm_Shown(object sender, EventArgs e)
         {
             Functions.OpenFile(_treeViewHandler, _currentAssembly.Path, ref _currentAssembly);
-        }
-
-        private void btnSelect_Click(object sender, EventArgs e)
-        {
-            EditInstructionForm.SelectedReference = treeView1.SelectedNode.Tag;
-            Close();
         }
 
         #endregion TreeView Events

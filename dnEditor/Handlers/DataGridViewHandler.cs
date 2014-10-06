@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using dnEditor.Forms;
@@ -11,15 +10,28 @@ namespace dnEditor.Handlers
 {
     public static class DataGridViewHandler
     {
+        private static int _currentRowIndex;
+        private static MethodDef _currentMethod;
         public static void InitializeBody()
         {
-            MainForm.DgBody.Columns["index"].DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
-            MainForm.DgBody.Columns["opcode"].DefaultCellStyle.ForeColor = DefaultColors.OpCodeTextColor;
+            MainForm.DgBody.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
+            MainForm.DgBody.Columns.GetColumnFromText("OpCode").DefaultCellStyle.ForeColor = DefaultColors.OpCodeTextColor;
             MainForm.DgBody.DefaultCellStyle.BackColor = DefaultColors.RowColor;
+
+            MainForm.DgVariables.DefaultCellStyle.BackColor = DefaultColors.RowColor;
+            MainForm.DgVariables.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
         }
 
         public static void ReadMethod(MethodDef method)
         {
+            if (_currentMethod == method)
+                _currentRowIndex = MainForm.DgBody.FirstDisplayedScrollingRowIndex;
+            else
+            {
+                _currentMethod = method;
+                _currentRowIndex = 0;
+            }
+
             MainForm.DgBody.Rows.Clear();
             MainForm.CurrentAssembly.Method.NewMethod = method;
 
@@ -27,6 +39,8 @@ namespace dnEditor.Handlers
 
             int i = 0;
             var rows = new List<DataGridViewRow>();
+
+            VariableHandler.ClearVariables();
 
             foreach (Instruction instruction in method.Body.Instructions)
             {
@@ -52,21 +66,17 @@ namespace dnEditor.Handlers
 
                 for (int j = 0; j < cells.Count; j++)
                 {
-                    if (string.IsNullOrEmpty(cells[j].ToString()))
+                    if (cells[j] == null || string.IsNullOrWhiteSpace(cells[j].ToString()))
                         continue;
 
-                    cells[j] = "   " + cells[j];
+                    cells[j] = string.Format("   {0}", cells[j]);
                 }
 
                 var row = new DataGridViewRow();
 
-                for (int j = 0; j < 4; j++)
-                {
-                    row.Cells.Add(new DataGridViewTextBoxCell());
-                }
-
                 for (int j = 0; j < cells.Count; j++)
                 {
+                    row.Cells.Add(new DataGridViewTextBoxCell());
                     row.Cells[j].Value = cells[j];
                 }
 
@@ -82,15 +92,24 @@ namespace dnEditor.Handlers
                 row.Tag = instruction;
                 row.Height = 16;
 
-                row.ContextMenuStrip = MainForm.InsructionMenuStrip;
+                row.ContextMenuStrip = MainForm.InstructionMenuStrip;
 
                 rows.Add(row);
             }
 
             MainForm.DgBody.Rows.AddRange(rows.ToArray());
 
+            if (_currentRowIndex > 0)
+                if (MainForm.DgBody.Rows.Count < _currentRowIndex)
+                    MainForm.DgBody.FirstDisplayedScrollingRowIndex = MainForm.DgBody.RowCount - 1;
+                else
+                    MainForm.DgBody.FirstDisplayedScrollingRowIndex = _currentRowIndex;
+
+
             ColorRules.MarkBlocks(MainForm.DgBody);
             ColorRules.ApplyColors(MainForm.DgBody);
+
+            VariableHandler.ReadVariables(method);
         }
 
         public static void ClearRows()
@@ -108,6 +127,55 @@ namespace dnEditor.Handlers
                 MainForm.DgBody.FirstDisplayedScrollingRowIndex = i;
                 MainForm.DgBody.Rows[i].Selected = true;
             }
+        }
+    }
+
+    static class VariableHandler
+    {
+        public static void ReadVariables(MethodDef method)
+        {
+            if (method.Body.HasVariables)
+            {
+                int i = 0;
+                var rows = new List<DataGridViewRow>();
+
+                foreach (Local local in method.Body.Variables)
+                {
+                    var cells = new List<object>();
+                    cells.Add(i++);
+                    cells.Add(local.Name);
+                    cells.Add(local.Type.GetFullName());
+
+                    for (int j = 0; j < cells.Count; j++)
+                    {
+                        if (cells[j] == null || string.IsNullOrWhiteSpace(cells[j].ToString()))
+                            continue;
+
+                        cells[j] = string.Format("   {0}", cells[j]);
+                    }
+
+                    var row = new DataGridViewRow();
+
+                    for (int j = 0; j < cells.Count; j++)
+                    {
+                        row.Cells.Add(new DataGridViewTextBoxCell());
+                        row.Cells[j].Value = cells[j];
+                    }
+
+                    row.Tag = local;
+                    row.Height = 16;
+
+                    rows.Add(row);
+                    row.ContextMenuStrip = MainForm.VariableMenu;
+                }
+
+                MainForm.DgVariables.Rows.AddRange(rows.ToArray());
+            }
+        }
+
+        public static void ClearVariables()
+        {
+            MainForm.DgVariables.Rows.Clear();
         }
     }
 }

@@ -236,6 +236,11 @@ namespace dnEditor.Misc
             return comboBox.Items.Cast<object>().First(item => item.ToString() == text);
         }
 
+        public static void SelectItemByText(this ComboBox comboBox, string text)
+        {
+            comboBox.SelectedItem = comboBox.GetItemByText(text);
+        }
+
         public static bool IsExpandable(this TypeDef type)
         {
             return (type.HasNestedTypes || type.HasMethods || type.HasEvents || type.HasFields || type.HasProperties);
@@ -279,6 +284,11 @@ namespace dnEditor.Misc
                 node = node.Parent;
 
             return node;
+        }
+
+        public static DataGridViewColumn GetColumnFromText(this DataGridViewColumnCollection columns, string text)
+        {
+            return columns.Cast<DataGridViewColumn>().First(t => t.HeaderText == text);
         }
     }
 }

@@ -15,18 +15,28 @@ namespace dnEditor.Forms
     public partial class MainForm : Form, ITreeView, ITreeMenu
     {
         public static DataGridView DgBody;
+        public static DataGridView DgVariables;
         public static CurrentAssembly CurrentAssembly;
+
         public static int EditedInstructionIndex;
+        public static int EditedVariableIndex;
+
         public static Instruction NewInstruction;
+        public static Local NewVariable;
+
         public static TreeView TreeView;
         public static ToolStrip ToolStrip;
-        public static ContextMenuStrip InsructionMenuStrip;
+        public static ContextMenuStrip InstructionMenuStrip;
         public static ContextMenuStrip TreeMenuStrip;
+        public static ContextMenuStrip VariableMenu;
 
         private readonly List<Instruction> _copiedInstructions = new List<Instruction>();
+        private readonly List<Local> _copiedVariables = new List<Local>();
 
         private readonly TreeViewHandler _treeViewHandler;
+
         private EditInstructionMode _editInstructionMode;
+        private EditVariableMode _editVariableMode;
 
         public MainForm()
         {
@@ -34,9 +44,14 @@ namespace dnEditor.Forms
             _treeViewHandler = new TreeViewHandler(treeView1, treeMenu);
 
             DgBody = dgBody;
+            DgVariables = dgVariables;
+
             TreeView = treeView1;
             ToolStrip = toolStrip1;
-            InsructionMenuStrip = instructionMenu;
+
+            InstructionMenuStrip = instructionMenu;
+            VariableMenu = variableMenu;
+
             TreeMenuStrip = treeMenu;
             txtMagicRegex.Text = Settings.Default.MagicRegex;
 
@@ -77,6 +92,32 @@ namespace dnEditor.Forms
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
         }
 
+        private void EditVariableForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (NewVariable == null) return;
+
+            if (!CurrentAssembly.Method.NewMethod.HasBody)
+                CurrentAssembly.Method.NewMethod.Body = new CilBody();
+
+            switch (_editVariableMode)
+            {
+                case EditVariableMode.Add:
+                    CurrentAssembly.Method.NewMethod.Body.Variables.Add(NewVariable);
+                    break;
+                case EditVariableMode.Edit:
+                    CurrentAssembly.Method.NewMethod.Body.Variables[EditedVariableIndex] = NewVariable;
+                    break;
+                case EditVariableMode.InsertAfter:
+                    CurrentAssembly.Method.NewMethod.Body.Variables.Insert(EditedVariableIndex + 1, NewVariable);
+                    break;
+                case EditVariableMode.InsertBefore:
+                    CurrentAssembly.Method.NewMethod.Body.Variables.Insert(EditedVariableIndex, NewVariable);
+                    break;
+            }
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
         private void NewInstructionEditor(EditInstructionMode mode)
         {
             NewInstruction = null;
@@ -98,6 +139,31 @@ namespace dnEditor.Forms
             {
                 var form = new EditInstructionForm();
                 form.FormClosed += EditInstructionForm_FormClosed;
+                form.ShowDialog();
+            }
+        }
+
+        private void NewVariableEditor(EditVariableMode mode)
+        {
+            NewVariable = null;
+            _editVariableMode = mode;
+            DataGridViewSelectedRowCollection selectedRows = dgVariables.SelectedRows;
+
+            if (selectedRows.Count > 0)
+                EditedVariableIndex = selectedRows[0].Index;
+
+            if (mode == EditVariableMode.Edit)
+            {
+                var form =
+                    new EditVariableForm(
+                        CurrentAssembly.Method.NewMethod.Body.Variables[dgVariables.SelectedRows[0].Index]);
+                form.FormClosed += EditVariableForm_FormClosed;
+                form.ShowDialog();
+            }
+            else
+            {
+                var form = new EditVariableForm();
+                form.FormClosed += EditVariableForm_FormClosed;
                 form.ShowDialog();
             }
         }
@@ -382,6 +448,77 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #endregion InstructionMenuStrip
 
+        #region VariableMenuStrip
+
+        private void editVariableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewVariableEditor(EditVariableMode.Edit);
+        }
+
+        private void insertVariableBeforeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewVariableEditor(EditVariableMode.InsertBefore);
+        }
+
+        private void insertVariableAfterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewVariableEditor(EditVariableMode.InsertAfter);
+        }
+
+        private void cutVariableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _copiedVariables.Clear();
+
+            foreach (DataGridViewRow selectedRow in dgVariables.SelectedRows)
+            {
+                _copiedVariables.Add(selectedRow.Tag as Local);
+                CurrentAssembly.Method.NewMethod.Body.Variables.RemoveAt(selectedRow.Index);
+            }
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
+        private void copyVariableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _copiedVariables.Clear();
+
+            foreach (DataGridViewRow selectedRow in dgVariables.SelectedRows)
+            {
+                _copiedVariables.Add(selectedRow.Tag as Local);
+            }
+        }
+
+        private void pasteVariableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int variableIndex = dgVariables.SelectedRows[0].Index + 1;
+
+            foreach (Local variable in _copiedVariables)
+            {
+                var newVariable = new Local(variable.Type);
+
+                if (variable.Name != null)
+                    newVariable.Name = variable.Name;
+
+                CurrentAssembly.Method.NewMethod.Body.Variables.Insert(variableIndex, newVariable);
+            }
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
+        private void deleteVariableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataGridViewSelectedRowCollection collection = dgVariables.SelectedRows;
+
+            foreach (DataGridViewRow row in collection)
+            {
+                CurrentAssembly.Method.NewMethod.Body.Variables.Remove(row.Tag as Local);
+            }
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
+        #endregion VariableMenuStrip
+
         #region TreeMenuStrip
 
         public void treeMenu_Opened(object sender, EventArgs e)
@@ -514,6 +651,34 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             }
         }
 
+        private void dgVariables_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                emptyVariableMenu.Show();
+            }
+        }
+
         #endregion DataGridView Events 
+
+        #region EmptyVariablesMenu
+
+        private void createNewVariableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewVariableEditor(EditVariableMode.Add);
+        }
+
+        private void createNewVariableToolStripMenuItem_Opened(object sender, EventArgs e)
+        {
+            if (CurrentAssembly == null || CurrentAssembly.Method.NewMethod == null)
+            {
+                emptyVariableMenu.Items[0].Enabled = false;
+                return;
+            }
+
+            emptyVariableMenu.Items[0].Enabled = true;
+        }
+
+        #endregion EmptyInstructionsMenu        
     }
 }
