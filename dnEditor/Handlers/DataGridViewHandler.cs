@@ -10,6 +10,8 @@ namespace dnEditor.Handlers
 {
     public static class DataGridViewHandler
     {
+        private static int _currentRowIndex;
+        private static MethodDef _currentMethod;
         public static void InitializeBody()
         {
             MainForm.DgBody.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
@@ -22,6 +24,14 @@ namespace dnEditor.Handlers
 
         public static void ReadMethod(MethodDef method)
         {
+            if (_currentMethod == method)
+                _currentRowIndex = MainForm.DgBody.FirstDisplayedScrollingRowIndex;
+            else
+            {
+                _currentMethod = method;
+                _currentRowIndex = 0;
+            }
+
             MainForm.DgBody.Rows.Clear();
             MainForm.CurrentAssembly.Method.NewMethod = method;
 
@@ -88,6 +98,13 @@ namespace dnEditor.Handlers
             }
 
             MainForm.DgBody.Rows.AddRange(rows.ToArray());
+
+            if (_currentRowIndex > 0)
+                if (MainForm.DgBody.Rows.Count < _currentRowIndex)
+                    MainForm.DgBody.FirstDisplayedScrollingRowIndex = MainForm.DgBody.RowCount - 1;
+                else
+                    MainForm.DgBody.FirstDisplayedScrollingRowIndex = _currentRowIndex;
+
 
             ColorRules.MarkBlocks(MainForm.DgBody);
             ColorRules.ApplyColors(MainForm.DgBody);
