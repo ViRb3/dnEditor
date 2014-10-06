@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\EditExceptionHandlerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditExceptionHandlerForm.Designer.cs">
+      <DependentUpon>EditExceptionHandlerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EditVariableForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,6 +108,9 @@
     <Compile Include="Misc\TokenUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\EditExceptionHandlerForm.resx">
+      <DependentUpon>EditExceptionHandlerForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditInstructionForm.resx">
       <DependentUpon>EditInstructionForm.cs</DependentUpon>
     </EmbeddedResource>

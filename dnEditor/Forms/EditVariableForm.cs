@@ -105,7 +105,7 @@ namespace dnEditor.Forms
             Close();
         }
 
-        private void btnSelectOperand_Click(object sender, EventArgs e)
+        private void btnVariableType_Click(object sender, EventArgs e)
         {
             cbVariableType.Enabled = false;
             cbVariableType.DropDownStyle = ComboBoxStyle.Simple;

@@ -5,6 +5,7 @@ using dnEditor.Forms;
 using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using dnlib.Utils;
 
 namespace dnEditor.Handlers
 {
@@ -12,14 +13,17 @@ namespace dnEditor.Handlers
     {
         private static int _currentRowIndex;
         private static MethodDef _currentMethod;
+
         public static void InitializeBody()
         {
             MainForm.DgBody.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
-            MainForm.DgBody.Columns.GetColumnFromText("OpCode").DefaultCellStyle.ForeColor = DefaultColors.OpCodeTextColor;
+            MainForm.DgBody.Columns.GetColumnFromText("OpCode").DefaultCellStyle.ForeColor =
+                DefaultColors.OpCodeTextColor;
             MainForm.DgBody.DefaultCellStyle.BackColor = DefaultColors.RowColor;
 
             MainForm.DgVariables.DefaultCellStyle.BackColor = DefaultColors.RowColor;
-            MainForm.DgVariables.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor = DefaultColors.IndexTextColor;
+            MainForm.DgVariables.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor =
+                DefaultColors.IndexTextColor;
         }
 
         public static void ReadMethod(MethodDef method)
@@ -110,6 +114,7 @@ namespace dnEditor.Handlers
             ColorRules.ApplyColors(MainForm.DgBody);
 
             VariableHandler.ReadVariables(method);
+            ExceptionHandler.ReadExceptionHandlers(method);
         }
 
         public static void ClearRows()
@@ -130,7 +135,7 @@ namespace dnEditor.Handlers
         }
     }
 
-    static class VariableHandler
+    internal static class VariableHandler
     {
         public static void ReadVariables(MethodDef method)
         {
@@ -176,6 +181,97 @@ namespace dnEditor.Handlers
         public static void ClearVariables()
         {
             MainForm.DgVariables.Rows.Clear();
+        }
+    }
+
+    internal static class ExceptionHandler
+    {
+        public static void ReadExceptionHandlers(MethodDef method)
+        {
+            if (method.Body.HasExceptionHandlers)
+            {
+                int i = 0;
+                var rows = new List<DataGridViewRow>();
+
+                foreach (dnlib.DotNet.Emit.ExceptionHandler exceptionHandler in method.Body.ExceptionHandlers)
+                {
+                    var cells = new List<object>();
+
+                    cells.Add(string.Empty); // Column 1
+                    cells.Add(string.Format(".try{0}", i++)); // Column 2
+
+                    int tryStart = method.Body.Instructions.IndexOf(exceptionHandler.TryStart);
+                    int tryEnd;
+
+                    if (exceptionHandler.TryEnd != null)
+                        tryEnd = method.Body.Instructions.IndexOf(exceptionHandler.TryEnd);
+                    else
+                        tryEnd = method.Body.Instructions.Count - 1;
+
+                    cells.Add(string.Format("{0} to {1}", tryStart, tryEnd));
+                        // Column 3
+
+                    int handlerStart = method.Body.Instructions.IndexOf(exceptionHandler.HandlerStart);
+                    int handlerEnd;
+
+                    if (exceptionHandler.HandlerEnd != null)
+                        handlerEnd = method.Body.Instructions.IndexOf(exceptionHandler.HandlerEnd);
+                    else
+                        handlerEnd = method.Body.Instructions.Count - 1;
+
+                    switch (exceptionHandler.HandlerType)
+                    {
+                        case ExceptionHandlerType.Catch:
+                            cells.Add(string.Format("Catch handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+
+                            if (exceptionHandler.CatchType != null)
+                                cells[3] += string.Format(" [{0}]", exceptionHandler.CatchType.FullName);
+
+                            break;
+                            case ExceptionHandlerType.Duplicated:
+                            cells.Add(string.Format("Duplicated handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+                            break;
+                            case ExceptionHandlerType.Fault:
+                            cells.Add(string.Format("Fault handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+                            break;
+                            case ExceptionHandlerType.Filter:
+                            cells.Add(string.Format("Filter handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+                            break;
+                            case ExceptionHandlerType.Finally:
+                            cells.Add(string.Format("Finally handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+                            break;
+                    }
+
+                    #region Application
+
+                    for (int j = 0; j < cells.Count; j++)
+                    {
+                        if (cells[j] == null || string.IsNullOrWhiteSpace(cells[j].ToString()))
+                            continue;
+
+                        cells[j] = string.Format("   {0}", cells[j]);
+                    }
+
+                    var row = new DataGridViewRow();
+
+                    for (int j = 0; j < cells.Count; j++)
+                    {
+                        row.Cells.Add(new DataGridViewTextBoxCell());
+                        row.Cells[j].Value = cells[j];
+                    }
+
+                    #endregion Application
+
+                    row.Tag = exceptionHandler;
+                    row.Height = 16;
+
+                    row.ContextMenuStrip = MainForm.ExceptionHandlerMenu;
+
+                    rows.Add(row);
+                }
+
+                MainForm.DgBody.Rows.AddRange(rows.ToArray());
+            }
         }
     }
 }

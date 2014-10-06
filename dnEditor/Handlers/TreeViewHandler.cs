@@ -125,7 +125,7 @@ namespace dnEditor.Handlers
             TreeNode file = NewFile(currentAssembly, path); // AssemblyDef
             file.AddTo(CurrentTreeView);
 
-            foreach (var moduleDef in currentAssembly.Modules)
+            foreach (var moduleDef in currentAssembly.Modules.OrderBy(m => m.Name))
             {
                 var module = (ModuleDefMD) moduleDef;
                 NameSpaceList.Clear();
@@ -138,7 +138,7 @@ namespace dnEditor.Handlers
 
                 if (module.Types.Any())
                 {
-                    foreach (TypeDef type in module.Types)
+                    foreach (TypeDef type in module.Types.OrderBy(t => t.Name))
                     {
                         new TypeHandler(this).HandleType(type, false);
                     }
@@ -148,7 +148,7 @@ namespace dnEditor.Handlers
 
                 if (module.GetAssemblyRefs().Any())
                 {
-                    new ReferenceHandler(this).HandleReferences(module.GetAssemblyRefs());
+                    new ReferenceHandler(this).HandleReferences(module.GetAssemblyRefs().OrderBy(a => a.Name));
                 }
             }
 

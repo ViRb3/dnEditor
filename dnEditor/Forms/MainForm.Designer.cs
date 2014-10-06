@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.dgBody = new System.Windows.Forms.DataGridView();
@@ -41,7 +41,8 @@
             this.opcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.operand = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.emptyBodyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createNewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createNewInstructionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createNewExceptionHandlerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -50,6 +51,8 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.emptyVariableMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createNewVariableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dgDetails = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -100,8 +103,9 @@
             this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
-            this.emptyVariableMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createNewVariableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exceptionHandlerMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).BeginInit();
             this.emptyBodyMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -112,13 +116,14 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgVariables)).BeginInit();
+            this.emptyVariableMenu.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgDetails)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.instructionMenu.SuspendLayout();
             this.treeMenu.SuspendLayout();
             this.variableMenu.SuspendLayout();
-            this.emptyVariableMenu.SuspendLayout();
+            this.exceptionHandlerMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -228,14 +233,14 @@
             this.opcode,
             this.operand});
             this.dgBody.ContextMenuStrip = this.emptyBodyMenu;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgBody.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgBody.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgBody.Location = new System.Drawing.Point(0, 0);
             this.dgBody.Name = "dgBody";
             this.dgBody.ReadOnly = true;
@@ -286,17 +291,25 @@
             // emptyBodyMenu
             // 
             this.emptyBodyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createNewToolStripMenuItem});
+            this.createNewInstructionToolStripMenuItem,
+            this.createNewExceptionHandlerToolStripMenuItem});
             this.emptyBodyMenu.Name = "emptyBodyMenu";
-            this.emptyBodyMenu.Size = new System.Drawing.Size(134, 26);
+            this.emptyBodyMenu.Size = new System.Drawing.Size(231, 48);
             this.emptyBodyMenu.Opened += new System.EventHandler(this.emptyBodyMenu_Opened);
             // 
-            // createNewToolStripMenuItem
+            // createNewInstructionToolStripMenuItem
             // 
-            this.createNewToolStripMenuItem.Name = "createNewToolStripMenuItem";
-            this.createNewToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.createNewToolStripMenuItem.Text = "Create new";
-            this.createNewToolStripMenuItem.Click += new System.EventHandler(this.createNewToolStripMenuItem_Click);
+            this.createNewInstructionToolStripMenuItem.Name = "createNewInstructionToolStripMenuItem";
+            this.createNewInstructionToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.createNewInstructionToolStripMenuItem.Text = "Create new instruction";
+            this.createNewInstructionToolStripMenuItem.Click += new System.EventHandler(this.createNewInstructionToolStripMenuItem_Click);
+            // 
+            // createNewExceptionHandlerToolStripMenuItem
+            // 
+            this.createNewExceptionHandlerToolStripMenuItem.Name = "createNewExceptionHandlerToolStripMenuItem";
+            this.createNewExceptionHandlerToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.createNewExceptionHandlerToolStripMenuItem.Text = "Create new exception handler";
+            this.createNewExceptionHandlerToolStripMenuItem.Click += new System.EventHandler(this.createNewExceptionHandlerToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -371,14 +384,14 @@
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3});
             this.dgVariables.ContextMenuStrip = this.emptyVariableMenu;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgVariables.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgVariables.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgVariables.Location = new System.Drawing.Point(0, 0);
             this.dgVariables.Name = "dgVariables";
             this.dgVariables.ReadOnly = true;
@@ -415,6 +428,21 @@
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
             this.dataGridViewTextBoxColumn3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
+            // emptyVariableMenu
+            // 
+            this.emptyVariableMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createNewVariableToolStripMenuItem});
+            this.emptyVariableMenu.Name = "emptyBodyMenu";
+            this.emptyVariableMenu.Size = new System.Drawing.Size(134, 26);
+            this.emptyVariableMenu.Opened += new System.EventHandler(this.createNewVariableToolStripMenuItem_Opened);
+            // 
+            // createNewVariableToolStripMenuItem
+            // 
+            this.createNewVariableToolStripMenuItem.Name = "createNewVariableToolStripMenuItem";
+            this.createNewVariableToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.createNewVariableToolStripMenuItem.Text = "Create new";
+            this.createNewVariableToolStripMenuItem.Click += new System.EventHandler(this.createNewVariableToolStripMenuItem_Click);
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.dgDetails);
@@ -443,14 +471,14 @@
             this.dataGridViewTextBoxColumn10,
             this.dataGridViewTextBoxColumn11,
             this.dataGridViewTextBoxColumn12});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgDetails.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgDetails.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgDetails.Location = new System.Drawing.Point(0, 0);
             this.dgDetails.Name = "dgDetails";
             this.dgDetails.ReadOnly = true;
@@ -1000,20 +1028,27 @@
             this.toolStripMenuItem8.Text = "Remove";
             this.toolStripMenuItem8.Click += new System.EventHandler(this.deleteVariableToolStripMenuItem_Click);
             // 
-            // emptyVariableMenu
+            // exceptionHandlerMenu
             // 
-            this.emptyVariableMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createNewVariableToolStripMenuItem});
-            this.emptyVariableMenu.Name = "emptyBodyMenu";
-            this.emptyVariableMenu.Size = new System.Drawing.Size(134, 26);
-            this.emptyVariableMenu.Opened += new System.EventHandler(this.createNewVariableToolStripMenuItem_Opened);
+            this.exceptionHandlerMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editToolStripMenuItem1,
+            this.removeToolStripMenuItem1});
+            this.exceptionHandlerMenu.Name = "exceptionHandlerMenu";
+            this.exceptionHandlerMenu.Size = new System.Drawing.Size(118, 48);
             // 
-            // createNewVariableToolStripMenuItem
+            // editToolStripMenuItem1
             // 
-            this.createNewVariableToolStripMenuItem.Name = "createNewVariableToolStripMenuItem";
-            this.createNewVariableToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.createNewVariableToolStripMenuItem.Text = "Create new";
-            this.createNewVariableToolStripMenuItem.Click += new System.EventHandler(this.createNewVariableToolStripMenuItem_Click);
+            this.editToolStripMenuItem1.Name = "editToolStripMenuItem1";
+            this.editToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.editToolStripMenuItem1.Text = "Edit";
+            this.editToolStripMenuItem1.Click += new System.EventHandler(this.editToolStripMenuItem1_Click);
+            // 
+            // removeToolStripMenuItem1
+            // 
+            this.removeToolStripMenuItem1.Name = "removeToolStripMenuItem1";
+            this.removeToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.removeToolStripMenuItem1.Text = "Remove";
+            this.removeToolStripMenuItem1.Click += new System.EventHandler(this.removeToolStripMenuItem1_Click);
             // 
             // MainForm
             // 
@@ -1023,7 +1058,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Name = "MainForm";
-            this.Text = "dnEditor v0.66 Beta ~ViRb3";
+            this.Text = "dnEditor v0.67 Beta ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
             this.emptyBodyMenu.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -1034,6 +1069,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgVariables)).EndInit();
+            this.emptyVariableMenu.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgDetails)).EndInit();
             this.toolStrip1.ResumeLayout(false);
@@ -1041,7 +1077,7 @@
             this.instructionMenu.ResumeLayout(false);
             this.treeMenu.ResumeLayout(false);
             this.variableMenu.ResumeLayout(false);
-            this.emptyVariableMenu.ResumeLayout(false);
+            this.exceptionHandlerMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1090,7 +1126,7 @@
         private System.Windows.Forms.ToolStripLabel lblMagicRegex;
         private System.Windows.Forms.ToolStripTextBox txtMagicRegex;
         private System.Windows.Forms.ContextMenuStrip emptyBodyMenu;
-        private System.Windows.Forms.ToolStripMenuItem createNewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createNewInstructionToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem saveInstructionsToFileToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl1;
@@ -1118,6 +1154,10 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
         private System.Windows.Forms.ContextMenuStrip emptyVariableMenu;
         private System.Windows.Forms.ToolStripMenuItem createNewVariableToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip exceptionHandlerMenu;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem createNewExceptionHandlerToolStripMenuItem;
     }
 }
 

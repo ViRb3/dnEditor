@@ -20,14 +20,19 @@ namespace dnEditor.Forms
             treeView1.AllowDrop = true;
 
             _reference = reference;
+
+            //TODO: Add detection to avoid useless assignment
             EditInstructionForm.SelectedReference = null;
+            EditVariableForm.SelectedReference = null;
+            EditExceptionHandlerForm.SelectedReference = null;
         }
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            //TODO: Add detection to remove useless assignment
+            //TODO: Add detection to remove avoid assignment
             EditInstructionForm.SelectedReference = treeView1.SelectedNode.Tag;
             EditVariableForm.SelectedReference = treeView1.SelectedNode.Tag;
+            EditExceptionHandlerForm.SelectedReference = treeView1.SelectedNode.Tag;
 
             Close();
         }

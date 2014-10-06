@@ -20,15 +20,18 @@ namespace dnEditor.Forms
 
         public static int EditedInstructionIndex;
         public static int EditedVariableIndex;
+        public static int EditedExceptionHandlerIndex;
 
         public static Instruction NewInstruction;
         public static Local NewVariable;
+        public static dnlib.DotNet.Emit.ExceptionHandler NewExceptionHandler;
 
         public static TreeView TreeView;
         public static ToolStrip ToolStrip;
         public static ContextMenuStrip InstructionMenuStrip;
         public static ContextMenuStrip TreeMenuStrip;
         public static ContextMenuStrip VariableMenu;
+        public static ContextMenuStrip ExceptionHandlerMenu;
 
         private readonly List<Instruction> _copiedInstructions = new List<Instruction>();
         private readonly List<Local> _copiedVariables = new List<Local>();
@@ -37,6 +40,7 @@ namespace dnEditor.Forms
 
         private EditInstructionMode _editInstructionMode;
         private EditVariableMode _editVariableMode;
+        private EditExceptionHandlerMode _editExceptionHandlerMode;
 
         public MainForm()
         {
@@ -51,6 +55,7 @@ namespace dnEditor.Forms
 
             InstructionMenuStrip = instructionMenu;
             VariableMenu = variableMenu;
+            ExceptionHandlerMenu = exceptionHandlerMenu;
 
             TreeMenuStrip = treeMenu;
             txtMagicRegex.Text = Settings.Default.MagicRegex;
@@ -118,6 +123,27 @@ namespace dnEditor.Forms
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
         }
 
+        private void EditExceptionHandlerForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (NewExceptionHandler == null) return;
+
+            if (!CurrentAssembly.Method.NewMethod.HasBody)
+                CurrentAssembly.Method.NewMethod.Body = new CilBody();
+
+            switch (_editExceptionHandlerMode)
+            {
+                case EditExceptionHandlerMode.Add:
+                    CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Add(NewExceptionHandler);
+                    break;
+                case EditExceptionHandlerMode.Edit:
+                    CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[EditedExceptionHandlerIndex] = NewExceptionHandler;
+                    break;
+            }
+
+            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
         private void NewInstructionEditor(EditInstructionMode mode)
         {
             NewInstruction = null;
@@ -164,6 +190,32 @@ namespace dnEditor.Forms
             {
                 var form = new EditVariableForm();
                 form.FormClosed += EditVariableForm_FormClosed;
+                form.ShowDialog();
+            }
+        }
+
+        private void NewExceptionHandlerEditor(EditExceptionHandlerMode mode)
+        {
+            NewExceptionHandler = null;
+            _editExceptionHandlerMode = mode;
+            DataGridViewSelectedRowCollection selectedRows = dgBody.SelectedRows;
+
+            if (selectedRows.Count > 0)
+                EditedExceptionHandlerIndex = dgBody.SelectedRows[0].Index -
+                                               CurrentAssembly.Method.NewMethod.Body.Instructions.Count;
+
+            if (mode == EditExceptionHandlerMode.Edit)
+            {
+                var form =
+                    new EditExceptionHandlerForm(
+                        CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[(dgBody.SelectedRows[0].Index - CurrentAssembly.Method.NewMethod.Body.Instructions.Count)]);
+                form.FormClosed += EditExceptionHandlerForm_FormClosed;
+                form.ShowDialog();
+            }
+            else
+            {
+                var form = new EditExceptionHandlerForm();
+                form.FormClosed += EditExceptionHandlerForm_FormClosed;
                 form.ShowDialog();
             }
         }
@@ -519,6 +571,27 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #endregion VariableMenuStrip
 
+        #region ExceptionHandlerMenuStrip
+
+        private void editToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            NewExceptionHandlerEditor(EditExceptionHandlerMode.Edit);
+        }
+
+        private void removeToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DataGridViewSelectedRowCollection collection = dgBody.SelectedRows;
+
+            foreach (DataGridViewRow row in collection)
+            {
+                CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Remove(row.Tag as dnlib.DotNet.Emit.ExceptionHandler);
+            }
+
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+        }
+
+        #endregion ExceptionHandlerMenuStrip
+
         #region TreeMenuStrip
 
         public void treeMenu_Opened(object sender, EventArgs e)
@@ -550,7 +623,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #region EmptyInstructionsMenu
 
-        private void createNewToolStripMenuItem_Click(object sender, EventArgs e)
+        private void createNewInstructionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NewInstructionEditor(EditInstructionMode.Add);
         }
@@ -560,10 +633,17 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             if (CurrentAssembly == null || CurrentAssembly.Method == null || CurrentAssembly.Method.NewMethod == null)
             {
                 emptyBodyMenu.Items[0].Enabled = false;
+                emptyBodyMenu.Items[1].Enabled = false;
                 return;
             }
 
             emptyBodyMenu.Items[0].Enabled = true;
+            emptyBodyMenu.Items[1].Enabled = true;
+        }
+
+        private void createNewExceptionHandlerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewExceptionHandlerEditor(EditExceptionHandlerMode.Add);
         }
 
         #endregion EmptyInstructionsMenu
@@ -605,7 +685,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 2)
+            if (e.RowIndex > CurrentAssembly.Method.NewMethod.Body.Instructions.Count - 1)
+                return;
+
+            if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
             {
                 NewInstructionEditor(EditInstructionMode.Edit);
             }

@@ -193,7 +193,7 @@ namespace dnEditor.Misc
                     break;
                 case "System.Byte":
                 case "System.SByte":
-                    operandText = String.Format("0x{0:x}", operand);
+                    operandText = operand.ToString();
                     break;
                 case "System.Boolean":
                     operandText = operand.ToString();

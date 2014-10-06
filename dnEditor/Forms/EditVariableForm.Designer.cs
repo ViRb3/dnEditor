@@ -36,15 +36,13 @@
             this.btnOk = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.cbTypeSpecification = new System.Windows.Forms.ComboBox();
-            this.btnSelectOperand = new System.Windows.Forms.Button();
+            this.btnVariableType = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cbVariableType
             // 
-            this.cbVariableType.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.cbVariableType.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.cbVariableType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbVariableType.FormattingEnabled = true;
+            this.cbVariableType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
+            this.cbVariableType.Enabled = false;
             this.cbVariableType.Location = new System.Drawing.Point(89, 40);
             this.cbVariableType.Name = "cbVariableType";
             this.cbVariableType.Size = new System.Drawing.Size(301, 21);
@@ -77,17 +75,17 @@
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(202, 108);
+            this.btnClose.Location = new System.Drawing.Point(226, 106);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 25);
             this.btnClose.TabIndex = 4;
-            this.btnClose.Text = "Close";
+            this.btnClose.Text = "Cancel";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(121, 108);
+            this.btnOk.Location = new System.Drawing.Point(145, 106);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 25);
             this.btnOk.TabIndex = 5;
@@ -121,22 +119,22 @@
             this.cbTypeSpecification.Size = new System.Drawing.Size(191, 21);
             this.cbTypeSpecification.TabIndex = 1;
             // 
-            // btnSelectOperand
+            // btnVariableType
             // 
-            this.btnSelectOperand.Location = new System.Drawing.Point(399, 39);
-            this.btnSelectOperand.Name = "btnSelectOperand";
-            this.btnSelectOperand.Size = new System.Drawing.Size(33, 21);
-            this.btnSelectOperand.TabIndex = 6;
-            this.btnSelectOperand.Text = "...";
-            this.btnSelectOperand.UseVisualStyleBackColor = true;
-            this.btnSelectOperand.Click += new System.EventHandler(this.btnSelectOperand_Click);
+            this.btnVariableType.Location = new System.Drawing.Point(399, 39);
+            this.btnVariableType.Name = "btnVariableType";
+            this.btnVariableType.Size = new System.Drawing.Size(33, 21);
+            this.btnVariableType.TabIndex = 6;
+            this.btnVariableType.Text = "...";
+            this.btnVariableType.UseVisualStyleBackColor = true;
+            this.btnVariableType.Click += new System.EventHandler(this.btnVariableType_Click);
             // 
             // EditVariableForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(444, 143);
-            this.Controls.Add(this.btnSelectOperand);
+            this.Controls.Add(this.btnVariableType);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.txtVariableName);
@@ -163,6 +161,6 @@
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbTypeSpecification;
-        private System.Windows.Forms.Button btnSelectOperand;
+        private System.Windows.Forms.Button btnVariableType;
     }
 }
