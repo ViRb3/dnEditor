@@ -13,14 +13,14 @@ a ticket. And wait. I will eventually get through it.
 
 #####Cheers!
 
-#To-do (sorted by priority):
+#To-do (sorted by current priority):
  - [x] ~~Finish support for "switch" opcode.~~
  - [x] ~~Switch back to virtual TreeNode.~~
  - [x] ~~Add TreeView context menu with helpful options.~~
- - [x] ~~Add search functions.~~ //to be continued
- - [ ] Add variables support.
+ - [x] ~~Add variables support.~~
+ - [x] ~~Add support for "try-catch".~~
+ - [ ] Add full search functions.
  - [ ] Add member overview/preview.
- - [ ] Add support for "try-catch".
  - [ ] Add member icons.
  - [ ] Add resources support.
 
