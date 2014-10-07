@@ -102,7 +102,7 @@ namespace dnEditor.Forms
         {
             if (leftGridView.SelectedRows.Count < 1) return;
 
-            DataGridViewRow selectedRow = leftGridView.SelectedRows[0];
+            DataGridViewRow selectedRow = leftGridView.SelectedRows.TopmostRow();
 
             leftGridView.Rows.Remove(selectedRow);
             leftGridView.Rows.Insert(0, selectedRow);
@@ -115,8 +115,8 @@ namespace dnEditor.Forms
         {
             if (leftGridView.SelectedRows.Count < 1) return;
 
-            DataGridViewRow row = leftGridView.SelectedRows[0];
-            int index = leftGridView.SelectedRows[0].Index;
+            DataGridViewRow row = leftGridView.SelectedRows.TopmostRow();
+            int index = leftGridView.SelectedRows.TopmostRow().Index;
             leftGridView.Rows.Remove(row);
             leftGridView.Rows.Insert(index - 1, row);
 
@@ -128,8 +128,8 @@ namespace dnEditor.Forms
         {
             if (leftGridView.SelectedRows.Count < 1) return;
 
-            DataGridViewRow row = leftGridView.SelectedRows[0];
-            int index = leftGridView.SelectedRows[0].Index;
+            DataGridViewRow row = leftGridView.SelectedRows.TopmostRow();
+            int index = leftGridView.SelectedRows.TopmostRow().Index;
             leftGridView.Rows.Remove(row);
             leftGridView.Rows.Insert(index + 1, row);
 
@@ -141,7 +141,7 @@ namespace dnEditor.Forms
         {
             if (leftGridView.SelectedRows.Count < 1) return;
 
-            DataGridViewRow selectedRow = leftGridView.SelectedRows[0];
+            DataGridViewRow selectedRow = leftGridView.SelectedRows.TopmostRow();
 
             leftGridView.Rows.Remove(selectedRow);
             leftGridView.Rows.Insert(leftGridView.Rows.Count, selectedRow);

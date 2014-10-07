@@ -148,16 +148,15 @@ namespace dnEditor.Forms
         {
             NewInstruction = null;
             _editInstructionMode = mode;
-            DataGridViewSelectedRowCollection selectedRows = dgBody.SelectedRows;
 
-            if (selectedRows.Count > 0)
-                EditedInstructionIndex = selectedRows[0].Index;
+            if (dgBody.SelectedRows.Count > 0)
+                EditedInstructionIndex = dgBody.SelectedRows.TopmostRow().Index;
 
             if (mode == EditInstructionMode.Edit)
             {
                 var form =
                     new EditInstructionForm(
-                        CurrentAssembly.Method.NewMethod.Body.Instructions[dgBody.SelectedRows[0].Index]);
+                        CurrentAssembly.Method.NewMethod.Body.Instructions[dgBody.SelectedRows.TopmostRow().Index]);
                 form.FormClosed += EditInstructionForm_FormClosed;
                 form.ShowDialog();
             }
@@ -173,16 +172,15 @@ namespace dnEditor.Forms
         {
             NewVariable = null;
             _editVariableMode = mode;
-            DataGridViewSelectedRowCollection selectedRows = dgVariables.SelectedRows;
 
-            if (selectedRows.Count > 0)
-                EditedVariableIndex = selectedRows[0].Index;
+            if (dgVariables.SelectedRows.Count > 0)
+                EditedVariableIndex = dgVariables.SelectedRows.TopmostRow().Index;
 
             if (mode == EditVariableMode.Edit)
             {
                 var form =
                     new EditVariableForm(
-                        CurrentAssembly.Method.NewMethod.Body.Variables[dgVariables.SelectedRows[0].Index]);
+                        CurrentAssembly.Method.NewMethod.Body.Variables[dgVariables.SelectedRows.TopmostRow().Index]);
                 form.FormClosed += EditVariableForm_FormClosed;
                 form.ShowDialog();
             }
@@ -201,14 +199,14 @@ namespace dnEditor.Forms
             DataGridViewSelectedRowCollection selectedRows = dgBody.SelectedRows;
 
             if (selectedRows.Count > 0)
-                EditedExceptionHandlerIndex = dgBody.SelectedRows[0].Index -
+                EditedExceptionHandlerIndex = dgBody.SelectedRows.TopmostRow().Index -
                                                CurrentAssembly.Method.NewMethod.Body.Instructions.Count;
 
             if (mode == EditExceptionHandlerMode.Edit)
             {
                 var form =
                     new EditExceptionHandlerForm(
-                        CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[(dgBody.SelectedRows[0].Index - CurrentAssembly.Method.NewMethod.Body.Instructions.Count)]);
+                        CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[(dgBody.SelectedRows.TopmostRow().Index - CurrentAssembly.Method.NewMethod.Body.Instructions.Count)]);
                 form.FormClosed += EditExceptionHandlerForm_FormClosed;
                 form.ShowDialog();
             }
@@ -390,14 +388,30 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int instructionIndex = dgBody.SelectedRows[0].Index + 1;
+            int instructionIndex = dgBody.SelectedRows.TopmostRow().Index + 1;
 
-            foreach (Instruction instruction in _copiedInstructions)
+            foreach (Instruction instruction in _copiedInstructions.OrderByDescending(i => i.Offset))
             {
                 var newInstruction = new Instruction(instruction.OpCode);
 
                 if (instruction.Operand != null)
-                    newInstruction.Operand = instruction.Operand;
+                    switch (instruction.OpCode.OperandType)
+                    {
+                        case OperandType.InlineField:
+                            newInstruction.Operand = CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
+                            break;
+
+                        case OperandType.InlineMethod:
+                            newInstruction.Operand = CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
+                            break;
+
+                        case OperandType.InlineType:
+                            newInstruction.Operand = CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
+                            break;
+                        default:
+                            newInstruction.Operand = instruction.Operand;
+                            break;
+                    }
 
                 CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, newInstruction);
             }
@@ -544,7 +558,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void pasteVariableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int variableIndex = dgVariables.SelectedRows[0].Index + 1;
+            int variableIndex = dgVariables.SelectedRows.TopmostRow().Index + 1;
 
             foreach (Local variable in _copiedVariables)
             {

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using dnEditor.Forms;
+using dnEditor.Misc;
 using dnlib.DotNet;
 
 namespace dnEditor.Handlers
@@ -85,7 +86,7 @@ namespace dnEditor.Handlers
                         .ToList();
 
                 DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
+                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
 
@@ -109,7 +110,7 @@ namespace dnEditor.Handlers
                         .ToList();
 
                 DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
+                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
 
@@ -127,7 +128,7 @@ namespace dnEditor.Handlers
                         .Where(r => r.Cells["Operand"].Value.ToString().ToLower().Contains(_text)).ToList();
 
                 DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows[0].Index);
+                    .FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows.TopmostRow().Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
 

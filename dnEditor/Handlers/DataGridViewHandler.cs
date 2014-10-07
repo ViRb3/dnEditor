@@ -38,12 +38,12 @@ namespace dnEditor.Handlers
                 _currentRowIndex = MainForm.DgBody.FirstDisplayedScrollingRowIndex;
 
                 if (MainForm.DgBody.SelectedRows.Count > 0)
-                    _currentSelectedRowIndex = MainForm.DgBody.SelectedRows[0].Index;
+                    _currentSelectedRowIndex = MainForm.DgBody.SelectedRows.TopmostRow().Index;
 
                 _currentVariableRowIndex = MainForm.DgVariables.FirstDisplayedScrollingRowIndex;
 
                 if (MainForm.DgVariables.SelectedRows.Count > 0)
-                    _currentVariableSelectedRowIndex = MainForm.DgVariables.SelectedRows[0].Index;
+                    _currentVariableSelectedRowIndex = MainForm.DgVariables.SelectedRows.TopmostRow().Index;
             }
             else
             {

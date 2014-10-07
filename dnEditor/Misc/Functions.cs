@@ -290,5 +290,10 @@ namespace dnEditor.Misc
         {
             return columns.Cast<DataGridViewColumn>().First(t => t.HeaderText == text);
         }
+
+        public static DataGridViewRow TopmostRow(this DataGridViewSelectedRowCollection selectedRows)
+        {
+            return selectedRows.Cast<DataGridViewRow>().OrderBy(r => r.Index).First();
+        }
     }
 }
