@@ -83,7 +83,8 @@ namespace dnEditor.Forms
                     CurrentAssembly.Method.NewMethod.Body.Instructions.Add(NewInstruction);
                     break;
                 case EditInstructionMode.Edit:
-                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex] = NewInstruction;
+                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].OpCode = NewInstruction.OpCode;
+                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].Operand = NewInstruction.Operand;
                     break;
                 case EditInstructionMode.InsertAfter:
                     CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(EditedInstructionIndex + 1, NewInstruction);
