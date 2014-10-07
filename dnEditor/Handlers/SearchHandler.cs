@@ -35,7 +35,7 @@ namespace dnEditor.Handlers
             _searchNode = searchNode;
             _searchTreeView = searchNode.TreeView;
 
-            _text = text;
+            _text = text.ToLower();
             _searchType = searchType;
             _treeViewHandler = treeViewHandler;
         }
@@ -43,7 +43,7 @@ namespace dnEditor.Handlers
         public SearchHandler(TreeView searchTreeView, string text, SearchType searchType, TreeViewHandler treeViewHandler)
         {
             _searchTreeView = searchTreeView;
-            _text = text;
+            _text = text.ToLower();
             _searchType = searchType;
             _treeViewHandler = treeViewHandler;
         }
@@ -122,14 +122,12 @@ namespace dnEditor.Handlers
 
                 if (!(_searchNode.Tag is MethodDef)) return null;
 
-                DataGridView dgBody = MainForm.DgBody;
-
                 List<DataGridViewRow> resultRows =
-                    dgBody.Rows.Cast<DataGridViewRow>()
+                    MainForm.DgBody.Rows.Cast<DataGridViewRow>()
                         .Where(r => r.Cells["Operand"].Value.ToString().ToLower().Contains(_text)).ToList();
 
                 DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows[0].Index);
+                    .FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows[0].Index);
 
                 return matchingRow == null ? null : matchingRow.Index as object;
 

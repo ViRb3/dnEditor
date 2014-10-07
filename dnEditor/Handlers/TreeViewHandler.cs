@@ -106,7 +106,7 @@ namespace dnEditor.Handlers
             CurrentMethod = null;
             CurrentModule = null;
             currentAssembly = null;
-            DataGridViewHandler.ClearRows();
+            DataGridViewHandler.ClearInstructions();
             assembly.Remove();
         }
 

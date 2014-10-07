@@ -255,6 +255,8 @@ namespace dnEditor.Forms
             var searchHandler = new SearchHandler(searchNode, txtSearch.Text, searchType, _treeViewHandler);
             searchHandler.SearchFinished += DataGridViewHandler.SearchFinished;
             searchHandler.Search();
+
+            DgBody.Focus();
         }
 
         private void txtMagicRegex_TextChanged(object sender, EventArgs e)
@@ -686,13 +688,18 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex > CurrentAssembly.Method.NewMethod.Body.Instructions.Count - 1)
+            {
+                NewExceptionHandlerEditor(EditExceptionHandlerMode.Edit);
                 return;
+            }
 
             if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
             {
                 NewInstructionEditor(EditInstructionMode.Edit);
+                return;
             }
-            else if (e.ColumnIndex == 3)
+
+            if (e.ColumnIndex == 3)
             {
                 var instruction = dgBody.Rows[e.RowIndex].Tag as Instruction;
 
@@ -713,6 +720,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             }
         }
 
+        private void dgVariables_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            NewVariableEditor(EditVariableMode.Edit);
+        }
+
         private void dgBody_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
@@ -720,10 +732,21 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             if (dgBody.SelectedRows.Cast<DataGridViewRow>().Any(selectedRow => selectedRow.Index == e.RowIndex))
                 return;
 
-            foreach (DataGridViewRow row in dgBody.Rows)
-                row.Selected = false;
+            dgBody.ClearSelection();
 
             dgBody.Rows[e.RowIndex].Selected = true;
+        }
+
+        private void dgVariables_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            if (dgVariables.SelectedRows.Cast<DataGridViewRow>().Any(selectedRow => selectedRow.Index == e.RowIndex))
+                return;
+
+            dgVariables.ClearSelection();
+
+            dgVariables.Rows[e.RowIndex].Selected = true;
         }
 
         private void dgBody_MouseClick(object sender, MouseEventArgs e)
