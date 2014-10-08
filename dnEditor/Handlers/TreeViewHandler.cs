@@ -165,10 +165,7 @@ namespace dnEditor.Handlers
         public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e,
             ref CurrentAssembly currentAssembly)
         {
-            TreeNode assemblyNode = e.Node.FirstParentNode();
-
-            MainForm.TabControl.SelectTab(0);
-            
+            TreeNode assemblyNode = e.Node.FirstParentNode();      
 
             if (currentAssembly == null || currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
             {

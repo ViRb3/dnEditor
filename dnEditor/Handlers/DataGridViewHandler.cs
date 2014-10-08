@@ -66,6 +66,8 @@ namespace dnEditor.Handlers
             VariableHandler.ReadVariables(method);
             ExceptionHandler.ReadExceptionHandlers(method);
 
+            ILSpyHandler.CheckDecompile();
+
             RestoreInstructionSelection();
             RestoreVariableSelection();
         }
@@ -334,6 +336,17 @@ namespace dnEditor.Handlers
                 }
 
                 MainForm.DgBody.Rows.AddRange(rows.ToArray());
+            }
+        }
+    }
+
+    internal static class ILSpyHandler
+    {
+        public static void CheckDecompile()
+        {
+            if (MainForm.TabControl.SelectedTab.Text == "ILSpy")
+            {
+                new MonoTranslator.Decompiler().Start();
             }
         }
     }

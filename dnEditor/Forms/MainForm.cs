@@ -810,10 +810,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (tabControl1.SelectedTab.Text == "ILSpy")
-            {
-                new MonoTranslator.Decompiler().Start();
-            }
+            ILSpyHandler.CheckDecompile();
         }
     }
 }
