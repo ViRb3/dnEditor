@@ -9,6 +9,7 @@ using dnEditor.Misc;
 using dnEditor.Properties;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using ExceptionHandler = dnlib.DotNet.Emit.ExceptionHandler;
 
 namespace dnEditor.Forms
 {
@@ -27,7 +28,7 @@ namespace dnEditor.Forms
 
         public static Instruction NewInstruction;
         public static Local NewVariable;
-        public static dnlib.DotNet.Emit.ExceptionHandler NewExceptionHandler;
+        public static ExceptionHandler NewExceptionHandler;
 
         public static TreeView TreeView;
         public static ToolStrip ToolStrip;
@@ -40,10 +41,10 @@ namespace dnEditor.Forms
         private readonly List<Local> _copiedVariables = new List<Local>();
 
         private readonly TreeViewHandler _treeViewHandler;
+        private EditExceptionHandlerMode _editExceptionHandlerMode;
 
         private EditInstructionMode _editInstructionMode;
         private EditVariableMode _editVariableMode;
-        private EditExceptionHandlerMode _editExceptionHandlerMode;
 
         public MainForm()
         {
@@ -89,8 +90,10 @@ namespace dnEditor.Forms
                     CurrentAssembly.Method.NewMethod.Body.Instructions.Add(NewInstruction);
                     break;
                 case EditInstructionMode.Edit:
-                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].OpCode = NewInstruction.OpCode;
-                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].Operand = NewInstruction.Operand;
+                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].OpCode =
+                        NewInstruction.OpCode;
+                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].Operand =
+                        NewInstruction.Operand;
                     break;
                 case EditInstructionMode.InsertAfter:
                     CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(EditedInstructionIndex + 1, NewInstruction);
@@ -143,7 +146,8 @@ namespace dnEditor.Forms
                     CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Add(NewExceptionHandler);
                     break;
                 case EditExceptionHandlerMode.Edit:
-                    CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[EditedExceptionHandlerIndex] = NewExceptionHandler;
+                    CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[EditedExceptionHandlerIndex] =
+                        NewExceptionHandler;
                     break;
             }
 
@@ -207,13 +211,15 @@ namespace dnEditor.Forms
 
             if (selectedRows.Count > 0)
                 EditedExceptionHandlerIndex = dgBody.SelectedRows.TopmostRow().Index -
-                                               CurrentAssembly.Method.NewMethod.Body.Instructions.Count;
+                                              CurrentAssembly.Method.NewMethod.Body.Instructions.Count;
 
             if (mode == EditExceptionHandlerMode.Edit)
             {
                 var form =
                     new EditExceptionHandlerForm(
-                        CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[(dgBody.SelectedRows.TopmostRow().Index - CurrentAssembly.Method.NewMethod.Body.Instructions.Count)]);
+                        CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[
+                            (dgBody.SelectedRows.TopmostRow().Index -
+                             CurrentAssembly.Method.NewMethod.Body.Instructions.Count)]);
                 form.FormClosed += EditExceptionHandlerForm_FormClosed;
                 form.ShowDialog();
             }
@@ -276,6 +282,19 @@ namespace dnEditor.Forms
                 _treeViewHandler.SelectedNode.Tag is AssemblyDef)
             {
                 closeToolStripMenuItem_Click(sender, e);
+            }
+        }
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            ILSpyHandler.CheckDecompile();
+        }
+
+        private void rtbILSpy_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!rtbILSpy.AutoWordSelection)
+            {
+                rtbILSpy.AutoWordSelection = false;
             }
         }
 
@@ -405,15 +424,18 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                     switch (instruction.OpCode.OperandType)
                     {
                         case OperandType.InlineField:
-                            newInstruction.Operand = CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
+                            newInstruction.Operand =
+                                CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
                             break;
 
                         case OperandType.InlineMethod:
-                            newInstruction.Operand = CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
+                            newInstruction.Operand =
+                                CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
                             break;
 
                         case OperandType.InlineType:
-                            newInstruction.Operand = CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
+                            newInstruction.Operand =
+                                CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
                             break;
                         default:
                             newInstruction.Operand = instruction.Operand;
@@ -445,7 +467,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         {
             if (!CurrentAssembly.Method.NewMethod.HasBody || !CurrentAssembly.Method.NewMethod.Body.HasInstructions)
                 return;
-            
+
             var code = new StringBuilder();
             code.AppendLine("//===================================");
             code.AppendLine("//dnlib");
@@ -459,7 +481,8 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
                 foreach (Local local in CurrentAssembly.Method.NewMethod.Body.Variables)
                 {
-                    code.AppendLine(string.Format("locals.Add(new Local(\"{0}\"));", local.Type.FullName.Replace("\"", "``")));
+                    code.AppendLine(string.Format("locals.Add(new Local(\"{0}\"));",
+                        local.Type.FullName.Replace("\"", "``")));
                     i++;
                 }
 
@@ -503,7 +526,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                 code.AppendLine("");
                 i = 0;
             }
-            
+
             foreach (Instruction instruction in CurrentAssembly.Method.NewMethod.Body.Instructions)
             {
                 OpCode opCode = Functions.OpCodes.First(o => o.Name == instruction.OpCode.Name);
@@ -518,7 +541,8 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             }
 
             File.WriteAllText("instructions.txt", code.ToString());
-            MessageBox.Show("Instructions saved to \"instructions.txt\"!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Instructions saved to \"instructions.txt\"!", "Success", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         #endregion InstructionMenuStrip
@@ -607,7 +631,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Remove(row.Tag as dnlib.DotNet.Emit.ExceptionHandler);
+                CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Remove(row.Tag as ExceptionHandler);
             }
 
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
@@ -807,10 +831,5 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
         #endregion EmptyInstructionsMenu        
-
-        private void tabControl1_Selected(object sender, TabControlEventArgs e)
-        {
-            ILSpyHandler.CheckDecompile();
-        }
     }
 }

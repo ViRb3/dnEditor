@@ -41,7 +41,8 @@ namespace dnEditor.Misc
                 MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(() =>
                 {
                     MainForm.RtbILSpy.Clear();
-                    MainForm.RtbILSpy.Text = Environment.NewLine + " Decompiling...";
+                    MainForm.RtbILSpy.Text = Environment.NewLine + "Decompiling..." + Environment.NewLine +
+                                             "First time might take a while.";
                 }));
 
                 try
