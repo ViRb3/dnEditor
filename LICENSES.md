@@ -355,7 +355,7 @@ Simple Assembly Explorer
 	
 	
 	
-ILSpy (images)
+ILSpy
 ========
 	The MIT License (MIT)
 
