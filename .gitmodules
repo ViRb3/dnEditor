@@ -3,4 +3,4 @@
 	url = https://github.com/ViRb3/dnlib
 [submodule "ILSpy"]
 	path = ILSpy
-	url = https://github.com/icsharpcode/ILSpy
+	url = https://github.com/ViRb3/ILSpy
