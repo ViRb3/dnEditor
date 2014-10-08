@@ -26,26 +26,6 @@ namespace dnEditor.Misc
             }
         }
 
-        public class MonoMethod
-        {
-            private readonly string _methodPath;
-            private readonly string _typePath;
-
-            public MonoMethod(MethodDef method)
-            {
-                _methodPath = method.FullName;
-                _typePath = method.DeclaringType.FullName;
-            }
-
-            public MethodDefinition Method(AssemblyDefinition assembly)
-            {
-                TypeDefinition type = assembly.MainModule.GetType(_typePath);
-                MethodDefinition method = type.Methods.First(m => m.FullName == _methodPath);
-
-                return method;
-            }
-        }
-
         public class Decompiler
         {
             private readonly BackgroundWorker _worker = new BackgroundWorker();
@@ -66,7 +46,7 @@ namespace dnEditor.Misc
 
                 try
                 {
-                    var assembly = Translate(MainForm.CurrentAssembly.Assembly);
+                    AssemblyDefinition assembly = Translate(MainForm.CurrentAssembly.Assembly);
 
                     var dnMethod = new MonoMethod(MainForm.CurrentAssembly.Method.NewMethod);
                     object method = dnMethod.Method(assembly);
@@ -74,7 +54,7 @@ namespace dnEditor.Misc
                     if (method == null)
                         return;
 
-                    var mtp = (IMetadataTokenProvider)method;
+                    var mtp = (IMetadataTokenProvider) method;
                     method = assembly.MainModule.LookupToken(mtp.MetadataToken);
 
                     if (method == null || string.IsNullOrEmpty(method.ToString()))
@@ -83,13 +63,14 @@ namespace dnEditor.Misc
                             () =>
                             {
                                 MainForm.RtbILSpy.Clear();
-                                MainForm.RtbILSpy.Text = "Could not find member by Metadata Token!";
+                                MainForm.RtbILSpy.Text = Environment.NewLine +
+                                                         "Could not find member by Metadata Token!";
                             }));
 
                         return;
                     }
 
-                    var bar = GlobalAssemblyResolver.Instance;
+                    DefaultAssemblyResolver bar = GlobalAssemblyResolver.Instance;
                     bool savedRaiseResolveException = true;
                     try
                     {
@@ -104,7 +85,7 @@ namespace dnEditor.Misc
 
                         MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(() =>
                         {
-                            MainForm.RtbILSpy.Clear(); 
+                            MainForm.RtbILSpy.Clear();
                             MainForm.RtbILSpy.Rtf = source;
                         }));
                     }
@@ -120,10 +101,31 @@ namespace dnEditor.Misc
                         () =>
                         {
                             MainForm.RtbILSpy.Clear();
-                            MainForm.RtbILSpy.Text = "Decompilation unsuccessful!" + Environment.NewLine +
-                                                    Environment.NewLine + o.Message;
+                            MainForm.RtbILSpy.Text = Environment.NewLine + "Decompilation unsuccessful!" +
+                                                     Environment.NewLine +
+                                                     Environment.NewLine + o.Message;
                         }));
                 }
+            }
+        }
+
+        public class MonoMethod
+        {
+            private readonly string _methodPath;
+            private readonly string _typePath;
+
+            public MonoMethod(MethodDef method)
+            {
+                _methodPath = method.FullName;
+                _typePath = method.DeclaringType.FullName;
+            }
+
+            public MethodDefinition Method(AssemblyDefinition assembly)
+            {
+                TypeDefinition type = assembly.MainModule.GetType(_typePath);
+                MethodDefinition method = type.Methods.First(m => m.FullName == _methodPath);
+
+                return method;
             }
         }
     }
