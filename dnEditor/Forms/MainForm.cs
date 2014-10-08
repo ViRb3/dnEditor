@@ -16,7 +16,10 @@ namespace dnEditor.Forms
     {
         public static DataGridView DgBody;
         public static DataGridView DgVariables;
+        public static RichTextBox RtbILSpy;
         public static CurrentAssembly CurrentAssembly;
+
+        public static TabControl TabControl;
 
         public static int EditedInstructionIndex;
         public static int EditedVariableIndex;
@@ -47,8 +50,11 @@ namespace dnEditor.Forms
             InitializeComponent();
             _treeViewHandler = new TreeViewHandler(treeView1, treeMenu);
 
+            TabControl = tabControl1;
+
             DgBody = dgBody;
             DgVariables = dgVariables;
+            RtbILSpy = rtbILSpy;
 
             TreeView = treeView1;
             ToolStrip = toolStrip1;
@@ -272,6 +278,11 @@ namespace dnEditor.Forms
                 closeToolStripMenuItem_Click(sender, e);
             }
         }
+
+        private void btnDecompile_Click(object sender, EventArgs e)
+        {
+            new MonoTranslator.Decompiler().Start();
+        } 
 
         #region ToolStrip
 

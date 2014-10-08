@@ -5,7 +5,6 @@ using dnEditor.Forms;
 using dnEditor.Misc;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using dnlib.Utils;
 
 namespace dnEditor.Handlers
 {

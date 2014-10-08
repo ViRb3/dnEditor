@@ -167,6 +167,9 @@ namespace dnEditor.Handlers
         {
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
+            MainForm.TabControl.SelectTab(0);
+            
+
             if (currentAssembly == null || currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
             {
                 currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef);
@@ -175,8 +178,14 @@ namespace dnEditor.Handlers
 
             if (e.Node.Tag is MethodDef)
             {
-                DataGridViewHandler.ReadMethod(e.Node.Tag as MethodDef);
-                CurrentMethod = e.Node;
+                var method = e.Node.Tag as MethodDef;
+
+                if (CurrentMethod == null || method != CurrentMethod.Tag as MethodDef)
+                {
+                    MainForm.RtbILSpy.Clear();
+                    DataGridViewHandler.ReadMethod(method);
+                    CurrentMethod = e.Node;
+                }
             }
             else MainForm.DgBody.Rows.Clear();
 
