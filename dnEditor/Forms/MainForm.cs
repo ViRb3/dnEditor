@@ -279,11 +279,6 @@ namespace dnEditor.Forms
             }
         }
 
-        private void btnDecompile_Click(object sender, EventArgs e)
-        {
-            new MonoTranslator.Decompiler().Start();
-        } 
-
         #region ToolStrip
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -812,5 +807,13 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
         #endregion EmptyInstructionsMenu        
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            if (tabControl1.SelectedTab.Text == "ILSpy")
+            {
+                new MonoTranslator.Decompiler().Start();
+            }
+        }
     }
 }

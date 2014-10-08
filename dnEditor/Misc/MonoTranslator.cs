@@ -58,7 +58,11 @@ namespace dnEditor.Misc
 
             private void worker_DoWork(object sender, DoWorkEventArgs e)
             {
-                MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(() => MainForm.RtbILSpy.Clear()));
+                MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(() =>
+                {
+                    MainForm.RtbILSpy.Clear();
+                    MainForm.RtbILSpy.Text = Environment.NewLine + " Decompiling...";
+                }));
 
                 try
                 {
@@ -76,7 +80,11 @@ namespace dnEditor.Misc
                     if (method == null || string.IsNullOrEmpty(method.ToString()))
                     {
                         MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(
-                            () => { MainForm.RtbILSpy.Text = "Could not find member by Metadata Token!"; }));
+                            () =>
+                            {
+                                MainForm.RtbILSpy.Clear();
+                                MainForm.RtbILSpy.Text = "Could not find member by Metadata Token!";
+                            }));
 
                         return;
                     }
@@ -94,7 +102,11 @@ namespace dnEditor.Misc
                         var il = new ILSpyDecompiler();
                         string source = il.Decompile(method);
 
-                        MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(() => { MainForm.RtbILSpy.Rtf = source; }));
+                        MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(() =>
+                        {
+                            MainForm.RtbILSpy.Clear(); 
+                            MainForm.RtbILSpy.Rtf = source;
+                        }));
                     }
                     finally
                     {
@@ -107,6 +119,7 @@ namespace dnEditor.Misc
                     MainForm.RtbILSpy.BeginInvoke(new MethodInvoker(
                         () =>
                         {
+                            MainForm.RtbILSpy.Clear();
                             MainForm.RtbILSpy.Text = "Decompilation unsuccessful!" + Environment.NewLine +
                                                     Environment.NewLine + o.Message;
                         }));
