@@ -103,7 +103,6 @@
     <Compile Include="Misc\ILSpy\DecompilationOptions.cs" />
     <Compile Include="Misc\ILSpy\Languages\CSharpLanguage.cs" />
     <Compile Include="Misc\ILSpy\Languages\Language.cs" />
-    <Compile Include="Misc\ILSpy\RtfTextOutput.cs" />
     <Compile Include="Misc\InstructionBlock.cs" />
     <Compile Include="Misc\InsUtils.cs" />
     <Compile Include="Misc\ITreeMenu.cs" />
