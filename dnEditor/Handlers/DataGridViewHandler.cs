@@ -60,13 +60,13 @@ namespace dnEditor.Handlers
 
             MainForm.CurrentAssembly.Method.NewMethod = method;
 
+            ILSpyHandler.CheckDecompile();
+
             if (!method.HasBody) return;
 
             ReadInstructions(method);
             VariableHandler.ReadVariables(method);
             ExceptionHandler.ReadExceptionHandlers(method);
-
-            ILSpyHandler.CheckDecompile();
 
             RestoreInstructionSelection();
             RestoreVariableSelection();
