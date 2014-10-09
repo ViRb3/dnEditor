@@ -184,7 +184,12 @@ namespace dnEditor.Handlers
                     CurrentMethod = e.Node;
                 }
             }
-            else MainForm.DgBody.Rows.Clear();
+            else
+            {
+                MainForm.DgBody.Rows.Clear();
+                MainForm.RtbILSpy.Clear();
+
+            }
 
             SelectedNode = e.Node;
         }
