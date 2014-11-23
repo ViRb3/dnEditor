@@ -379,8 +379,8 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             foreach (DataGridViewRow row in collection)
             {
                 int instructionIndex = CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(row.Tag as Instruction);
-                CurrentAssembly.Method.NewMethod.Body.Instructions.RemoveAt(instructionIndex);
-                CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, OpCodes.Nop.ToInstruction());
+                CurrentAssembly.Method.NewMethod.Body.Instructions[instructionIndex].OpCode = OpCodes.Nop;
+                CurrentAssembly.Method.NewMethod.Body.Instructions[instructionIndex].Operand = null;
             }
 
             CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
