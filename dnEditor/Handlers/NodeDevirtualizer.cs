@@ -64,12 +64,11 @@ namespace dnEditor.Handlers
             {
                 var children = result[0] as TreeNode[];
 
-                if (children == null || children.Length == 0) return;
-
-                foreach (TreeNode child in children)
-                {
-                    Node.Nodes.Add(child);
-                }
+                if (children != null && children.Length > 0)
+                    foreach (TreeNode child in children)
+                    {
+                        Node.Nodes.Add(child);
+                    }
             }
 
             if (WorkerFinished != null)

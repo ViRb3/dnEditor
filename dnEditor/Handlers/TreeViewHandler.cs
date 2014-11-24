@@ -389,10 +389,8 @@ namespace dnEditor.Handlers
         public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e,
             ref CurrentAssembly currentAssembly)
         {
-            if (!(e.Node.Tag is AssemblyRef))
-            {
+            if (!(e.Node.Tag is AssemblyRef) || e.Node.TreeView.SelectedNode != e.Node)
                 return;
-            }
 
             var assemblyRef = e.Node.Tag as AssemblyRef;
             var runtimeDirectory = RuntimeEnvironment.GetRuntimeDirectory();
