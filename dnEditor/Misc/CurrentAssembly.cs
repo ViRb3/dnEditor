@@ -8,11 +8,12 @@ namespace dnEditor.Misc
 {
     public class CurrentAssembly
     {
-        public AssemblyDef Assembly;
+        public ModuleDefMD ManifestModule;
 
         public Instruction Instruction;
         public MethodHolder Method = new MethodHolder();
         public string Path;
+        public bool IsExecutable = false;
 
         public CurrentAssembly(string path)
         {
@@ -20,18 +21,17 @@ namespace dnEditor.Misc
                 throw new FileNotFoundException("Assembly does not exist!");
 
             Path = path;
+
+            if (System.IO.Path.GetExtension(path) == "exe")
+                IsExecutable = true;
+
             OpenAssembly();
         }
 
-        public CurrentAssembly(AssemblyDef assembly)
+        public CurrentAssembly(ModuleDefMD manifestModule)
         {
-            Assembly = assembly;
+            ManifestModule = manifestModule;
             Path = null;
-        }
-
-        public ModuleDefMD Module
-        {
-            get { return (ModuleDefMD) Assembly.ManifestModule; }
         }
 
         public void OpenAssembly(string path = null)
@@ -39,17 +39,17 @@ namespace dnEditor.Misc
             try
             {
                 if (path == null)
-                    Assembly = AssemblyDef.Load(Path);
+                    ManifestModule = ModuleDefMD.Load(Path);
                 else
                 {
-                    Assembly = AssemblyDef.Load(path);
+                    ManifestModule = ModuleDefMD.Load(path);
                     Path = path;
                 }
             }
             catch (BadImageFormatException e)
             {
                 MessageBox.Show(e.Message, "Error loading assembly!");
-                Assembly = null;
+                ManifestModule = null;
             }
         }
     }

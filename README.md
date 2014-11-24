@@ -26,19 +26,19 @@ a ticket. And wait. I will eventually get through it.
  - [ ] Add resources support.
 
 ##Credits and thanks:
- - WiCKY Hu (Simple Assembly Explorer) for his awesome piece of work. I "borrowed" many ideas and features
- from there, for which I hope I won't have done bad.
+ - WiCKY Hu (Simple Assembly Explorer) for his amazing piece of work. I "borrowed" many ideas and features
+ from there, for which I hope I won't have done any bad.
  - 0xd4d (dnlib) for the epic library that made this whole project possible. Yes, if that didn't exist,
  this would have only been your fancy dream.
  - yck1509 (dnSpy & dnlib fork) for the first dnlib-based assembly decompiler. That definitely served me as a
- reference of dnlib itself and what I wasn't sure how to do. Plus I am using a fork of his fork of dnlib for
- some reason, though I use none of his additions. Still worth mentioning.
+ reference of dnlib itself and what I wasn't sure how to do. I am also using "a fork of his fork of dnlib",
+ though I use none of his implementations. Still worth mentioning.
  - Sebastien LEBRETON (Reflexil) for the currently only fully-working and fully-featured assembly
  editor. If you find something similar in dnEditor's design: it's either Reflexil that inspired me
  or Reflexil that made me use the (almost) same design.
  - The guys behind ICSHARPCODE (ILSpy) [Daniel Grunwald, David Srbecky, Ed Harvey, Siegfried Pammer
  Artur Zgodzinski, Eusebiu Marcu, Pent Ploompuu] for their unbelievable work. 
- If they didn't keep their everything open-source I wouldn't have been able to add the decompiler for literally 15 minutes.
+ If they didn't keep their everything open-source I wouldn't have been able to add the decompiler for some 15 minutes.
  
 ####All licenses can be found in the LICENSES.md file in the project root directory.
  

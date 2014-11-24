@@ -24,7 +24,7 @@ namespace dnEditor.Handlers
 
             var assemblyRefs = new List<AssemblyRef>();
 
-            if (_treeViewHandler.RefNode.Tag as AssemblyRef[] != null)
+            if (_treeViewHandler.RefNode.Tag is AssemblyRef[])
                 assemblyRefs = (_treeViewHandler.RefNode.Tag as AssemblyRef[]).ToList();
 
             assemblyRefs.AddRange(references.ToArray());

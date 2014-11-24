@@ -833,7 +833,7 @@
             this.lblMagicRegex.Name = "lblMagicRegex";
             this.lblMagicRegex.Size = new System.Drawing.Size(77, 22);
             this.lblMagicRegex.Text = "Magic Regex:";
-            this.lblMagicRegex.ToolTipText = "Regex to match and remove from assembly symbols/members";
+            this.lblMagicRegex.ToolTipText = "All symbols matching this regex will not be displayed";
             // 
             // txtMagicRegex
             // 
@@ -1092,7 +1092,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Name = "MainForm";
-            this.Text = "dnEditor v0.69 Beta ~ViRb3";
+            this.Text = "dnEditor v0.70 Beta ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
             this.emptyBodyMenu.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);

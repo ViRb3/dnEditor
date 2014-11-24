@@ -44,9 +44,9 @@ namespace dnEditor.Forms
             _treeViewHandler.SelectedNode = null;
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
-            if (_currentAssembly == null || _currentAssembly.Assembly != assemblyNode.Tag as AssemblyDef)
+            if (_currentAssembly == null || _currentAssembly.ManifestModule != assemblyNode.Tag as ModuleDefMD)
             {
-                _currentAssembly = new CurrentAssembly(assemblyNode.Tag as AssemblyDef)
+                _currentAssembly = new CurrentAssembly(assemblyNode.Tag as ModuleDefMD)
                 {
                     Path = assemblyNode.ToolTipText
                 };

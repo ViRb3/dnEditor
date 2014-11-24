@@ -193,7 +193,7 @@ namespace dnEditor.Forms
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
-                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
+                        MainForm.CurrentAssembly.ManifestModule.Import(instruction.Operand as IField);
                     cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
@@ -203,7 +203,7 @@ namespace dnEditor.Forms
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
-                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
+                        MainForm.CurrentAssembly.ManifestModule.Import(instruction.Operand as IMethod);
                     cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
@@ -213,7 +213,7 @@ namespace dnEditor.Forms
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
                     SelectedReference =
-                        MainForm.CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
+                        MainForm.CurrentAssembly.ManifestModule.Import(instruction.Operand as IType);
                     cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
@@ -422,7 +422,7 @@ namespace dnEditor.Forms
             cbOperand.Items.Clear();
 
             SelectedReference =
-                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IField);
+                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as IField);
             cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
@@ -435,7 +435,7 @@ namespace dnEditor.Forms
             cbOperand.Items.Clear();
 
             SelectedReference =
-                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as IMethod);
+                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as IMethod);
             cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
@@ -448,7 +448,7 @@ namespace dnEditor.Forms
             cbOperand.Items.Clear();
 
             SelectedReference =
-                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
+                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
             cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;

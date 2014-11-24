@@ -121,7 +121,7 @@ namespace dnEditor.Forms
             cbVariableType.Items.Clear();
 
             SelectedReference =
-                MainForm.CurrentAssembly.Assembly.ManifestModule.Import((SelectedReference as ITypeDefOrRef).ToTypeSig());
+                MainForm.CurrentAssembly.ManifestModule.Import((SelectedReference as ITypeDefOrRef).ToTypeSig());
             cbVariableType.Items.Add(SelectedReference);
 
             cbVariableType.SelectedIndex = 0;

@@ -271,10 +271,10 @@ namespace dnEditor.Misc
 
             var newCurrentAssembly = new CurrentAssembly(file);
 
-            if (newCurrentAssembly.Assembly == null) return false;
+            if (newCurrentAssembly.ManifestModule == null) return false;
             currentAssembly = newCurrentAssembly;
 
-            treeViewHandler.LoadAssembly(currentAssembly.Assembly, file, clear);
+            treeViewHandler.LoadAssembly(currentAssembly.ManifestModule, file, clear);
             return true;
         }
 

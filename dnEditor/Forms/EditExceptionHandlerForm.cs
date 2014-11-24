@@ -202,7 +202,7 @@ namespace dnEditor.Forms
             cbCatchType.Items.Clear();
 
             SelectedReference =
-                MainForm.CurrentAssembly.Assembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
+                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
             cbCatchType.Items.Add(SelectedReference);
 
             cbCatchType.SelectedIndex = 0;

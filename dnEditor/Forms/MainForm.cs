@@ -279,7 +279,7 @@ namespace dnEditor.Forms
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete && _treeViewHandler.SelectedNode != null &&
-                _treeViewHandler.SelectedNode.Tag is AssemblyDef)
+                _treeViewHandler.SelectedNode.Tag is ModuleDefMD)
             {
                 closeToolStripMenuItem_Click(sender, e);
             }
@@ -307,7 +307,8 @@ namespace dnEditor.Forms
             var dialog = new SaveFileDialog
             {
                 Title = "Choose a location to write the new assembly...",
-                Filter = "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll"
+                Filter = CurrentAssembly.IsExecutable ? "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll" :
+                "DLL Files (*.dll)|*.dll|Executable Files (*.exe)|*.exe"
             };
 
             if (dialog.ShowDialog() != DialogResult.OK)
@@ -315,13 +316,20 @@ namespace dnEditor.Forms
 
             try
             {
-                CurrentAssembly.Assembly.Write(dialog.FileName);
+                CurrentAssembly.ManifestModule.Write(dialog.FileName);
             }
-            catch (Exception o)
+            catch (Exception)
             {
-                MessageBox.Show("Could not write assembly!" + Environment.NewLine + Environment.NewLine + o.Message,
+                try
+                {
+                    CurrentAssembly.ManifestModule.NativeWrite(dialog.FileName);
+                }
+                catch (Exception u)
+                {
+                    MessageBox.Show("Could not write assembly!" + Environment.NewLine + Environment.NewLine + u.Message,
                     "Error");
-                return;
+                    return;
+                }
             }
 
             MessageBox.Show("Assembly written to:" + Environment.NewLine + dialog.FileName, "Success");
@@ -425,17 +433,17 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                     {
                         case OperandType.InlineField:
                             newInstruction.Operand =
-                                CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IField);
+                                CurrentAssembly.ManifestModule.Import(instruction.Operand as IField);
                             break;
 
                         case OperandType.InlineMethod:
                             newInstruction.Operand =
-                                CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IMethod);
+                                CurrentAssembly.ManifestModule.Import(instruction.Operand as IMethod);
                             break;
 
                         case OperandType.InlineType:
                             newInstruction.Operand =
-                                CurrentAssembly.Assembly.ManifestModule.Import(instruction.Operand as IType);
+                                CurrentAssembly.ManifestModule.Import(instruction.Operand as IType);
                             break;
                         default:
                             newInstruction.Operand = instruction.Operand;

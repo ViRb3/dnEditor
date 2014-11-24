@@ -12,11 +12,18 @@ namespace dnEditor.Misc
 {
     public static class MonoTranslator
     {
-        public static AssemblyDefinition Translate(AssemblyDef assembly)
+        public static AssemblyDefinition Translate(ModuleDefMD manifestModule)
         {
             using (var assemblyStream = new MemoryStream())
             {
-                assembly.Write(assemblyStream);
+                try
+                {
+                    manifestModule.Write(assemblyStream);
+                }
+                catch (Exception)
+                {
+                    manifestModule.NativeWrite(assemblyStream);
+                }
 
                 assemblyStream.Position = 0;
 
@@ -47,7 +54,7 @@ namespace dnEditor.Misc
 
                 try
                 {
-                    AssemblyDefinition assembly = Translate(MainForm.CurrentAssembly.Assembly);
+                    AssemblyDefinition assembly = Translate(MainForm.CurrentAssembly.ManifestModule);
 
                     var dnMethod = new MonoMethod(MainForm.CurrentAssembly.Method.NewMethod);
                     object method = dnMethod.Method(assembly);
