@@ -192,8 +192,7 @@ namespace dnEditor.Forms
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Field reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                    SelectedReference =
-                        MainForm.CurrentAssembly.ManifestModule.Import(instruction.Operand as IField);
+                    SelectedReference = instruction.Operand;
                     cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
@@ -202,8 +201,7 @@ namespace dnEditor.Forms
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Method reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                    SelectedReference =
-                        MainForm.CurrentAssembly.ManifestModule.Import(instruction.Operand as IMethod);
+                    SelectedReference = instruction.Operand;
                     cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
@@ -212,8 +210,7 @@ namespace dnEditor.Forms
                     cbOperandType.SelectedItem = cbOperandType.GetItemByText("-> Type reference");
                     cbOperand.Enabled = false;
                     cbOperand.DropDownStyle = ComboBoxStyle.Simple;
-                    SelectedReference =
-                        MainForm.CurrentAssembly.ManifestModule.Import(instruction.Operand as IType);
+                    SelectedReference = instruction.Operand;
                     cbOperand.Items.Add(SelectedReference);
                     cbOperand.SelectedIndex = 0;
                     break;
@@ -304,17 +301,45 @@ namespace dnEditor.Forms
                 {
                     #region Field
 
-                    MainForm.NewInstruction =
-                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.SelectedItem as IField);
+                    IField field = cbOperand.SelectedItem as IField;
 
+                    if (field.DeclaringType.DefinitionAssembly != MainForm.CurrentAssembly.ManifestModule.Assembly ||
+                                field.Module != MainForm.CurrentAssembly.ManifestModule)
+                    {
+                        MemberRefUser fieldRef = new MemberRefUser(field.Module, field.Name, field.FieldSig, 
+                            field.DeclaringType);
+
+                        MainForm.NewInstruction = ((OpCode)cbOpCode.SelectedItem).ToInstruction(
+                            MainForm.CurrentAssembly.ManifestModule.Import(fieldRef));
+                    }
+                    else
+                    {
+                        MainForm.NewInstruction = ((OpCode)cbOpCode.SelectedItem).ToInstruction(
+                            MainForm.CurrentAssembly.ManifestModule.ResolveField(field.Rid));
+                    }
+                    
                     #endregion Field
                 }
                 else if (cbOperandType.SelectedItem.ToString() == "-> Method reference")
                 {
                     #region Method
 
-                    MainForm.NewInstruction =
-                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.SelectedItem as IMethod);
+                    IMethod method = cbOperand.SelectedItem as IMethod;
+
+                    if (method.DeclaringType.DefinitionAssembly != MainForm.CurrentAssembly.ManifestModule.Assembly ||
+                                method.Module != MainForm.CurrentAssembly.ManifestModule)
+                    {
+                        MemberRefUser methodRef = new MemberRefUser(method.Module, method.Name, method.MethodSig, 
+                            method.DeclaringType);
+
+                        MainForm.NewInstruction = ((OpCode)cbOpCode.SelectedItem).ToInstruction(
+                            MainForm.CurrentAssembly.ManifestModule.Import(methodRef));
+                    }
+                    else
+                    {
+                        MainForm.NewInstruction = ((OpCode)cbOpCode.SelectedItem).ToInstruction(
+                            MainForm.CurrentAssembly.ManifestModule.ResolveMethod(method.Rid));
+                    }
 
                     #endregion Method
                 }
@@ -323,8 +348,22 @@ namespace dnEditor.Forms
                 {
                     #region Type
 
-                    MainForm.NewInstruction =
-                        ((OpCode) cbOpCode.SelectedItem).ToInstruction(cbOperand.SelectedItem as ITypeDefOrRef);
+                    ITypeDefOrRef type = cbOperand.SelectedItem as ITypeDefOrRef;
+
+                    if (type.DefinitionAssembly != MainForm.CurrentAssembly.ManifestModule.Assembly ||
+                                type.Module != MainForm.CurrentAssembly.ManifestModule)
+                    {
+                        TypeRefUser typeRef = new TypeRefUser(type.Module, type.Namespace, type.Name, 
+                            MainForm.CurrentAssembly.ManifestModule.CorLibTypes.AssemblyRef);
+
+                        MainForm.NewInstruction = ((OpCode) cbOpCode.SelectedItem).ToInstruction(
+                        MainForm.CurrentAssembly.ManifestModule.Import(typeRef));
+                    }
+                    else
+                    {
+                        MainForm.NewInstruction = ((OpCode)cbOpCode.SelectedItem).ToInstruction(
+                            MainForm.CurrentAssembly.ManifestModule.ResolveTypeDef(type.Rid));
+                    }
 
                     #endregion Type
                 }
@@ -420,9 +459,6 @@ namespace dnEditor.Forms
             if (SelectedReference == null) return;
 
             cbOperand.Items.Clear();
-
-            SelectedReference =
-                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as IField);
             cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
@@ -433,9 +469,6 @@ namespace dnEditor.Forms
             if (SelectedReference == null) return;
 
             cbOperand.Items.Clear();
-
-            SelectedReference =
-                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as IMethod);
             cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;
@@ -446,9 +479,6 @@ namespace dnEditor.Forms
             if (SelectedReference == null) return;
 
             cbOperand.Items.Clear();
-
-            SelectedReference =
-                MainForm.CurrentAssembly.ManifestModule.Import(SelectedReference as ITypeDefOrRef);
             cbOperand.Items.Add(SelectedReference);
 
             cbOperand.SelectedIndex = 0;

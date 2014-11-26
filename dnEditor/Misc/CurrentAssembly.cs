@@ -13,7 +13,7 @@ namespace dnEditor.Misc
         public Instruction Instruction;
         public MethodHolder Method = new MethodHolder();
         public string Path;
-        public bool IsExecutable = false;
+        public bool IsExecutable;
 
         public CurrentAssembly(string path)
         {
@@ -22,7 +22,7 @@ namespace dnEditor.Misc
 
             Path = path;
 
-            if (System.IO.Path.GetExtension(path) == "exe")
+            if (System.IO.Path.GetExtension(path) == ".exe")
                 IsExecutable = true;
 
             OpenAssembly();

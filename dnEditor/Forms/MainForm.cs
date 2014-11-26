@@ -432,18 +432,52 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                     switch (instruction.OpCode.OperandType)
                     {
                         case OperandType.InlineField:
-                            newInstruction.Operand =
-                                CurrentAssembly.ManifestModule.Import(instruction.Operand as IField);
+                            IField field = instruction.Operand as IField;
+                            if (field.DeclaringType.DefinitionAssembly != CurrentAssembly.ManifestModule.Assembly ||
+                                field.Module != CurrentAssembly.ManifestModule)
+                            {
+                                MemberRefUser fieldRef = new MemberRefUser(field.Module, field.Name, field.FieldSig,
+                                    field.DeclaringType);
+
+                                newInstruction.Operand = CurrentAssembly.ManifestModule.Import(fieldRef);
+                            }
+                            else
+                            {
+                                newInstruction.Operand = CurrentAssembly.ManifestModule.ResolveField(field.Rid);
+                            }
                             break;
 
                         case OperandType.InlineMethod:
-                            newInstruction.Operand =
-                                CurrentAssembly.ManifestModule.Import(instruction.Operand as IMethod);
+                            IMethod method = instruction.Operand as IMethod;
+                            if (method.DeclaringType.DefinitionAssembly != CurrentAssembly.ManifestModule.Assembly ||
+                                method.Module != CurrentAssembly.ManifestModule)
+                            {
+                                MemberRefUser methodRef = new MemberRefUser(method.Module, method.Name, method.MethodSig,
+                                    method.DeclaringType);
+
+                                newInstruction.Operand = CurrentAssembly.ManifestModule.Import(methodRef);
+                            }
+                            else
+                            {
+                                newInstruction.Operand = CurrentAssembly.ManifestModule.ResolveMethod(method.Rid);
+                            }
                             break;
 
                         case OperandType.InlineType:
-                            newInstruction.Operand =
-                                CurrentAssembly.ManifestModule.Import(instruction.Operand as IType);
+                            ITypeDefOrRef type = instruction.Operand as ITypeDefOrRef;
+
+                            if (type.DefinitionAssembly != CurrentAssembly.ManifestModule.Assembly ||
+                                type.Module != CurrentAssembly.ManifestModule)
+                            {
+                                TypeRefUser typeRef = new TypeRefUser(type.Module, type.Namespace, type.Name, 
+                                    CurrentAssembly.ManifestModule.CorLibTypes.AssemblyRef);
+
+                                newInstruction.Operand = CurrentAssembly.ManifestModule.Import(typeRef);
+                            }
+                            else
+                            {
+                                newInstruction.Operand = CurrentAssembly.ManifestModule.ResolveTypeDefOrRef(type.Rid);
+                            }
                             break;
                         default:
                             newInstruction.Operand = instruction.Operand;
