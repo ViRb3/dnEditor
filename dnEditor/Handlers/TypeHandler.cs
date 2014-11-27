@@ -77,7 +77,9 @@ namespace dnEditor.Handlers
             }
             else
             {
-                _treeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() => targetType.AddTo(_treeViewHandler.CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == type.Namespace))));
+                _treeViewHandler.CurrentTreeView.BeginInvoke(new MethodInvoker(() => 
+                    targetType.AddTo(_treeViewHandler.CurrentModule.Nodes.Cast<TreeNode>().First(
+                    n => n.Text == type.Namespace))));
             }
         }
     }

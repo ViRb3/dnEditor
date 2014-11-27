@@ -9,6 +9,7 @@ using dnEditor.Misc;
 using dnEditor.Properties;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using dnlib.DotNet.Writer;
 using ExceptionHandler = dnlib.DotNet.Emit.ExceptionHandler;
 
 namespace dnEditor.Forms
@@ -301,8 +302,8 @@ namespace dnEditor.Forms
             {
                 Title = "Choose a location to write the new assembly...",
                 Filter = CurrentAssembly.IsExecutable
-                    ? "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll"
-                    : "DLL Files (*.dll)|*.dll|Executable Files (*.exe)|*.exe"
+                    ? "Executable Files (*.exe) [ThrowOnError]|*.exe|Executable Files (*.exe) [NoThrow]|*.exe|DLL Files (*.dll) [ThrowOnError]|*.dll|DLL Files (*.dll) [NoThrow]|*.dll"
+                    : "DLL Files (*.dll) [ThrowOnError]|*.dll|DLL Files (*.dll) [NoThrow]|*.dll|Executable Files (*.exe) [ThrowOnError]|*.exe|Executable Files (*.exe) [NoThrow]|*.exe"
             };
 
             if (dialog.ShowDialog() != DialogResult.OK)
@@ -310,13 +311,22 @@ namespace dnEditor.Forms
 
             try
             {
-                CurrentAssembly.ManifestModule.Write(dialog.FileName);
+                var writerOptions = new ModuleWriterOptions(CurrentAssembly.ManifestModule, new DummyModuleWriterListener());
+                writerOptions.Logger = dialog.FilterIndex == 1 || dialog.FilterIndex == 3 ? 
+                    DummyLogger.ThrowModuleWriterExceptionOnErrorInstance : DummyLogger.NoThrowInstance;
+
+                CurrentAssembly.ManifestModule.Write(dialog.FileName, writerOptions);
+                
             }
             catch (Exception)
             {
                 try
                 {
-                    CurrentAssembly.ManifestModule.NativeWrite(dialog.FileName);
+                    var nativeWriterOptions = new NativeModuleWriterOptions(CurrentAssembly.ManifestModule, new DummyModuleWriterListener());
+                    nativeWriterOptions.Logger = dialog.FilterIndex == 1 || dialog.FilterIndex == 3 ? 
+                        DummyLogger.ThrowModuleWriterExceptionOnErrorInstance : DummyLogger.NoThrowInstance;
+                    
+                    CurrentAssembly.ManifestModule.NativeWrite(dialog.FileName, nativeWriterOptions);
                 }
                 catch (Exception u)
                 {

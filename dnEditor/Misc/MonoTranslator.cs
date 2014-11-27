@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using dnEditor.Forms;
 using dnEditor.Misc.ILSpy;
 using dnlib.DotNet;
+using dnlib.DotNet.Writer;
 using Mono.Cecil;
 
 namespace dnEditor.Misc
@@ -18,15 +19,20 @@ namespace dnEditor.Misc
             {
                 try
                 {
-                    manifestModule.Write(assemblyStream);
+                    var writerOptions = new ModuleWriterOptions(manifestModule, new DummyModuleWriterListener());
+                    writerOptions.Logger = DummyLogger.NoThrowInstance;
+
+                    manifestModule.Write(assemblyStream, writerOptions);
                 }
                 catch (Exception)
                 {
-                    manifestModule.NativeWrite(assemblyStream);
+                    var nativeWriterOptions = new NativeModuleWriterOptions(manifestModule, new DummyModuleWriterListener());
+                    nativeWriterOptions.Logger = DummyLogger.NoThrowInstance;
+
+                    manifestModule.NativeWrite(assemblyStream, nativeWriterOptions);
                 }
 
                 assemblyStream.Position = 0;
-
                 AssemblyDefinition newAssembly = AssemblyDefinition.ReadAssembly(assemblyStream);
 
                 return newAssembly;
