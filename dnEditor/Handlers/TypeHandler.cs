@@ -20,7 +20,7 @@ namespace dnEditor.Handlers
         {
             var type = parentNode.Tag as TypeDef;
 
-            foreach (TypeDef nestedType in type.NestedTypes.OrderBy(t => t.Name))
+            foreach (TypeDef nestedType in type.NestedTypes.OrderBy(t => t.Name.ToLower()))
             {
                 TreeNode newTypeNode = _treeViewHandler.NewType(nestedType);
                 VirtualNodeUtilities.NewVirtualNode().AddTo(newTypeNode);
@@ -28,7 +28,7 @@ namespace dnEditor.Handlers
                 children.Add(newTypeNode);
             }
 
-            foreach (MethodDef method in type.Methods.OrderBy(m => m.Name))
+            foreach (MethodDef method in type.Methods.OrderBy(m => m.Name.ToLower()))
             {
                 List<MethodDef> accessorMethods = type.GetAccessorMethods();
 
@@ -36,13 +36,13 @@ namespace dnEditor.Handlers
                     children.Add(_treeViewHandler.NewMethod(method));
             }
 
-            foreach (PropertyDef property in type.Properties.OrderBy(p => p.Name))
+            foreach (PropertyDef property in type.Properties.OrderBy(p => p.Name.ToLower()))
                 children.Add(_treeViewHandler.NewProperty(property));
 
-            foreach (FieldDef field in type.Fields.OrderBy(f => f.Name))
+            foreach (FieldDef field in type.Fields.OrderBy(f => f.Name.ToLower()))
                 children.Add(_treeViewHandler.NewField(field));
 
-            foreach (EventDef @event in type.Events.OrderBy(e => e.Name))
+            foreach (EventDef @event in type.Events.OrderBy(e => e.Name.ToLower()))
                 children.Add(_treeViewHandler.NewEvent(@event));
         }
 

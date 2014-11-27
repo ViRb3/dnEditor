@@ -9,5 +9,6 @@ namespace dnEditor.Misc
         void treeView_DragEnter(object sender, DragEventArgs e);
         void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e);
         void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e);
+        void treeView1_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e);
     }
 }

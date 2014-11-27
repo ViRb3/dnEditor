@@ -68,12 +68,8 @@
     </Compile>
     <Compile Include="Handlers\SearchHandler.cs" />
     <Compile Include="Handlers\NodeDevirtualizer.cs" />
-    <Compile Include="Handlers\EventHandler.cs" />
-    <Compile Include="Handlers\FieldHandler.cs" />
     <Compile Include="Handlers\MethodHandler.cs" />
-    <Compile Include="Handlers\PropertyHandler.cs" />
     <Compile Include="Handlers\ReferenceHandler.cs" />
-    <Compile Include="Handlers\ResourceHandler.cs" />
     <Compile Include="Handlers\TypeHandler.cs" />
     <Compile Include="Misc\ByteUtils.cs" />
     <Compile Include="Misc\ColoredRow.cs" />

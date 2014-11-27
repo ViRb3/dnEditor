@@ -19,32 +19,25 @@ namespace dnEditor.Forms
         public static DataGridView DgVariables;
         public static RichTextBox RtbILSpy;
         public static CurrentAssembly CurrentAssembly;
-
         public static TabControl TabControl;
-
         public static int EditedInstructionIndex;
         public static int EditedVariableIndex;
         public static int EditedExceptionHandlerIndex;
-
         public static Instruction NewInstruction;
         public static Local NewVariable;
         public static ExceptionHandler NewExceptionHandler;
-
         public static TreeView TreeView;
         public static ToolStrip ToolStrip;
         public static ContextMenuStrip InstructionMenuStrip;
         public static ContextMenuStrip TreeMenuStrip;
         public static ContextMenuStrip VariableMenu;
         public static ContextMenuStrip ExceptionHandlerMenu;
-
-        private readonly List<Instruction> _copiedInstructions = new List<Instruction>();
-        private readonly List<Local> _copiedVariables = new List<Local>();
-
-        private readonly TreeViewHandler _treeViewHandler;
         private EditExceptionHandlerMode _editExceptionHandlerMode;
-
         private EditInstructionMode _editInstructionMode;
         private EditVariableMode _editVariableMode;
+        private readonly List<Instruction> _copiedInstructions = new List<Instruction>();
+        private readonly List<Local> _copiedVariables = new List<Local>();
+        private readonly TreeViewHandler _treeViewHandler;
 
         public MainForm()
         {
@@ -307,8 +300,9 @@ namespace dnEditor.Forms
             var dialog = new SaveFileDialog
             {
                 Title = "Choose a location to write the new assembly...",
-                Filter = CurrentAssembly.IsExecutable ? "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll" :
-                "DLL Files (*.dll)|*.dll|Executable Files (*.exe)|*.exe"
+                Filter = CurrentAssembly.IsExecutable
+                    ? "Executable Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll"
+                    : "DLL Files (*.dll)|*.dll|Executable Files (*.exe)|*.exe"
             };
 
             if (dialog.ShowDialog() != DialogResult.OK)
@@ -327,7 +321,7 @@ namespace dnEditor.Forms
                 catch (Exception u)
                 {
                     MessageBox.Show("Could not write assembly!" + Environment.NewLine + Environment.NewLine + u.Message,
-                    "Error");
+                        "Error");
                     return;
                 }
             }
@@ -432,11 +426,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                     switch (instruction.OpCode.OperandType)
                     {
                         case OperandType.InlineField:
-                            IField field = instruction.Operand as IField;
+                            var field = instruction.Operand as IField;
                             if (field.DeclaringType.DefinitionAssembly != CurrentAssembly.ManifestModule.Assembly ||
                                 field.Module != CurrentAssembly.ManifestModule)
                             {
-                                MemberRefUser fieldRef = new MemberRefUser(field.Module, field.Name, field.FieldSig,
+                                var fieldRef = new MemberRefUser(field.Module, field.Name, field.FieldSig,
                                     field.DeclaringType);
 
                                 newInstruction.Operand = CurrentAssembly.ManifestModule.Import(fieldRef);
@@ -448,11 +442,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                             break;
 
                         case OperandType.InlineMethod:
-                            IMethod method = instruction.Operand as IMethod;
+                            var method = instruction.Operand as IMethod;
                             if (method.DeclaringType.DefinitionAssembly != CurrentAssembly.ManifestModule.Assembly ||
                                 method.Module != CurrentAssembly.ManifestModule)
                             {
-                                MemberRefUser methodRef = new MemberRefUser(method.Module, method.Name, method.MethodSig,
+                                var methodRef = new MemberRefUser(method.Module, method.Name, method.MethodSig,
                                     method.DeclaringType);
 
                                 newInstruction.Operand = CurrentAssembly.ManifestModule.Import(methodRef);
@@ -464,12 +458,12 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                             break;
 
                         case OperandType.InlineType:
-                            ITypeDefOrRef type = instruction.Operand as ITypeDefOrRef;
+                            var type = instruction.Operand as ITypeDefOrRef;
 
                             if (type.DefinitionAssembly != CurrentAssembly.ManifestModule.Assembly ||
                                 type.Module != CurrentAssembly.ManifestModule)
                             {
-                                TypeRefUser typeRef = new TypeRefUser(type.Module, type.Namespace, type.Name, 
+                                var typeRef = new TypeRefUser(type.Module, type.Namespace, type.Name,
                                     CurrentAssembly.ManifestModule.CorLibTypes.AssemblyRef);
 
                                 newInstruction.Operand = CurrentAssembly.ManifestModule.Import(typeRef);
@@ -515,7 +509,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             code.AppendLine("//dnlib");
             code.AppendLine("//===================================");
             code.AppendLine("");
-            int i = 0;
+            var i = 0;
 
             if (CurrentAssembly.Method.NewMethod.Body.Variables.Count > 0)
             {
@@ -766,6 +760,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             _treeViewHandler.treeView_NodeMouseDoubleClick(sender, e, ref CurrentAssembly);
+        }
+
+        public void treeView1_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
+        {
+            _treeViewHandler.treeView1_NodeMouseHover(sender, e);
         }
 
         #endregion TreeView Events

@@ -43,7 +43,7 @@ namespace dnEditor.Handlers
             }
             else if (node.Tag is ModuleDefMD) // Module
             {
-                foreach (TypeDef type in (node.Tag as ModuleDefMD).Types.OrderBy(t => t.Name))
+                foreach (TypeDef type in (node.Tag as ModuleDefMD).Types.OrderBy(t => t.Name.ToLower()))
                 {
                     new TypeHandler(_treeViewHandler).HandleType(type, true);
                 }

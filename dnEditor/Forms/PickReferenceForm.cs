@@ -72,6 +72,11 @@ namespace dnEditor.Forms
             _treeViewHandler.treeView_NodeMouseDoubleClick(sender, e, ref _currentAssembly);
         }
 
+        public void treeView1_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
+        {
+            _treeViewHandler.treeView1_NodeMouseHover(sender, e);
+        }
+
         public void treeView_DragDrop(object sender, DragEventArgs e)
         {
             string result = _treeViewHandler.DragDrop(sender, e);
