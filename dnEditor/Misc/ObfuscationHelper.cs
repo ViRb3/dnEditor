@@ -18,6 +18,9 @@ namespace dnEditor.Misc
 
         public static string ShortenTreeNodeText(this string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return text;
+
             if (!string.IsNullOrEmpty(Settings.Default.MagicRegex))
                 text = Regex.Replace(text, Settings.Default.MagicRegex, "");
 

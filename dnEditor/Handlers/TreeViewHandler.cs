@@ -62,9 +62,9 @@ namespace dnEditor.Handlers
             referenceFolder.Nodes.AddRange(nodes.ToArray());
         }
 
-        public TreeNode NewNode(string text)
+        public TreeNode NewNode(string text, bool shorten = true)
         {
-            var node = new TreeNode(text.ShortenTreeNodeText());
+            var node = new TreeNode(shorten ? text.ShortenTreeNodeText() : text);
             node.ContextMenuStrip = CurrentTreeMenu;
 
             return node;
@@ -75,7 +75,7 @@ namespace dnEditor.Handlers
             if (String.IsNullOrEmpty(path))
                 throw new ArgumentException("Path is invalid!");
 
-            TreeNode node = NewNode(file.Name);
+            TreeNode node = NewNode(file.Name, false);
             node.Tag = file;
             node.ImageIndex = node.SelectedImageIndex = 0;
             node.ToolTipText = path;
@@ -85,7 +85,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewModule(ModuleDefMD module)
         {
-            TreeNode node = NewNode(module.FullName);
+            TreeNode node = NewNode(module.FullName, false);
             node.Tag = module;
             node.ImageIndex = node.SelectedImageIndex = 28;
 
@@ -94,7 +94,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewReferenceFolder()
         {
-            TreeNode node = NewNode("References");
+            TreeNode node = NewNode("References", false);
             node.ImageIndex = node.SelectedImageIndex = 44;
 
             return node;
@@ -102,7 +102,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewAssemblyRef(AssemblyRef assemblyRef)
         {
-            TreeNode node = NewNode(assemblyRef.FullName);
+            TreeNode node = NewNode(assemblyRef.FullName, false);
             node.Tag = assemblyRef;
             node.ImageIndex = node.SelectedImageIndex = 0;
 
@@ -111,7 +111,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewNameSpace(string nameSpace)
         {
-            TreeNode node = NewNode(nameSpace);
+            TreeNode node = NewNode(nameSpace, false);
             node.Tag = nameSpace;
             node.ImageIndex = node.SelectedImageIndex = 31;
 

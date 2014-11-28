@@ -882,5 +882,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         }
 
         #endregion EmptyInstructionsMenu        
+
+        private void lblMagicRegex_Click(object sender, EventArgs e)
+        {
+            txtMagicRegex.Text = Settings.Default.MagicRegex = @"[^\x20-\x7F]";
+            Settings.Default.Save();
+        }
     }
 }

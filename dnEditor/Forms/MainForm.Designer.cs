@@ -835,6 +835,7 @@
             this.lblMagicRegex.Size = new System.Drawing.Size(77, 22);
             this.lblMagicRegex.Text = "Magic Regex:";
             this.lblMagicRegex.ToolTipText = "All symbols matching this regex will not be displayed";
+            this.lblMagicRegex.Click += new System.EventHandler(this.lblMagicRegex_Click);
             // 
             // txtMagicRegex
             // 
@@ -1093,7 +1094,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Name = "MainForm";
-            this.Text = "dnEditor v0.70 Beta ~ViRb3";
+            this.Text = "dnEditor v0.71 Beta ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
             this.emptyBodyMenu.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
