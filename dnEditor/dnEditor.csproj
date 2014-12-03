@@ -67,7 +67,7 @@
       <DependentUpon>MultipleInstructionsSelectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Handlers\SearchHandler.cs" />
-    <Compile Include="Handlers\NodeDevirtualizer.cs" />
+    <Compile Include="Handlers\VirtualNodeHandler.cs" />
     <Compile Include="Handlers\MethodHandler.cs" />
     <Compile Include="Handlers\ReferenceHandler.cs" />
     <Compile Include="Handlers\TypeHandler.cs" />

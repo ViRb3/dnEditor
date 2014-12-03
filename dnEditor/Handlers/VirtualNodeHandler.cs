@@ -6,6 +6,21 @@ using dnlib.DotNet;
 
 namespace dnEditor.Handlers
 {
+    public class VirtualNode
+    {
+        public static string Name = "VIRTNODE";
+    }
+
+    public class DeVirtualNode
+    {
+        public static string Name = "DEVIRTNODE";
+    }
+
+    public static class VirtualNodeHandler
+    {
+        public static int VirtualNodes;
+    }
+
     public class NodeDevirtualizer
     {
         public delegate void EventHandler(TreeNode processedNode);
@@ -85,6 +100,8 @@ namespace dnEditor.Handlers
                 Tag = new VirtualNode()
             };
 
+            VirtualNodeHandler.VirtualNodes++;
+
             return node;
         }
 
@@ -130,6 +147,7 @@ namespace dnEditor.Handlers
             {
                 var processor = new NodeDevirtualizer(expandedNode, treeViewHandler);
                 processor.ProcessNode();
+                VirtualNodeHandler.VirtualNodes--;
                 expandedNode.Nodes.Remove(expandedNode.FindVirtualNode());
             }
         }

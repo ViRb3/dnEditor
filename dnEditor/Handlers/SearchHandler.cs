@@ -15,7 +15,7 @@ namespace dnEditor.Handlers
         Field,
         String,
         OpCode,
-        Operand,
+        Operand
     }
 
     public class SearchHandler
@@ -54,7 +54,9 @@ namespace dnEditor.Handlers
         public void Search()
         {
             object result = DoSearch();
-            SearchFinished.Invoke(result);
+
+            if (SearchFinished != null)
+                SearchFinished.Invoke(result);
         }
 
         private object DoSearch()
@@ -74,68 +76,66 @@ namespace dnEditor.Handlers
 
             if (_searchType == SearchType.OpCode)
             {
-                #region OpCode
-
-                if (!(_searchNode.Tag is MethodDef)) return null;
-
-                DataGridView dgBody = MainForm.DgBody;
-
-                List<DataGridViewRow> resultRows =
-                    dgBody.Rows.Cast<DataGridViewRow>()
-                        .Where(r => r.Cells["OpCode"].Value.ToString().ToLower().Trim() == _text.ToLower())
-                        .ToList();
-
-                DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
-
-                return matchingRow == null ? null : matchingRow.Index as object;
-
-                #endregion OpCode
+                return SearchOpCode();
             }
 
             if (_searchType == SearchType.String)
             {
-                #region String
-
-                if (!(_searchNode.Tag is MethodDef)) return null;
-
-                DataGridView dgBody = MainForm.DgBody;
-
-                List<DataGridViewRow> resultRows =
-                    dgBody.Rows.Cast<DataGridViewRow>()
-                        .Where(
-                            r =>
-                                r.Cells["OpCode"].Value.ToString().Trim() == "ldstr" &&
-                                r.Cells["Operand"].Value.ToString().ToLower().Contains(_text))
-                        .ToList();
-
-                DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
-
-                return matchingRow == null ? null : matchingRow.Index as object;
-
-                #endregion String
+                return SearchStringInMethod();
             }
 
             if (_searchType == SearchType.Operand)
             {
-                #region Operand
-
-                if (!(_searchNode.Tag is MethodDef)) return null;
-
-                List<DataGridViewRow> resultRows =
-                    MainForm.DgBody.Rows.Cast<DataGridViewRow>()
-                        .Where(r => r.Cells["Operand"].Value.ToString().ToLower().Contains(_text)).ToList();
-
-                DataGridViewRow matchingRow = resultRows
-                    .FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows.TopmostRow().Index);
-
-                return matchingRow == null ? null : matchingRow.Index as object;
-
-                #endregion Operand
+                return SearchOperand();
             }
 
             return null;
+        }
+
+        private object SearchOperand()
+        {
+            if (!(_searchNode.Tag is MethodDef)) return null;
+
+            List<DataGridViewRow> resultRows =
+                MainForm.DgBody.Rows.Cast<DataGridViewRow>().Where(
+                    r => r.Cells["Operand"].Value.ToString().ToLower().Contains(_text)).ToList();
+
+            DataGridViewRow matchingRow =
+                resultRows.FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows.TopmostRow().Index);
+
+            return matchingRow == null ? null : matchingRow.Index as object;
+        }
+
+        private object SearchStringInMethod()
+        {
+            if (!(_searchNode.Tag is MethodDef)) return null;
+
+            DataGridView dgBody = MainForm.DgBody;
+
+            List<DataGridViewRow> resultRows =
+                dgBody.Rows.Cast<DataGridViewRow>().Where(
+                    r =>
+                        r.Cells["OpCode"].Value.ToString().Trim() == "ldstr" &&
+                        r.Cells["Operand"].Value.ToString().ToLower().Contains(_text)).ToList();
+
+            DataGridViewRow matchingRow = resultRows.FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
+
+            return matchingRow == null ? null : matchingRow.Index as object;
+        }
+
+        private object SearchOpCode()
+        {
+            if (!(_searchNode.Tag is MethodDef)) return null;
+
+            DataGridView dgBody = MainForm.DgBody;
+
+            List<DataGridViewRow> resultRows =
+                dgBody.Rows.Cast<DataGridViewRow>().Where(
+                    r => r.Cells["OpCode"].Value.ToString().ToLower().Trim() == _text.ToLower()).ToList();
+
+            DataGridViewRow matchingRow = resultRows.FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
+
+            return matchingRow == null ? null : matchingRow.Index as object;
         }
     }
 }

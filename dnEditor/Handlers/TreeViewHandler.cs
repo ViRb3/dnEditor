@@ -11,16 +11,6 @@ using dnlib.Utils;
 
 namespace dnEditor.Handlers
 {
-    public class VirtualNode
-    {
-        public static string Name = "VIRTNODE";
-    }
-
-    public class DeVirtualNode
-    {
-        public static string Name = "DEVIRTNODE";
-    }
-
     public class TreeViewHandler : ITreeMenu
     {
         public TreeNode CurrentMethod;
