@@ -19,17 +19,31 @@ namespace dnEditor.Misc
             {
                 try
                 {
-                    var writerOptions = new ModuleWriterOptions(manifestModule, new DummyModuleWriterListener());
-                    writerOptions.Logger = DummyLogger.NoThrowInstance;
+                    if (manifestModule.IsILOnly)
+                    {
+                        var writerOptions = new ModuleWriterOptions(manifestModule);
+                        writerOptions.Logger = DummyLogger.NoThrowInstance;
 
-                    manifestModule.Write(assemblyStream, writerOptions);
+                        MetaDataOptions metaDataOptions = new MetaDataOptions();
+                        metaDataOptions.Flags = MetaDataFlags.PreserveAll;
+
+                        manifestModule.Write(assemblyStream, writerOptions);
+                    }
+                    else
+                    {
+                        var writerOptions = new NativeModuleWriterOptions(manifestModule);
+                        writerOptions.Logger = DummyLogger.NoThrowInstance;
+
+                        MetaDataOptions metaDataOptions = new MetaDataOptions();
+                        metaDataOptions.Flags = MetaDataFlags.PreserveAll;
+
+                        manifestModule.NativeWrite(assemblyStream, writerOptions);
+                    }
                 }
                 catch (Exception)
                 {
-                    var nativeWriterOptions = new NativeModuleWriterOptions(manifestModule, new DummyModuleWriterListener());
-                    nativeWriterOptions.Logger = DummyLogger.NoThrowInstance;
-
-                    manifestModule.NativeWrite(assemblyStream, nativeWriterOptions);
+                    if (assemblyStream.Length == 0)
+                        return null;
                 }
 
                 assemblyStream.Position = 0;
@@ -61,6 +75,9 @@ namespace dnEditor.Misc
                 try
                 {
                     AssemblyDefinition assembly = Translate(MainForm.CurrentAssembly.ManifestModule);
+
+                    if (assembly == null)
+                        throw new Exception("Could not write assembly to stream!");
 
                     var dnMethod = new MonoMethod(MainForm.CurrentAssembly.Method.NewMethod);
                     object method = dnMethod.Method(assembly);

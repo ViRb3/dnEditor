@@ -66,6 +66,12 @@
     <Compile Include="Forms\MultipleInstructionsSelectForm.Designer.cs">
       <DependentUpon>MultipleInstructionsSelectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\WriteAssemblyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WriteAssemblyForm.Designer.cs">
+      <DependentUpon>WriteAssemblyForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Handlers\SearchHandler.cs" />
     <Compile Include="Handlers\VirtualNodeHandler.cs" />
     <Compile Include="Handlers\MethodHandler.cs" />
@@ -127,6 +133,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PickReferenceForm.resx">
       <DependentUpon>PickReferenceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WriteAssemblyForm.resx">
+      <DependentUpon>WriteAssemblyForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

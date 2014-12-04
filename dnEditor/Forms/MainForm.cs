@@ -298,45 +298,7 @@ namespace dnEditor.Forms
         {
             if (CurrentAssembly == null) return;
 
-            var dialog = new SaveFileDialog
-            {
-                Title = "Choose a location to write the new assembly...",
-                Filter = CurrentAssembly.IsExecutable
-                    ? "Executable Files (*.exe) [ThrowOnError]|*.exe|Executable Files (*.exe) [NoThrow]|*.exe|DLL Files (*.dll) [ThrowOnError]|*.dll|DLL Files (*.dll) [NoThrow]|*.dll"
-                    : "DLL Files (*.dll) [ThrowOnError]|*.dll|DLL Files (*.dll) [NoThrow]|*.dll|Executable Files (*.exe) [ThrowOnError]|*.exe|Executable Files (*.exe) [NoThrow]|*.exe"
-            };
-
-            if (dialog.ShowDialog() != DialogResult.OK)
-                return;
-
-            try
-            {
-                var writerOptions = new ModuleWriterOptions(CurrentAssembly.ManifestModule, new DummyModuleWriterListener());
-                writerOptions.Logger = dialog.FilterIndex == 1 || dialog.FilterIndex == 3 ? 
-                    DummyLogger.ThrowModuleWriterExceptionOnErrorInstance : DummyLogger.NoThrowInstance;
-
-                CurrentAssembly.ManifestModule.Write(dialog.FileName, writerOptions);
-                
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    var nativeWriterOptions = new NativeModuleWriterOptions(CurrentAssembly.ManifestModule, new DummyModuleWriterListener());
-                    nativeWriterOptions.Logger = dialog.FilterIndex == 1 || dialog.FilterIndex == 3 ? 
-                        DummyLogger.ThrowModuleWriterExceptionOnErrorInstance : DummyLogger.NoThrowInstance;
-                    
-                    CurrentAssembly.ManifestModule.NativeWrite(dialog.FileName, nativeWriterOptions);
-                }
-                catch (Exception u)
-                {
-                    MessageBox.Show("Could not write assembly!" + Environment.NewLine + Environment.NewLine + u.Message,
-                        "Error");
-                    return;
-                }
-            }
-
-            MessageBox.Show("Assembly written to:" + Environment.NewLine + dialog.FileName, "Success");
+            new WriteAssemblyForm(CurrentAssembly.ManifestModule).ShowDialog();
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
