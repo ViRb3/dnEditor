@@ -205,7 +205,7 @@
             // btnCatchType
             // 
             this.btnCatchType.Enabled = false;
-            this.btnCatchType.Location = new System.Drawing.Point(379, 32);
+            this.btnCatchType.Location = new System.Drawing.Point(379, 38);
             this.btnCatchType.Name = "btnCatchType";
             this.btnCatchType.Size = new System.Drawing.Size(33, 21);
             this.btnCatchType.TabIndex = 5;
