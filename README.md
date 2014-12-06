@@ -26,10 +26,10 @@ a ticket. And wait. I will eventually get through it.
  - [ ] Add resources support.
 
 ##Credits and thanks:
+ - 0xd4d (dnlib) for the epic library that made this whole project possible and the time he took to help me. 
+ Yes, if dnlib didn't exist, this would have only been a fancy dream.
  - WiCKY Hu (Simple Assembly Explorer) for his amazing piece of work. I "borrowed" many ideas and features
  from there, for which I hope I won't have done any bad.
- - 0xd4d (dnlib) for the epic library that made this whole project possible. Yes, if that didn't exist,
- this would have only been your fancy dream.
  - yck1509 (dnSpy & dnlib fork) for the first dnlib-based assembly decompiler. That definitely served me as a
  reference of dnlib itself and what I wasn't sure how to do. I am also using "a fork of his fork of dnlib",
  though I use none of his implementations. Still worth mentioning.
@@ -39,6 +39,8 @@ a ticket. And wait. I will eventually get through it.
  - The guys behind ICSHARPCODE (ILSpy) [Daniel Grunwald, David Srbecky, Ed Harvey, Siegfried Pammer
  Artur Zgodzinski, Eusebiu Marcu, Pent Ploompuu] for their unbelievable work. 
  If they didn't keep their everything open-source I wouldn't have been able to add the decompiler for some 15 minutes.
+ - li0nsar3c00l for wanting to be here. And for helping me out too, of course.
+ - XenoCode for the icon dnEditor currently uses.
  
 ####All licenses can be found in the LICENSES.md file in the project root directory.
  

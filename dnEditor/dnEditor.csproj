@@ -34,6 +34,9 @@
   <PropertyGroup>
     <StartupObject>dnEditor.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -159,6 +162,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icon.ico" />
     <Content Include="Images\Assembly.png" />
     <Content Include="Images\AssemblyList.png" />
     <Content Include="Images\AssemblyWarning.png" />

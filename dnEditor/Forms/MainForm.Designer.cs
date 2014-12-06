@@ -1093,6 +1093,7 @@
             this.ClientSize = new System.Drawing.Size(843, 439);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "dnEditor v0.72 Beta ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
