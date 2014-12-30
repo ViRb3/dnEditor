@@ -78,8 +78,31 @@ namespace dnEditor.Handlers
             }
             else if (member is MethodDef)
             {
-                _currentSearchNode =
-                   _currentSearchNode.Nodes.Cast<TreeNode>().First(n => n.Text == NewMethod(member as MethodDef).Text);
+                var method = (MethodDef) member;
+
+                TreeNode newNode = _currentSearchNode.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == NewMethod(method).Text);
+
+                if (newNode != null)
+                    _currentSearchNode = newNode;
+                else
+                {
+                    foreach (TreeNode node in _currentSearchNode.Nodes.Cast<TreeNode>().Where(n => n.Tag is PropertyDef || n.Tag is EventDef))
+                    {
+                        newNode = node.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Text == NewMethod(method).Text);
+
+                        if (newNode != null)
+                        {
+                            _currentSearchNode = newNode;
+                            break;
+                        }
+                    }
+
+                    if (newNode == null)
+                    {
+                        _searchPath.Clear();
+                        BrowseAndExpandMember();
+                    }
+                }
 
                 treeView_NodeMouseClick(this,
                     new TreeNodeMouseClickEventArgs(_currentSearchNode, MouseButtons.Left, 1,
