@@ -876,6 +876,29 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                 ListAnalysis.EndUpdate();
                 ListAnalysis.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             }
+            else if (result is Dictionary<object, string>) // string result member
+            {
+                var resultList = result as Dictionary<object, string>;
+
+                if (resultList.Count == 0)
+                    return;
+
+                AnalysisHandler.UpdateStatus("Search results");
+
+                ListAnalysis.BeginUpdate();
+
+                foreach (KeyValuePair<object, string> pair in resultList)
+                {
+                    var listViewItem = new ListViewItem();
+                    listViewItem.Text = string.Format("{0} --> {1}", pair.Key, pair.Value);
+                    listViewItem.Tag = pair.Key;
+
+                    ListAnalysis.Items.Add(listViewItem);
+                }
+
+                ListAnalysis.EndUpdate();
+                ListAnalysis.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)

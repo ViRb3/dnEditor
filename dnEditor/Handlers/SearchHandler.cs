@@ -22,13 +22,11 @@ namespace dnEditor.Handlers
     {
         public delegate void EventHandler(object result);
 
-        private readonly TreeView _searchTreeView;
         private readonly TreeNode _searchNode;
-
-        private readonly SearchType _searchType;
         private readonly string _searchText;
+        private readonly TreeView _searchTreeView;
+        private readonly SearchType _searchType;
         private readonly TreeViewHandler _treeViewHandler;
-
         public TreeNode FoundNode = null;
 
         public SearchHandler(TreeNode searchNode, string text, SearchType searchType, TreeViewHandler treeViewHandler)
@@ -89,7 +87,7 @@ namespace dnEditor.Handlers
             if (_searchType == SearchType.OpCode)
             {
                 return SearchOpCode();
-            }    
+            }
 
             if (_searchType == SearchType.Operand)
             {
@@ -103,12 +101,10 @@ namespace dnEditor.Handlers
         {
             if (!(_searchNode.Tag is MethodDef)) return null;
 
-            List<DataGridViewRow> resultRows =
-                MainForm.DgBody.Rows.Cast<DataGridViewRow>().Where(
-                    r => r.Cells["Operand"].Value.ToString().ToLower().Contains(_searchText)).ToList();
+            List<DataGridViewRow> resultRows = MainForm.DgBody.Rows.Cast<DataGridViewRow>().Where(r => 
+                r.Cells["Operand"].Value.ToString().ToLower().Contains(_searchText)).ToList();
 
-            DataGridViewRow matchingRow =
-                resultRows.FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows.TopmostRow().Index);
+            DataGridViewRow matchingRow = resultRows.FirstOrDefault(row => row.Index > MainForm.DgBody.SelectedRows.TopmostRow().Index);
 
             return matchingRow == null ? null : matchingRow.Index as object;
         }
@@ -125,7 +121,8 @@ namespace dnEditor.Handlers
                         r.Cells["OpCode"].Value.ToString().Trim() == "ldstr" &&
                         r.Cells["Operand"].Value.ToString().ToLower().Contains(_searchText)).ToList();
 
-            DataGridViewRow matchingRow = resultRows.FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
+            DataGridViewRow matchingRow =
+                resultRows.FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
 
             return matchingRow == null ? null : matchingRow.Index as object;
         }
@@ -140,7 +137,8 @@ namespace dnEditor.Handlers
                 dgBody.Rows.Cast<DataGridViewRow>().Where(
                     r => r.Cells["OpCode"].Value.ToString().ToLower().Trim() == _searchText.ToLower()).ToList();
 
-            DataGridViewRow matchingRow = resultRows.FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
+            DataGridViewRow matchingRow =
+                resultRows.FirstOrDefault(row => row.Index > dgBody.SelectedRows.TopmostRow().Index);
 
             return matchingRow == null ? null : matchingRow.Index as object;
         }
@@ -148,8 +146,8 @@ namespace dnEditor.Handlers
 
     public class SearchAny
     {
-        private readonly TreeViewHandler _treeViewHandler;
         private readonly string _searchText;
+        private readonly TreeViewHandler _treeViewHandler;
 
         public SearchAny(TreeViewHandler treeViewHandler, string searchText)
         {
@@ -224,8 +222,8 @@ namespace dnEditor.Handlers
 
     public class SearchMDToken
     {
-        private readonly TreeViewHandler _treeViewHandler;
         private readonly string _searchText;
+        private readonly TreeViewHandler _treeViewHandler;
 
         public SearchMDToken(TreeViewHandler treeViewHandler, string searchText)
         {
@@ -305,8 +303,8 @@ namespace dnEditor.Handlers
 
     public class SearchStringGlobal
     {
-        private readonly TreeViewHandler _treeViewHandler;
         private readonly string _searchText;
+        private readonly TreeViewHandler _treeViewHandler;
 
         public SearchStringGlobal(TreeViewHandler treeViewHandler, string searchText)
         {
@@ -314,9 +312,9 @@ namespace dnEditor.Handlers
             _searchText = searchText;
         }
 
-        public List<object> Search()
+        public Dictionary<object, string> Search()
         {
-            var results = new List<object>();
+            var results = new Dictionary<object, string>();
 
             var currentModule = _treeViewHandler.CurrentModule.Tag as ModuleDefMD;
             if (currentModule == null)
@@ -324,35 +322,52 @@ namespace dnEditor.Handlers
 
             foreach (TypeDef type in currentModule.Types)
             {
-                results.AddRange(ProcessChildren(type));
+                Dictionary<object, string> output = ProcessChildren(type);
+
+                foreach (KeyValuePair<object, string> pair in output)
+                    results.Add(pair.Key, pair.Value);
             }
 
             return results;
         }
 
-        public List<object> ProcessChildren(TypeDef type)
+        public Dictionary<object, string> ProcessChildren(TypeDef type)
         {
-            var results = new List<object>();
+            var results = new Dictionary<object, string>();
 
-            results.AddRange(type.Methods.Where(CheckMember));
+            foreach (MethodDef method in type.Methods)
+            {
+                string output = CheckMember(method);
+
+                if (!string.IsNullOrEmpty(output))
+                    results.Add(method, output);
+            }
 
             foreach (TypeDef nestedType in type.NestedTypes)
-                results.AddRange(ProcessChildren(nestedType));
+            {
+                Dictionary<object, string> output = ProcessChildren(nestedType);
+
+                foreach (KeyValuePair<object, string> pair in output)
+                    results.Add(pair.Key, pair.Value);
+            }
 
             return results;
         }
 
-        public bool CheckMember(object member)
+        public string CheckMember(object member)
         {
             if (!(member is MethodDef))
-                return false;
+                return null;
 
             var method = (MethodDef) member;
 
             if (!method.HasBody || !method.Body.HasInstructions)
-                return false;
+                return null;
 
-            return method.Body.Instructions.Any(i => i.OpCode == OpCodes.Ldstr && i.Operand.ToString().ToLower() == _searchText);
+            Instruction result =  method.Body.Instructions.FirstOrDefault(i => i.OpCode == OpCodes.Ldstr && 
+                i.Operand != null && i.Operand.ToString().ToLower().Contains(_searchText));
+
+            return result == null ? null : result.Operand.ToString();
         }
     }
 }
