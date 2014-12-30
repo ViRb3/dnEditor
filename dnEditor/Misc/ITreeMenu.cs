@@ -8,7 +8,7 @@ namespace dnEditor.Misc
 
         void goToEntryPointToolStripMenuItem_Click(object sender, EventArgs e);
 
-        void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e);
+        void goToModuleCCtorToolStripMenuItem_Click(object sender, EventArgs e);
 
         void expandToolStripMenuItem_Click(object sender, EventArgs e);
 

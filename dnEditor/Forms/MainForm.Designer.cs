@@ -35,9 +35,9 @@ namespace dnEditor.Forms
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.dgBody = new System.Windows.Forms.DataGridView();
@@ -63,6 +63,7 @@ namespace dnEditor.Forms
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.lblAnalysis = new System.Windows.Forms.Label();
             this.listAnalysis = new System.Windows.Forms.ListView();
+            this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dgDetails = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -98,6 +99,9 @@ namespace dnEditor.Forms
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.saveInstructionsToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.goToEntryPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToModuleCCtorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.collapseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.collapseAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,10 +120,6 @@ namespace dnEditor.Forms
             this.exceptionHandlerMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.removeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.goToEntryPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.goToModuleCtorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).BeginInit();
             this.emptyBodyMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -251,14 +251,14 @@ namespace dnEditor.Forms
             this.opcode,
             this.operand});
             this.dgBody.ContextMenuStrip = this.emptyBodyMenu;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgBody.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgBody.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgBody.Location = new System.Drawing.Point(0, 0);
             this.dgBody.Name = "dgBody";
             this.dgBody.ReadOnly = true;
@@ -405,14 +405,14 @@ namespace dnEditor.Forms
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3});
             this.dgVariables.ContextMenuStrip = this.emptyVariableMenu;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgVariables.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgVariables.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgVariables.Location = new System.Drawing.Point(0, 0);
             this.dgVariables.Name = "dgVariables";
             this.dgVariables.ReadOnly = true;
@@ -559,14 +559,14 @@ namespace dnEditor.Forms
             this.dataGridViewTextBoxColumn10,
             this.dataGridViewTextBoxColumn11,
             this.dataGridViewTextBoxColumn12});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgDetails.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgDetails.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgDetails.Location = new System.Drawing.Point(0, 0);
             this.dgDetails.Name = "dgDetails";
             this.dgDetails.ReadOnly = true;
@@ -1004,7 +1004,7 @@ namespace dnEditor.Forms
             // 
             this.treeMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.goToEntryPointToolStripMenuItem,
-            this.goToModuleCtorToolStripMenuItem,
+            this.goToModuleCCtorToolStripMenuItem,
             this.toolStripSeparator11,
             this.collapseToolStripMenuItem,
             this.expandToolStripMenuItem,
@@ -1012,39 +1012,58 @@ namespace dnEditor.Forms
             this.toolStripSeparator7,
             this.closeToolStripMenuItem});
             this.treeMenu.Name = "treeMenu";
-            this.treeMenu.Size = new System.Drawing.Size(171, 148);
+            this.treeMenu.Size = new System.Drawing.Size(179, 148);
             this.treeMenu.Opened += new System.EventHandler(this.treeMenu_Opened);
+            // 
+            // goToEntryPointToolStripMenuItem
+            // 
+            this.goToEntryPointToolStripMenuItem.Name = "goToEntryPointToolStripMenuItem";
+            this.goToEntryPointToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.goToEntryPointToolStripMenuItem.Text = "Go to EntryPoint";
+            this.goToEntryPointToolStripMenuItem.Click += new System.EventHandler(this.goToEntryPointToolStripMenuItem_Click);
+            // 
+            // goToModuleCCtorToolStripMenuItem
+            // 
+            this.goToModuleCCtorToolStripMenuItem.Name = "goToModuleCCtorToolStripMenuItem";
+            this.goToModuleCCtorToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.goToModuleCCtorToolStripMenuItem.Text = "Go to ModuleCCtor";
+            this.goToModuleCCtorToolStripMenuItem.Click += new System.EventHandler(this.goToModuleCCtorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(175, 6);
             // 
             // collapseToolStripMenuItem
             // 
             this.collapseToolStripMenuItem.Name = "collapseToolStripMenuItem";
-            this.collapseToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.collapseToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.collapseToolStripMenuItem.Text = "Collapse";
             this.collapseToolStripMenuItem.Click += new System.EventHandler(this.collapseToolStripMenuItem_Click);
             // 
             // expandToolStripMenuItem
             // 
             this.expandToolStripMenuItem.Name = "expandToolStripMenuItem";
-            this.expandToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.expandToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.expandToolStripMenuItem.Text = "Expand";
             this.expandToolStripMenuItem.Click += new System.EventHandler(this.expandToolStripMenuItem_Click);
             // 
             // collapseAllToolStripMenuItem
             // 
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
-            this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.collapseAllToolStripMenuItem.Text = "Collapse all";
             this.collapseAllToolStripMenuItem.Click += new System.EventHandler(this.collapseAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(167, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(175, 6);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.closeToolStripMenuItem.Text = "Close assembly";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -1143,25 +1162,6 @@ namespace dnEditor.Forms
             this.removeToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
             this.removeToolStripMenuItem1.Text = "Remove";
             this.removeToolStripMenuItem1.Click += new System.EventHandler(this.removeToolStripMenuItem1_Click);
-            // 
-            // goToEntryPointToolStripMenuItem
-            // 
-            this.goToEntryPointToolStripMenuItem.Name = "goToEntryPointToolStripMenuItem";
-            this.goToEntryPointToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.goToEntryPointToolStripMenuItem.Text = "Go to EntryPoint";
-            this.goToEntryPointToolStripMenuItem.Click += new System.EventHandler(this.goToEntryPointToolStripMenuItem_Click);
-            // 
-            // goToModuleCtorToolStripMenuItem
-            // 
-            this.goToModuleCtorToolStripMenuItem.Name = "goToModuleCtorToolStripMenuItem";
-            this.goToModuleCtorToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.goToModuleCtorToolStripMenuItem.Text = "Go to ModuleCtor";
-            this.goToModuleCtorToolStripMenuItem.Click += new System.EventHandler(this.goToModuleCtorToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator11
-            // 
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(167, 6);
             // 
             // MainForm
             // 
@@ -1280,7 +1280,7 @@ namespace dnEditor.Forms
         private ListView listAnalysis;
         private ColumnHeader columnHeader;
         private ToolStripMenuItem goToEntryPointToolStripMenuItem;
-        private ToolStripMenuItem goToModuleCtorToolStripMenuItem;
+        private ToolStripMenuItem goToModuleCCtorToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator11;
     }
 }

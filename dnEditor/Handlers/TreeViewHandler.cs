@@ -370,7 +370,7 @@ namespace dnEditor.Handlers
             BrowseAndExpandMember((CurrentModule.Tag as ModuleDefMD).EntryPoint);
         }
 
-        public void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e)
+        public void goToModuleCCtorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             BrowseAndExpandMember((CurrentModule.Tag as ModuleDefMD).GlobalType.FindStaticConstructor());
         }

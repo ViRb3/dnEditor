@@ -634,9 +634,9 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             _treeViewHandler.goToEntryPointToolStripMenuItem_Click(sender, e);
         }
 
-        public void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e)
+        public void goToModuleCCtorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _treeViewHandler.goToModuleCtorToolStripMenuItem_Click(sender, e);
+            _treeViewHandler.goToModuleCCtorToolStripMenuItem_Click(sender, e);
         }
 
         public void expandToolStripMenuItem_Click(object sender, EventArgs e)
