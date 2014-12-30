@@ -13,6 +13,8 @@ namespace dnEditor.Handlers
 {
     public class TreeViewHandler : ITreeMenu
     {
+        private TreeNode _currentSearchNode;
+        private List<object> _searchPath;
         public TreeNode CurrentMethod;
         public TreeNode CurrentModule;
         public ContextMenuStrip CurrentTreeMenu;
@@ -26,6 +28,111 @@ namespace dnEditor.Handlers
         {
             CurrentTreeView = currentTreeView;
             CurrentTreeMenu = currentTreeMenu;
+        }
+
+        public void BrowseAndExpandMember(object member)
+        {
+            var memberPath = new MemberPath(member);
+
+            if (memberPath.Path.Count == 0)
+                return;
+
+            MainForm.HandleExpand = false;
+            _searchPath = memberPath.Path;
+
+            TreeNode node = CurrentModule;
+
+            while (node != null)
+            {
+                node.Expand();
+                node = node.Parent;
+            }
+
+            var mainType = memberPath.Path[0] as TypeDef;
+            _currentSearchNode = CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == mainType.Namespace);
+            _currentSearchNode.Expand();
+
+            BrowseAndExpandMember();
+        }
+
+        private void BrowseAndExpandMember()
+        {
+            object member = _searchPath.FirstOrDefault();
+
+            if (member == null)
+            {
+                CurrentTreeView.Focus();
+                _currentSearchNode.EnsureVisible();
+                CurrentTreeView.SelectedNode = _currentSearchNode;
+
+                MainForm.HandleExpand = true;
+                return;
+            }
+
+            if (member is TypeDef)
+            {
+                _currentSearchNode =
+                   _currentSearchNode.Nodes.Cast<TreeNode>().First(n => n.Text == NewType(member as TypeDef).Text);
+
+                _currentSearchNode.Expand();
+            }
+            else if (member is MethodDef)
+            {
+                _currentSearchNode =
+                   _currentSearchNode.Nodes.Cast<TreeNode>().First(n => n.Text == NewMethod(member as MethodDef).Text);
+
+                treeView_NodeMouseClick(this,
+                    new TreeNodeMouseClickEventArgs(_currentSearchNode, MouseButtons.Left, 1,
+                        _currentSearchNode.Bounds.X, _currentSearchNode.Bounds.Y), MainForm.CurrentAssembly);
+
+                DataGridViewHandler.SelectTab();
+            }
+            else if (member is FieldDef)
+            {
+                _currentSearchNode =
+                    _currentSearchNode.Nodes.Cast<TreeNode>().First(n => n.Text == NewField(member as FieldDef).Text);
+
+                treeView_NodeMouseClick(this,
+                    new TreeNodeMouseClickEventArgs(_currentSearchNode, MouseButtons.Left, 1,
+                        _currentSearchNode.Bounds.X, _currentSearchNode.Bounds.Y), MainForm.CurrentAssembly);
+
+                DataGridViewHandler.SelectTab();
+            }
+            else if (member is PropertyDef)
+            {
+                _currentSearchNode =
+                    _currentSearchNode.Nodes.Cast<TreeNode>().First(n => n.Text == NewProperty(member as PropertyDef).Text);
+
+                _currentSearchNode.Expand();
+            }
+            else if (member is EventDef)
+            {
+                _currentSearchNode =
+                    _currentSearchNode.Nodes.Cast<TreeNode>().First(n => n.Text == NewEvent(member as EventDef).Text);
+
+                _currentSearchNode.Expand();
+            }
+
+            _searchPath.RemoveAt(0);
+
+            if (_currentSearchNode.HasVirtualNode())
+            {
+                var processor = new NodeDevirtualizer(_currentSearchNode, this);
+                processor.WorkerFinished += searchProcessor_WorkerFinished;
+                processor.ProcessNode();
+                VirtualNodeHandler.VirtualNodes--;
+                _currentSearchNode.Nodes.Remove(_currentSearchNode.FindVirtualNode());
+            }
+            else
+            {
+                BrowseAndExpandMember();
+            }
+        }
+
+        private void searchProcessor_WorkerFinished(TreeNode processedNode)
+        {
+            _currentSearchNode = processedNode;
+            BrowseAndExpandMember();
         }
 
         private void OrderNamespaces()
@@ -55,6 +162,7 @@ namespace dnEditor.Handlers
         public TreeNode NewNode(string text, bool shorten = true)
         {
             var node = new TreeNode(shorten ? text.ShortenTreeNodeText() : text);
+            node.Name = text;
             node.ContextMenuStrip = CurrentTreeMenu;
 
             return node;
@@ -119,18 +227,7 @@ namespace dnEditor.Handlers
 
         public TreeNode NewMethod(MethodDef method)
         {
-            var parameters = "";
-
-            foreach (Parameter parameter in method.Parameters.Where(param => !param.IsHiddenThisParameter))
-            {
-                parameters += parameter.Type.GetExtendedName();
-                parameters += ", ";
-            }
-
-            parameters = parameters.TrimEnd(',', ' ');
-
-            TreeNode node = NewNode(String.Format("{0}({1}): {2}", method.Name, parameters,
-                method.ReturnType.GetExtendedName()));
+            TreeNode node = NewNode(method.GetExtendedName(true));
             node.Tag = method;
             node.ImageIndex = node.SelectedImageIndex = 30;
 
@@ -199,8 +296,7 @@ namespace dnEditor.Handlers
         {
             string type = field.FieldType.GetExtendedName();
 
-            TreeNode node =
-                NewNode(String.Format("{0}: {1}", field.Name, type));
+            TreeNode node = NewNode(String.Format("{0}: {1}", field.Name, type));
             node.Tag = field;
             node.ImageIndex = node.SelectedImageIndex = 17;
 
@@ -246,6 +342,16 @@ namespace dnEditor.Handlers
             }
         }
 
+        public void goToEntryPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BrowseAndExpandMember((CurrentModule.Tag as ModuleDefMD).EntryPoint);
+        }
+
+        public void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BrowseAndExpandMember((CurrentModule.Tag as ModuleDefMD).GlobalType.FindStaticConstructor());
+        }
+
         public void expandToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedNode != null)
@@ -272,6 +378,8 @@ namespace dnEditor.Handlers
 
         public void closeToolStripMenuItem_Click(object sender, EventArgs e, ref CurrentAssembly currentAssembly)
         {
+            //TODO: Update on changes
+
             if (SelectedNode == null) return;
 
             TreeNode assembly = SelectedNode.FirstParentNode();
@@ -281,6 +389,9 @@ namespace dnEditor.Handlers
             CurrentModule = null;
             currentAssembly = null;
             DataGridViewHandler.ClearInstructions();
+            VariableHandler.ClearVariables();
+            ILSpyHandler.Clear();
+            AnalysisHandler.Reset();
             assembly.Remove();
         }
 
@@ -290,6 +401,7 @@ namespace dnEditor.Handlers
 
         public void LoadAssembly(ModuleDefMD manifestModule, string path, bool clear)
         {
+            AnalysisHandler.Reset();
             RefNode = null;
             CurrentModule = null;
 
@@ -340,15 +452,19 @@ namespace dnEditor.Handlers
             VirtualNodeUtilities.ExpandHandler(e.Node, this);
         }
 
-        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e,
-            ref CurrentAssembly currentAssembly)
+        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e, CurrentAssembly currentAssembly)
         {
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
             if (currentAssembly == null || currentAssembly.ManifestModule != assemblyNode.Tag as ModuleDefMD)
             {
+                AnalysisHandler.Reset();
+
                 currentAssembly = new CurrentAssembly(assemblyNode.Tag as ModuleDefMD);
                 currentAssembly.Path = assemblyNode.ToolTipText;
+
+                if (e.Node.ModuleNode() != null)
+                    CurrentModule = e.Node.ModuleNode();
             }
 
             if (e.Node.Tag is MethodDef)
@@ -357,15 +473,18 @@ namespace dnEditor.Handlers
 
                 if (CurrentMethod == null || method != CurrentMethod.Tag as MethodDef)
                 {
-                    MainForm.RtbILSpy.Clear();
+                    ILSpyHandler.Clear();
                     DataGridViewHandler.ReadMethod(method);
                     CurrentMethod = e.Node;
                 }
             }
             else
             {
-                MainForm.DgBody.Rows.Clear();
-                MainForm.RtbILSpy.Clear();
+                CurrentMethod = null;
+                currentAssembly.Method = null;
+                DataGridViewHandler.ClearInstructions();
+                VariableHandler.ClearVariables();
+                ILSpyHandler.Clear();
             }
 
             SelectedNode = e.Node;
@@ -382,10 +501,7 @@ namespace dnEditor.Handlers
             string directory = Directory.GetParent(currentAssembly.Path).FullName;
 
             var paths = new List<string>
-            {
-                Path.Combine(directory, assemblyRef.Name + ".dll"),
-                Path.Combine(directory, assemblyRef.Name + ".exe")
-            };
+            {Path.Combine(directory, assemblyRef.Name + ".dll"), Path.Combine(directory, assemblyRef.Name + ".exe")};
 
             var paths2 = new List<string>
             {
@@ -405,8 +521,9 @@ namespace dnEditor.Handlers
                 return;
             }
 
-            if (MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (
+                MessageBox.Show("Could not automatically find reference file. Browse for it?", "Error",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
             {
                 currentAssembly = null;
                 return;
@@ -431,9 +548,9 @@ namespace dnEditor.Handlers
         {
             TreeNode node = e.Node;
 
-            if (node == null || (!(node.Tag is ModuleDefMD) && !(node.Tag is TypeDef)
-                                 && !(node.Tag is MethodDef) && !(node.Tag is PropertyDef)
-                                 && !(node.Tag is FieldDef) && !(node.Tag is EventDef)) ||
+            if (node == null ||
+                (!(node.Tag is ModuleDefMD) && !(node.Tag is TypeDef) && !(node.Tag is MethodDef) &&
+                 !(node.Tag is PropertyDef) && !(node.Tag is FieldDef) && !(node.Tag is EventDef)) ||
                 node.ToolTipText != string.Empty)
             {
                 return;
@@ -446,8 +563,7 @@ namespace dnEditor.Handlers
             if (node.Tag is ModuleDefMD)
             {
                 var module = node.Tag as ModuleDefMD;
-                string text = string.Format("0x{0}: {1}", module.MDToken.FullMetadataTokenString(),
-                    module.FullName);
+                string text = string.Format("0x{0}: {1}", module.MDToken.FullMetadataTokenString(), module.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -456,8 +572,7 @@ namespace dnEditor.Handlers
             else if (node.Tag is TypeDef)
             {
                 var type = node.Tag as TypeDef;
-                string text = string.Format("0x{0}: {1}", type.MDToken.FullMetadataTokenString(),
-                    type.FullName);
+                string text = string.Format("0x{0}: {1}", type.MDToken.FullMetadataTokenString(), type.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -466,8 +581,7 @@ namespace dnEditor.Handlers
             else if (node.Tag is MethodDef)
             {
                 var method = node.Tag as MethodDef;
-                string text = string.Format("0x{0}: {1}", method.MDToken.FullMetadataTokenString(),
-                    method.FullName);
+                string text = string.Format("0x{0}: {1}", method.MDToken.FullMetadataTokenString(), method.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -476,8 +590,7 @@ namespace dnEditor.Handlers
             else if (node.Tag is PropertyDef)
             {
                 var property = node.Tag as PropertyDef;
-                string text = string.Format("0x{0}: {1}", property.MDToken.FullMetadataTokenString(),
-                    property.FullName);
+                string text = string.Format("0x{0}: {1}", property.MDToken.FullMetadataTokenString(), property.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -486,8 +599,7 @@ namespace dnEditor.Handlers
             else if (node.Tag is FieldDef)
             {
                 var field = node.Tag as FieldDef;
-                string text = string.Format("0x{0}: {1}", field.MDToken.FullMetadataTokenString(),
-                    field.FullName);
+                string text = string.Format("0x{0}: {1}", field.MDToken.FullMetadataTokenString(), field.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -496,8 +608,7 @@ namespace dnEditor.Handlers
             else if (node.Tag is EventDef)
             {
                 var @event = node.Tag as EventDef;
-                string text = string.Format("0x{0}: {1}", @event.MDToken.FullMetadataTokenString(),
-                    @event.FullName);
+                string text = string.Format("0x{0}: {1}", @event.MDToken.FullMetadataTokenString(), @event.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);

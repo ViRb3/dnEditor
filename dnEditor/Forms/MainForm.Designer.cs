@@ -1,11 +1,16 @@
-﻿namespace dnEditor.Forms
+﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace dnEditor.Forms
 {
     partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -55,6 +60,9 @@
             this.createNewVariableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.rtbILSpy = new System.Windows.Forms.RichTextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.lblAnalysis = new System.Windows.Forms.Label();
+            this.listAnalysis = new System.Windows.Forms.ListView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dgDetails = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -108,6 +116,10 @@
             this.exceptionHandlerMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.removeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.columnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.goToEntryPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToModuleCtorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).BeginInit();
             this.emptyBodyMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -120,6 +132,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgVariables)).BeginInit();
             this.emptyVariableMenu.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgDetails)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -135,6 +148,7 @@
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.HideSelection = false;
             this.treeView1.ImageIndex = 0;
             this.treeView1.ImageList = this.imageList2;
             this.treeView1.Location = new System.Drawing.Point(3, 3);
@@ -342,6 +356,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
             this.tabControl1.Name = "tabControl1";
@@ -477,6 +492,44 @@
             this.rtbILSpy.Text = "";
             this.rtbILSpy.WordWrap = false;
             this.rtbILSpy.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rtbILSpy_MouseDown);
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.BackColor = System.Drawing.SystemColors.Window;
+            this.tabPage5.Controls.Add(this.lblAnalysis);
+            this.tabPage5.Controls.Add(this.listAnalysis);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(554, 367);
+            this.tabPage5.TabIndex = 5;
+            this.tabPage5.Text = "Analysis";
+            // 
+            // lblAnalysis
+            // 
+            this.lblAnalysis.AutoSize = true;
+            this.lblAnalysis.Location = new System.Drawing.Point(7, 6);
+            this.lblAnalysis.Name = "lblAnalysis";
+            this.lblAnalysis.Size = new System.Drawing.Size(45, 13);
+            this.lblAnalysis.TabIndex = 1;
+            this.lblAnalysis.Text = "Empty...";
+            // 
+            // listAnalysis
+            // 
+            this.listAnalysis.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listAnalysis.BackColor = System.Drawing.SystemColors.Info;
+            this.listAnalysis.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader});
+            this.listAnalysis.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listAnalysis.Location = new System.Drawing.Point(3, 31);
+            this.listAnalysis.Name = "listAnalysis";
+            this.listAnalysis.ShowGroups = false;
+            this.listAnalysis.Size = new System.Drawing.Size(548, 333);
+            this.listAnalysis.TabIndex = 0;
+            this.listAnalysis.UseCompatibleStateImageBehavior = false;
+            this.listAnalysis.View = System.Windows.Forms.View.Details;
+            this.listAnalysis.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listAnalysis_MouseDoubleClick);
             // 
             // tabPage3
             // 
@@ -791,6 +844,8 @@
             this.cbSearchType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbSearchType.Items.AddRange(new object[] {
             "Any name",
+            "MDToken",
+            "String (global)",
             "String",
             "OpCode",
             "Operand"});
@@ -948,45 +1003,48 @@
             // treeMenu
             // 
             this.treeMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.goToEntryPointToolStripMenuItem,
+            this.goToModuleCtorToolStripMenuItem,
+            this.toolStripSeparator11,
             this.collapseToolStripMenuItem,
             this.expandToolStripMenuItem,
             this.collapseAllToolStripMenuItem,
             this.toolStripSeparator7,
             this.closeToolStripMenuItem});
             this.treeMenu.Name = "treeMenu";
-            this.treeMenu.Size = new System.Drawing.Size(156, 98);
+            this.treeMenu.Size = new System.Drawing.Size(171, 148);
             this.treeMenu.Opened += new System.EventHandler(this.treeMenu_Opened);
             // 
             // collapseToolStripMenuItem
             // 
             this.collapseToolStripMenuItem.Name = "collapseToolStripMenuItem";
-            this.collapseToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.collapseToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.collapseToolStripMenuItem.Text = "Collapse";
             this.collapseToolStripMenuItem.Click += new System.EventHandler(this.collapseToolStripMenuItem_Click);
             // 
             // expandToolStripMenuItem
             // 
             this.expandToolStripMenuItem.Name = "expandToolStripMenuItem";
-            this.expandToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.expandToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.expandToolStripMenuItem.Text = "Expand";
             this.expandToolStripMenuItem.Click += new System.EventHandler(this.expandToolStripMenuItem_Click);
             // 
             // collapseAllToolStripMenuItem
             // 
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
-            this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.collapseAllToolStripMenuItem.Text = "Collapse all";
             this.collapseAllToolStripMenuItem.Click += new System.EventHandler(this.collapseAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(167, 6);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.closeToolStripMenuItem.Text = "Close assembly";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -1086,16 +1144,33 @@
             this.removeToolStripMenuItem1.Text = "Remove";
             this.removeToolStripMenuItem1.Click += new System.EventHandler(this.removeToolStripMenuItem1_Click);
             // 
+            // goToEntryPointToolStripMenuItem
+            // 
+            this.goToEntryPointToolStripMenuItem.Name = "goToEntryPointToolStripMenuItem";
+            this.goToEntryPointToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.goToEntryPointToolStripMenuItem.Text = "Go to EntryPoint";
+            this.goToEntryPointToolStripMenuItem.Click += new System.EventHandler(this.goToEntryPointToolStripMenuItem_Click);
+            // 
+            // goToModuleCtorToolStripMenuItem
+            // 
+            this.goToModuleCtorToolStripMenuItem.Name = "goToModuleCtorToolStripMenuItem";
+            this.goToModuleCtorToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.goToModuleCtorToolStripMenuItem.Text = "Go to ModuleCtor";
+            this.goToModuleCtorToolStripMenuItem.Click += new System.EventHandler(this.goToModuleCtorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(167, 6);
+            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(843, 439);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "dnEditor v0.72 Beta ~ViRb3";
+            this.Text = "dnEditor v0.75 Beta ~ViRb3";
             ((System.ComponentModel.ISupportInitialize)(this.dgBody)).EndInit();
             this.emptyBodyMenu.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -1108,6 +1183,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgVariables)).EndInit();
             this.emptyVariableMenu.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgDetails)).EndInit();
             this.toolStrip1.ResumeLayout(false);
@@ -1123,81 +1200,88 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView treeView1;
-        public System.Windows.Forms.DataGridView dgBody;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ImageList imageList1;
-        private System.Windows.Forms.ImageList imageList2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn index;
-        private System.Windows.Forms.DataGridViewTextBoxColumn offset;
-        private System.Windows.Forms.DataGridViewTextBoxColumn opcode;
-        private System.Windows.Forms.DataGridViewTextBoxColumn operand;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton btnSave;
-        private System.Windows.Forms.ToolStripButton btnOpen;
-        private System.Windows.Forms.ContextMenuStrip instructionMenu;
-        private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem insertBeforeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem insertAfterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem nopToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton btnAbout;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripComboBox cbSearchType;
-        private System.Windows.Forms.ToolStripTextBox txtSearch;
-        private System.Windows.Forms.ToolStripButton btnSearch;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-        private System.Windows.Forms.ContextMenuStrip treeMenu;
-        private System.Windows.Forms.ToolStripMenuItem collapseAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem collapseToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem expandToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
-        private System.Windows.Forms.ToolStripLabel lblMagicRegex;
-        private System.Windows.Forms.ToolStripTextBox txtMagicRegex;
-        private System.Windows.Forms.ContextMenuStrip emptyBodyMenu;
-        private System.Windows.Forms.ToolStripMenuItem createNewInstructionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
-        private System.Windows.Forms.ToolStripMenuItem saveInstructionsToFileToolStripMenuItem;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        public System.Windows.Forms.DataGridView dgVariables;
-        private System.Windows.Forms.TabPage tabPage3;
-        public System.Windows.Forms.DataGridView dgDetails;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.ContextMenuStrip variableMenu;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
-        private System.Windows.Forms.ContextMenuStrip emptyVariableMenu;
-        private System.Windows.Forms.ToolStripMenuItem createNewVariableToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip exceptionHandlerMenu;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem createNewExceptionHandlerToolStripMenuItem;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.RichTextBox rtbILSpy;
+        private TreeView treeView1;
+        public DataGridView dgBody;
+        private SplitContainer splitContainer1;
+        private ImageList imageList1;
+        private ImageList imageList2;
+        private DataGridViewTextBoxColumn index;
+        private DataGridViewTextBoxColumn offset;
+        private DataGridViewTextBoxColumn opcode;
+        private DataGridViewTextBoxColumn operand;
+        private ToolStrip toolStrip1;
+        private ToolStripButton btnSave;
+        private ToolStripButton btnOpen;
+        private ContextMenuStrip instructionMenu;
+        private ToolStripMenuItem removeToolStripMenuItem;
+        private ToolStripMenuItem insertBeforeToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem insertAfterToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem nopToolStripMenuItem;
+        private ToolStripMenuItem copyToolStripMenuItem;
+        private ToolStripMenuItem pasteToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem cutToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton btnAbout;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripComboBox cbSearchType;
+        private ToolStripTextBox txtSearch;
+        private ToolStripButton btnSearch;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripSeparator toolStripSeparator6;
+        private ContextMenuStrip treeMenu;
+        private ToolStripMenuItem collapseAllToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator7;
+        private ToolStripMenuItem closeToolStripMenuItem;
+        private ToolStripMenuItem collapseToolStripMenuItem;
+        private ToolStripMenuItem expandToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator8;
+        private ToolStripLabel lblMagicRegex;
+        private ToolStripTextBox txtMagicRegex;
+        private ContextMenuStrip emptyBodyMenu;
+        private ToolStripMenuItem createNewInstructionToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator9;
+        private ToolStripMenuItem saveInstructionsToFileToolStripMenuItem;
+        private TabControl tabControl1;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        public DataGridView dgVariables;
+        private TabPage tabPage3;
+        public DataGridView dgDetails;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private ContextMenuStrip variableMenu;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem toolStripMenuItem3;
+        private ToolStripSeparator toolStripSeparator10;
+        private ToolStripMenuItem toolStripMenuItem5;
+        private ToolStripMenuItem toolStripMenuItem6;
+        private ToolStripMenuItem toolStripMenuItem7;
+        private ToolStripSeparator toolStripSeparator12;
+        private ToolStripMenuItem toolStripMenuItem8;
+        private ContextMenuStrip emptyVariableMenu;
+        private ToolStripMenuItem createNewVariableToolStripMenuItem;
+        private ContextMenuStrip exceptionHandlerMenu;
+        private ToolStripMenuItem editToolStripMenuItem1;
+        private ToolStripMenuItem removeToolStripMenuItem1;
+        private ToolStripMenuItem createNewExceptionHandlerToolStripMenuItem;
+        private TabPage tabPage4;
+        private RichTextBox rtbILSpy;
+        private TabPage tabPage5;
+        private Label lblAnalysis;
+        private ListView listAnalysis;
+        private ColumnHeader columnHeader;
+        private ToolStripMenuItem goToEntryPointToolStripMenuItem;
+        private ToolStripMenuItem goToModuleCtorToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator11;
     }
 }
 

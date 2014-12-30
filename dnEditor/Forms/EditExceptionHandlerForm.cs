@@ -49,7 +49,7 @@ namespace dnEditor.Forms
 
         private void ListInstructions(ComboBox comboBox)
         {
-            List<Instruction> instructions = MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.ToList();
+            List<Instruction> instructions = MainForm.CurrentAssembly.Method.Body.Instructions.ToList();
 
             for (int i = 0; i < instructions.Count; i++)
             {
@@ -79,7 +79,7 @@ namespace dnEditor.Forms
             }
 
             cbTryStart.SelectedIndex =
-                MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(_exceptionHandler.TryStart);
+                MainForm.CurrentAssembly.Method.Body.Instructions.IndexOf(_exceptionHandler.TryStart);
 
             if (_exceptionHandler.TryEnd == null)
             {
@@ -88,11 +88,11 @@ namespace dnEditor.Forms
             else
             {
                 cbTryEnd.SelectedIndex =
-                    MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(_exceptionHandler.TryEnd);
+                    MainForm.CurrentAssembly.Method.Body.Instructions.IndexOf(_exceptionHandler.TryEnd);
             }
 
             cbHandlerStart.SelectedIndex =
-                MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(_exceptionHandler.HandlerStart);
+                MainForm.CurrentAssembly.Method.Body.Instructions.IndexOf(_exceptionHandler.HandlerStart);
 
             if (_exceptionHandler.HandlerEnd == null)
             {
@@ -101,7 +101,7 @@ namespace dnEditor.Forms
             else
             {
                 cbHandlerEnd.SelectedIndex =
-                    MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(_exceptionHandler.HandlerEnd);
+                    MainForm.CurrentAssembly.Method.Body.Instructions.IndexOf(_exceptionHandler.HandlerEnd);
             }
 
             if (_exceptionHandler.CatchType != null)
@@ -113,7 +113,7 @@ namespace dnEditor.Forms
             if (_exceptionHandler.FilterStart != null)
             {
                 cbFilterStart.SelectedIndex =
-                    MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(_exceptionHandler.FilterStart);
+                    MainForm.CurrentAssembly.Method.Body.Instructions.IndexOf(_exceptionHandler.FilterStart);
             }
         }
 
@@ -157,13 +157,13 @@ namespace dnEditor.Forms
             }
 
             exceptionHandler.TryStart =
-                MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbTryStart.SelectedIndex];
+                MainForm.CurrentAssembly.Method.Body.Instructions[cbTryStart.SelectedIndex];
             exceptionHandler.TryEnd =
-                MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbTryEnd.SelectedIndex];
+                MainForm.CurrentAssembly.Method.Body.Instructions[cbTryEnd.SelectedIndex];
             exceptionHandler.HandlerStart =
-                MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbHandlerStart.SelectedIndex];
+                MainForm.CurrentAssembly.Method.Body.Instructions[cbHandlerStart.SelectedIndex];
             exceptionHandler.HandlerEnd =
-                MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbHandlerEnd.SelectedIndex];
+                MainForm.CurrentAssembly.Method.Body.Instructions[cbHandlerEnd.SelectedIndex];
 
             if (exceptionHandler.HandlerType == ExceptionHandlerType.Catch)
             {
@@ -178,7 +178,7 @@ namespace dnEditor.Forms
                     return;
 
                 exceptionHandler.FilterStart =
-                    MainForm.CurrentAssembly.Method.NewMethod.Body.Instructions[cbFilterStart.SelectedIndex];
+                    MainForm.CurrentAssembly.Method.Body.Instructions[cbFilterStart.SelectedIndex];
             }
 
             MainForm.NewExceptionHandler = exceptionHandler;

@@ -93,7 +93,8 @@ namespace dnEditor.Forms
 
         public void treeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            VirtualNodeUtilities.ExpandHandler(e.Node, _treeViewHandler);
+            if (MainForm.HandleExpand)
+                VirtualNodeUtilities.ExpandHandler(e.Node, _treeViewHandler);
         }
 
         private void PickReferenceForm_Shown(object sender, EventArgs e)
@@ -108,6 +109,16 @@ namespace dnEditor.Forms
         public void treeMenu_Opened(object sender, EventArgs e)
         {
             _treeViewHandler.treeMenu_Opened(sender, e);
+        }
+
+        public void goToEntryPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.goToEntryPointToolStripMenuItem_Click(sender, e);
+        }
+
+        public void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.goToModuleCtorToolStripMenuItem_Click(sender, e);
         }
 
         public void expandToolStripMenuItem_Click(object sender, EventArgs e)

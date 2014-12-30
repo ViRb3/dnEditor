@@ -16,6 +16,11 @@ namespace dnEditor.Forms
 {
     public partial class MainForm : Form, ITreeView, ITreeMenu
     {
+        public static ListView ListAnalysis;
+        public static Label LblAnalysis;
+        public static bool HandleExpand = true;
+        private static SearchType _searchType;
+
         public static DataGridView DgBody;
         public static DataGridView DgVariables;
         public static RichTextBox RtbILSpy;
@@ -46,6 +51,9 @@ namespace dnEditor.Forms
             _treeViewHandler = new TreeViewHandler(treeView1, treeMenu);
 
             TabControl = tabControl1;
+            ListAnalysis = listAnalysis;
+            ListAnalysis.Columns[0].Width = -1;
+            LblAnalysis = lblAnalysis;
 
             DgBody = dgBody;
             DgVariables = dgVariables;
@@ -75,78 +83,78 @@ namespace dnEditor.Forms
         {
             if (NewInstruction == null) return;
 
-            if (!CurrentAssembly.Method.NewMethod.HasBody)
-                CurrentAssembly.Method.NewMethod.Body = new CilBody();
+            if (!CurrentAssembly.Method.HasBody)
+                CurrentAssembly.Method.Body = new CilBody();
 
             switch (_editInstructionMode)
             {
                 case EditInstructionMode.Add:
-                    CurrentAssembly.Method.NewMethod.Body.Instructions.Add(NewInstruction);
+                    CurrentAssembly.Method.Body.Instructions.Add(NewInstruction);
                     break;
                 case EditInstructionMode.Edit:
-                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].OpCode =
+                    CurrentAssembly.Method.Body.Instructions[EditedInstructionIndex].OpCode =
                         NewInstruction.OpCode;
-                    CurrentAssembly.Method.NewMethod.Body.Instructions[EditedInstructionIndex].Operand =
+                    CurrentAssembly.Method.Body.Instructions[EditedInstructionIndex].Operand =
                         NewInstruction.Operand;
                     break;
                 case EditInstructionMode.InsertAfter:
-                    CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(EditedInstructionIndex + 1, NewInstruction);
+                    CurrentAssembly.Method.Body.Instructions.Insert(EditedInstructionIndex + 1, NewInstruction);
                     break;
                 case EditInstructionMode.InsertBefore:
-                    CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(EditedInstructionIndex, NewInstruction);
+                    CurrentAssembly.Method.Body.Instructions.Insert(EditedInstructionIndex, NewInstruction);
                     break;
             }
 
-            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            CurrentAssembly.Method.Body.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void EditVariableForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (NewVariable == null) return;
 
-            if (!CurrentAssembly.Method.NewMethod.HasBody)
-                CurrentAssembly.Method.NewMethod.Body = new CilBody();
+            if (!CurrentAssembly.Method.HasBody)
+                CurrentAssembly.Method.Body = new CilBody();
 
             switch (_editVariableMode)
             {
                 case EditVariableMode.Add:
-                    CurrentAssembly.Method.NewMethod.Body.Variables.Add(NewVariable);
+                    CurrentAssembly.Method.Body.Variables.Add(NewVariable);
                     break;
                 case EditVariableMode.Edit:
-                    CurrentAssembly.Method.NewMethod.Body.Variables[EditedVariableIndex] = NewVariable;
+                    CurrentAssembly.Method.Body.Variables[EditedVariableIndex] = NewVariable;
                     break;
                 case EditVariableMode.InsertAfter:
-                    CurrentAssembly.Method.NewMethod.Body.Variables.Insert(EditedVariableIndex + 1, NewVariable);
+                    CurrentAssembly.Method.Body.Variables.Insert(EditedVariableIndex + 1, NewVariable);
                     break;
                 case EditVariableMode.InsertBefore:
-                    CurrentAssembly.Method.NewMethod.Body.Variables.Insert(EditedVariableIndex, NewVariable);
+                    CurrentAssembly.Method.Body.Variables.Insert(EditedVariableIndex, NewVariable);
                     break;
             }
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void EditExceptionHandlerForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (NewExceptionHandler == null) return;
 
-            if (!CurrentAssembly.Method.NewMethod.HasBody)
-                CurrentAssembly.Method.NewMethod.Body = new CilBody();
+            if (!CurrentAssembly.Method.HasBody)
+                CurrentAssembly.Method.Body = new CilBody();
 
             switch (_editExceptionHandlerMode)
             {
                 case EditExceptionHandlerMode.Add:
-                    CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Add(NewExceptionHandler);
+                    CurrentAssembly.Method.Body.ExceptionHandlers.Add(NewExceptionHandler);
                     break;
                 case EditExceptionHandlerMode.Edit:
-                    CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[EditedExceptionHandlerIndex] =
+                    CurrentAssembly.Method.Body.ExceptionHandlers[EditedExceptionHandlerIndex] =
                         NewExceptionHandler;
                     break;
             }
 
-            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            CurrentAssembly.Method.Body.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void NewInstructionEditor(EditInstructionMode mode)
@@ -161,7 +169,7 @@ namespace dnEditor.Forms
             {
                 var form =
                     new EditInstructionForm(
-                        CurrentAssembly.Method.NewMethod.Body.Instructions[dgBody.SelectedRows.TopmostRow().Index]);
+                        CurrentAssembly.Method.Body.Instructions[dgBody.SelectedRows.TopmostRow().Index]);
                 form.FormClosed += EditInstructionForm_FormClosed;
                 form.ShowDialog();
             }
@@ -185,7 +193,7 @@ namespace dnEditor.Forms
             {
                 var form =
                     new EditVariableForm(
-                        CurrentAssembly.Method.NewMethod.Body.Variables[dgVariables.SelectedRows.TopmostRow().Index]);
+                        CurrentAssembly.Method.Body.Variables[dgVariables.SelectedRows.TopmostRow().Index]);
                 form.FormClosed += EditVariableForm_FormClosed;
                 form.ShowDialog();
             }
@@ -205,15 +213,15 @@ namespace dnEditor.Forms
 
             if (selectedRows.Count > 0)
                 EditedExceptionHandlerIndex = dgBody.SelectedRows.TopmostRow().Index -
-                                              CurrentAssembly.Method.NewMethod.Body.Instructions.Count;
+                                              CurrentAssembly.Method.Body.Instructions.Count;
 
             if (mode == EditExceptionHandlerMode.Edit)
             {
                 var form =
                     new EditExceptionHandlerForm(
-                        CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers[
+                        CurrentAssembly.Method.Body.ExceptionHandlers[
                             (dgBody.SelectedRows.TopmostRow().Index -
-                             CurrentAssembly.Method.NewMethod.Body.Instructions.Count)]);
+                             CurrentAssembly.Method.Body.Instructions.Count)]);
                 form.FormClosed += EditExceptionHandlerForm_FormClosed;
                 form.ShowDialog();
             }
@@ -223,45 +231,6 @@ namespace dnEditor.Forms
                 form.FormClosed += EditExceptionHandlerForm_FormClosed;
                 form.ShowDialog();
             }
-        }
-
-        private void btnSearch_Click(object sender, EventArgs e)
-        {
-            if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
-
-            SearchType searchType;
-            TreeNode searchNode;
-
-            switch (cbSearchType.Text)
-            {
-                case "String":
-                    searchType = SearchType.String;
-                    searchNode = _treeViewHandler.CurrentMethod;
-                    break;
-
-                case "OpCode":
-                    searchType = SearchType.OpCode;
-                    searchNode = _treeViewHandler.CurrentMethod;
-                    break;
-
-                case "Operand":
-                    searchType = SearchType.Operand;
-                    searchNode = _treeViewHandler.CurrentMethod;
-                    break;
-
-                default:
-                    searchType = SearchType.Any;
-                    searchNode = _treeViewHandler.CurrentModule;
-                    break;
-            }
-
-            if (searchNode == null) return;
-
-            var searchHandler = new SearchHandler(searchNode, txtSearch.Text, searchType, _treeViewHandler);
-            searchHandler.SearchFinished += DataGridViewHandler.SearchFinished;
-            searchHandler.Search();
-
-            DgBody.Focus();
         }
 
         private void txtMagicRegex_TextChanged(object sender, EventArgs e)
@@ -290,6 +259,12 @@ namespace dnEditor.Forms
             {
                 rtbILSpy.AutoWordSelection = false;
             }
+        }
+
+        private void lblMagicRegex_Click(object sender, EventArgs e)
+        {
+            txtMagicRegex.Text = Settings.Default.MagicRegex = @"[^\x20-\x7F]";
+            Settings.Default.Save();
         }
 
         #region ToolStrip
@@ -352,14 +327,14 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                int instructionIndex = CurrentAssembly.Method.NewMethod.Body.Instructions.IndexOf(row.Tag as Instruction);
-                CurrentAssembly.Method.NewMethod.Body.Instructions[instructionIndex].OpCode = OpCodes.Nop;
-                CurrentAssembly.Method.NewMethod.Body.Instructions[instructionIndex].Operand = null;
+                int instructionIndex = CurrentAssembly.Method.Body.Instructions.IndexOf(row.Tag as Instruction);
+                CurrentAssembly.Method.Body.Instructions[instructionIndex].OpCode = OpCodes.Nop;
+                CurrentAssembly.Method.Body.Instructions[instructionIndex].Operand = null;
             }
 
-            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
+            CurrentAssembly.Method.Body.UpdateInstructionOffsets();
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -369,11 +344,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             foreach (DataGridViewRow selectedRow in dgBody.SelectedRows)
             {
                 _copiedInstructions.Add(selectedRow.Tag as Instruction);
-                CurrentAssembly.Method.NewMethod.Body.Instructions.RemoveAt(selectedRow.Index);
+                CurrentAssembly.Method.Body.Instructions.RemoveAt(selectedRow.Index);
             }
 
-            CurrentAssembly.Method.NewMethod.Body.Instructions.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            CurrentAssembly.Method.Body.Instructions.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -450,11 +425,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                             break;
                     }
 
-                CurrentAssembly.Method.NewMethod.Body.Instructions.Insert(instructionIndex, newInstruction);
+                CurrentAssembly.Method.Body.Instructions.Insert(instructionIndex, newInstruction);
             }
 
-            CurrentAssembly.Method.NewMethod.Body.Instructions.UpdateInstructionOffsets();
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            CurrentAssembly.Method.Body.Instructions.UpdateInstructionOffsets();
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -463,17 +438,17 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                CurrentAssembly.Method.NewMethod.Body.Instructions.Remove(row.Tag as Instruction);
+                CurrentAssembly.Method.Body.Instructions.Remove(row.Tag as Instruction);
             }
 
-            CurrentAssembly.Method.NewMethod.Body.UpdateInstructionOffsets();
+            CurrentAssembly.Method.Body.UpdateInstructionOffsets();
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void saveInstructionsToFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!CurrentAssembly.Method.NewMethod.HasBody || !CurrentAssembly.Method.NewMethod.Body.HasInstructions)
+            if (!CurrentAssembly.Method.HasBody || !CurrentAssembly.Method.Body.HasInstructions)
                 return;
 
             var code = new StringBuilder();
@@ -483,13 +458,13 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             code.AppendLine("");
             var i = 0;
 
-            if (CurrentAssembly.Method.NewMethod.Body.Variables.Count > 0)
+            if (CurrentAssembly.Method.Body.Variables.Count > 0)
             {
-                code.AppendLine(string.Format("List<Local> locals = new List<Local>();"));
+                code.AppendLine(String.Format("List<Local> locals = new List<Local>();"));
 
-                foreach (Local local in CurrentAssembly.Method.NewMethod.Body.Variables)
+                foreach (Local local in CurrentAssembly.Method.Body.Variables)
                 {
-                    code.AppendLine(string.Format("locals.Add(new Local(\"{0}\"));",
+                    code.AppendLine(String.Format("locals.Add(new Local(\"{0}\"));",
                         local.Type.FullName.Replace("\"", "``")));
                     i++;
                 }
@@ -499,17 +474,17 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                 i = 0;
             }
 
-            code.AppendLine(string.Format("List<Instruction> instructions = new List<Instruction>();"));
+            code.AppendLine(String.Format("List<Instruction> instructions = new List<Instruction>();"));
 
-            foreach (Instruction instruction in CurrentAssembly.Method.NewMethod.Body.Instructions)
+            foreach (Instruction instruction in CurrentAssembly.Method.Body.Instructions)
             {
                 OpCode opCode = Functions.OpCodes.First(o => o.Name == instruction.OpCode.Name);
 
                 if (instruction.Operand != null)
-                    code.AppendLine(string.Format("instructions.Add(OpCodes.{0}.ToInstruction(\"{1}\"));", opCode.Code,
+                    code.AppendLine(String.Format("instructions.Add(OpCodes.{0}.ToInstruction(\"{1}\"));", opCode.Code,
                         instruction.Operand.ToString().Replace("\"", "``")));
                 else
-                    code.AppendLine(string.Format("instructions.Add(OpCodes.{1}.ToInstruction());", i, opCode.Code));
+                    code.AppendLine(String.Format("instructions.Add(OpCodes.{1}.ToInstruction());", i, opCode.Code));
 
                 i++;
             }
@@ -522,11 +497,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             code.AppendLine("//===================================");
             code.AppendLine("");
 
-            if (CurrentAssembly.Method.NewMethod.Body.Variables.Count > 0)
+            if (CurrentAssembly.Method.Body.Variables.Count > 0)
             {
-                foreach (Local local in CurrentAssembly.Method.NewMethod.Body.Variables)
+                foreach (Local local in CurrentAssembly.Method.Body.Variables)
                 {
-                    code.AppendLine(string.Format("il.DeclareLocal(\"{0}\"));", local.Type.FullName.Replace("\"", "``")));
+                    code.AppendLine(String.Format("il.DeclareLocal(\"{0}\"));", local.Type.FullName.Replace("\"", "``")));
                     i++;
                 }
 
@@ -535,15 +510,15 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                 i = 0;
             }
 
-            foreach (Instruction instruction in CurrentAssembly.Method.NewMethod.Body.Instructions)
+            foreach (Instruction instruction in CurrentAssembly.Method.Body.Instructions)
             {
                 OpCode opCode = Functions.OpCodes.First(o => o.Name == instruction.OpCode.Name);
 
                 if (instruction.Operand != null)
-                    code.AppendLine(string.Format("il.Emit(OpCodes.{0}, \"{1}\");", opCode.Code,
+                    code.AppendLine(String.Format("il.Emit(OpCodes.{0}, \"{1}\");", opCode.Code,
                         instruction.Operand.ToString().Replace("\"", "``")));
                 else
-                    code.AppendLine(string.Format("il.Emit(OpCodes.{0});", opCode.Code));
+                    code.AppendLine(String.Format("il.Emit(OpCodes.{0});", opCode.Code));
 
                 i++;
             }
@@ -579,10 +554,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             foreach (DataGridViewRow selectedRow in dgVariables.SelectedRows)
             {
                 _copiedVariables.Add(selectedRow.Tag as Local);
-                CurrentAssembly.Method.NewMethod.Body.Variables.RemoveAt(selectedRow.Index);
+                CurrentAssembly.Method.Body.Variables.RemoveAt(selectedRow.Index);
             }
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void copyVariableToolStripMenuItem_Click(object sender, EventArgs e)
@@ -606,10 +581,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
                 if (variable.Name != null)
                     newVariable.Name = variable.Name;
 
-                CurrentAssembly.Method.NewMethod.Body.Variables.Insert(variableIndex, newVariable);
+                CurrentAssembly.Method.Body.Variables.Insert(variableIndex, newVariable);
             }
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         private void deleteVariableToolStripMenuItem_Click(object sender, EventArgs e)
@@ -618,10 +593,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                CurrentAssembly.Method.NewMethod.Body.Variables.Remove(row.Tag as Local);
+                CurrentAssembly.Method.Body.Variables.Remove(row.Tag as Local);
             }
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         #endregion VariableMenuStrip
@@ -639,10 +614,10 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
             foreach (DataGridViewRow row in collection)
             {
-                CurrentAssembly.Method.NewMethod.Body.ExceptionHandlers.Remove(row.Tag as ExceptionHandler);
+                CurrentAssembly.Method.Body.ExceptionHandlers.Remove(row.Tag as ExceptionHandler);
             }
 
-            DataGridViewHandler.ReadMethod(CurrentAssembly.Method.NewMethod);
+            DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
         }
 
         #endregion ExceptionHandlerMenuStrip
@@ -652,6 +627,16 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         public void treeMenu_Opened(object sender, EventArgs e)
         {
             _treeViewHandler.treeMenu_Opened(sender, e);
+        }
+
+        public void goToEntryPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.goToEntryPointToolStripMenuItem_Click(sender, e);
+        }
+
+        public void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.goToModuleCtorToolStripMenuItem_Click(sender, e);
         }
 
         public void expandToolStripMenuItem_Click(object sender, EventArgs e)
@@ -685,7 +670,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void emptyBodyMenu_Opened(object sender, EventArgs e)
         {
-            if (CurrentAssembly == null || CurrentAssembly.Method == null || CurrentAssembly.Method.NewMethod == null)
+            if (CurrentAssembly == null || CurrentAssembly.Method == null || CurrentAssembly.Method == null)
             {
                 emptyBodyMenu.Items[0].Enabled = false;
                 emptyBodyMenu.Items[1].Enabled = false;
@@ -707,13 +692,14 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         public void treeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
+            if (HandleExpand)
             _treeViewHandler.treeView1_AfterExpand(sender, e);
         }
 
         public void treeView_DragDrop(object sender, DragEventArgs e)
         {
             string result = _treeViewHandler.DragDrop(sender, e);
-            if (!string.IsNullOrEmpty(result))
+            if (!String.IsNullOrEmpty(result))
             {
                 Functions.OpenFile(_treeViewHandler, result, ref CurrentAssembly);
             }
@@ -726,7 +712,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            _treeViewHandler.treeView_NodeMouseClick(sender, e, ref CurrentAssembly);
+            _treeViewHandler.treeView_NodeMouseClick(sender, e, CurrentAssembly);
         }
 
         public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -745,7 +731,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void dgBody_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex > CurrentAssembly.Method.NewMethod.Body.Instructions.Count - 1)
+            if (e.RowIndex > CurrentAssembly.Method.Body.Instructions.Count - 1)
             {
                 NewExceptionHandlerEditor(EditExceptionHandlerMode.Edit);
                 return;
@@ -834,7 +820,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         private void createNewVariableToolStripMenuItem_Opened(object sender, EventArgs e)
         {
-            if (CurrentAssembly == null || CurrentAssembly.Method.NewMethod == null)
+            if (CurrentAssembly == null || CurrentAssembly.Method == null)
             {
                 emptyVariableMenu.Items[0].Enabled = false;
                 return;
@@ -845,10 +831,100 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         #endregion EmptyInstructionsMenu        
 
-        private void lblMagicRegex_Click(object sender, EventArgs e)
+        #region Search
+
+        private void listAnalysis_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            txtMagicRegex.Text = Settings.Default.MagicRegex = @"[^\x20-\x7F]";
-            Settings.Default.Save();
+            ListViewItem item = listAnalysis.GetItemAt(e.X, e.Y);
+
+            if (item == null)
+                return;
+
+            _treeViewHandler.BrowseAndExpandMember(item.Tag);
         }
+
+        public static void SearchFinished(object result)
+        {
+            if (result is int) // row index
+            {
+                int i = Int32.Parse(result.ToString());
+
+                DgBody.ClearSelection();
+                DgBody.FirstDisplayedScrollingRowIndex = i;
+                DgBody.Rows[i].Selected = true;
+            }
+            else if (result is List<object>) // members
+            {
+                var resultList = result as List<object>;
+
+                if (resultList.Count == 0)
+                    return;
+
+                AnalysisHandler.UpdateStatus("Search results");
+
+                ListAnalysis.BeginUpdate();
+
+                foreach (object item in resultList)
+                {
+                    var listViewItem = new ListViewItem();
+                    listViewItem.Text = item.ToString();
+                    listViewItem.Tag = item;
+
+                    ListAnalysis.Items.Add(listViewItem);
+                }
+
+                ListAnalysis.EndUpdate();
+                ListAnalysis.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            }
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (cbSearchType.Text.Trim() == "" || txtSearch.Text.Trim() == "") return;
+            TreeNode searchNode;
+
+            switch (cbSearchType.Text)
+            {
+                case "MDToken":
+                    _searchType = SearchType.MDToken;
+                    searchNode = _treeViewHandler.CurrentModule;
+                    break;
+
+                case "String (global)":
+                    _searchType = SearchType.StringGlobal;
+                    searchNode = _treeViewHandler.CurrentModule;
+                    break;
+
+                case "String":
+                    _searchType = SearchType.String;
+                    searchNode = _treeViewHandler.CurrentMethod;
+                    break;
+
+                case "OpCode":
+                    _searchType = SearchType.OpCode;
+                    searchNode = _treeViewHandler.CurrentMethod;
+                    break;
+
+                case "Operand":
+                    _searchType = SearchType.Operand;
+                    searchNode = _treeViewHandler.CurrentMethod;
+                    break;
+
+                default:
+                    _searchType = SearchType.Any;
+                    searchNode = _treeViewHandler.CurrentModule;
+                    break;
+            }
+
+            if (searchNode == null) return;
+
+            var searchHandler = new SearchHandler(searchNode, txtSearch.Text, _searchType, _treeViewHandler);
+            searchHandler.SearchFinished += SearchFinished;
+            searchHandler.Search();
+
+            DgBody.Focus();
+        }
+
+        #endregion Search
     }
 }

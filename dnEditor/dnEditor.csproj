@@ -112,7 +112,7 @@
     <Compile Include="Misc\InsUtils.cs" />
     <Compile Include="Misc\ITreeMenu.cs" />
     <Compile Include="Misc\ITreeView.cs" />
-    <Compile Include="Misc\MethodHolder.cs" />
+    <Compile Include="Misc\MemberPath.cs" />
     <Compile Include="Misc\MonoTranslator.cs" />
     <Compile Include="Misc\ObfuscationHelper.cs" />
     <Compile Include="Misc\ILSpy\ILSpyDecompiler.cs" />

@@ -12,10 +12,8 @@ namespace dnEditor.Handlers
     {
         private static int _currentRowIndex;
         private static int _currentSelectedRowIndex;
-
         private static int _currentVariableRowIndex;
         private static int _currentVariableSelectedRowIndex;
-
         private static MethodDef _currentMethod;
 
         public static void InitializeBody()
@@ -28,6 +26,11 @@ namespace dnEditor.Handlers
             MainForm.DgVariables.DefaultCellStyle.BackColor = DefaultColors.RowColor;
             MainForm.DgVariables.Columns.GetColumnFromText("Index").DefaultCellStyle.ForeColor =
                 DefaultColors.IndexTextColor;
+        }
+
+        public static void SelectTab()
+        {
+            MainForm.TabControl.SelectTab(MainForm.TabControl.TabPages.Cast<TabPage>().First(tab => tab.Text == "IL"));
         }
 
         public static void ReadMethod(MethodDef method)
@@ -58,7 +61,7 @@ namespace dnEditor.Handlers
             ClearInstructions();
             VariableHandler.ClearVariables();
 
-            MainForm.CurrentAssembly.Method.NewMethod = method;
+            MainForm.CurrentAssembly.Method = method;
 
             ILSpyHandler.CheckDecompile();
 
@@ -76,7 +79,7 @@ namespace dnEditor.Handlers
         {
             if (!method.Body.HasInstructions) return;
 
-            int i = 0;
+            var i = 0;
             var rows = new List<DataGridViewRow>();
 
             foreach (Instruction instruction in method.Body.Instructions)
@@ -101,7 +104,7 @@ namespace dnEditor.Handlers
 
                 #region Application
 
-                for (int j = 0; j < cells.Count; j++)
+                for (var j = 0; j < cells.Count; j++)
                 {
                     if (cells[j] == null || string.IsNullOrWhiteSpace(cells[j].ToString()))
                         continue;
@@ -111,7 +114,7 @@ namespace dnEditor.Handlers
 
                 var row = new DataGridViewRow();
 
-                for (int j = 0; j < cells.Count; j++)
+                for (var j = 0; j < cells.Count; j++)
                 {
                     row.Cells.Add(new DataGridViewTextBoxCell());
                     row.Cells[j].Value = cells[j];
@@ -186,27 +189,15 @@ namespace dnEditor.Handlers
                     MainForm.DgVariables.Rows[_currentVariableSelectedRowIndex].Selected = true;
             }
         }
-
-        public static void SearchFinished(object result)
-        {
-            if (result is int) // row index
-            {
-                int i = int.Parse(result.ToString());
-
-                MainForm.DgBody.ClearSelection();
-                MainForm.DgBody.FirstDisplayedScrollingRowIndex = i;
-                MainForm.DgBody.Rows[i].Selected = true;
-            }
-        }
     }
 
-    internal static class VariableHandler
+    public static class VariableHandler
     {
         public static void ReadVariables(MethodDef method)
         {
             if (method.Body.HasVariables)
             {
-                int i = 0;
+                var i = 0;
                 var rows = new List<DataGridViewRow>();
 
                 foreach (Local local in method.Body.Variables)
@@ -216,7 +207,7 @@ namespace dnEditor.Handlers
                     cells.Add(local.Name);
                     cells.Add(local.Type.GetFullName());
 
-                    for (int j = 0; j < cells.Count; j++)
+                    for (var j = 0; j < cells.Count; j++)
                     {
                         if (cells[j] == null || string.IsNullOrWhiteSpace(cells[j].ToString()))
                             continue;
@@ -226,7 +217,7 @@ namespace dnEditor.Handlers
 
                     var row = new DataGridViewRow();
 
-                    for (int j = 0; j < cells.Count; j++)
+                    for (var j = 0; j < cells.Count; j++)
                     {
                         row.Cells.Add(new DataGridViewTextBoxCell());
                         row.Cells[j].Value = cells[j];
@@ -249,13 +240,13 @@ namespace dnEditor.Handlers
         }
     }
 
-    internal static class ExceptionHandler
+    public static class ExceptionHandler
     {
         public static void ReadExceptionHandlers(MethodDef method)
         {
             if (method.Body.HasExceptionHandlers)
             {
-                int i = 0;
+                var i = 0;
                 var rows = new List<DataGridViewRow>();
 
                 foreach (dnlib.DotNet.Emit.ExceptionHandler exceptionHandler in method.Body.ExceptionHandlers)
@@ -274,7 +265,7 @@ namespace dnEditor.Handlers
                         tryEnd = method.Body.Instructions.Count - 1;
 
                     cells.Add(string.Format("{0} to {1}", tryStart, tryEnd));
-                        // Column 3
+                    // Column 3
 
                     int handlerStart = method.Body.Instructions.IndexOf(exceptionHandler.HandlerStart);
                     int handlerEnd;
@@ -293,23 +284,25 @@ namespace dnEditor.Handlers
                                 cells[3] += string.Format(" [{0}]", exceptionHandler.CatchType.FullName);
 
                             break;
-                            case ExceptionHandlerType.Duplicated:
-                            cells.Add(string.Format("Duplicated handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+                        case ExceptionHandlerType.Duplicated:
+                            cells.Add(string.Format("Duplicated handler {0} to {1}", handlerStart, handlerEnd));
+                                // Column 3
                             break;
-                            case ExceptionHandlerType.Fault:
+                        case ExceptionHandlerType.Fault:
                             cells.Add(string.Format("Fault handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
                             break;
-                            case ExceptionHandlerType.Filter:
+                        case ExceptionHandlerType.Filter:
                             cells.Add(string.Format("Filter handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
                             break;
-                            case ExceptionHandlerType.Finally:
-                            cells.Add(string.Format("Finally handler {0} to {1}", handlerStart, handlerEnd)); // Column 3
+                        case ExceptionHandlerType.Finally:
+                            cells.Add(string.Format("Finally handler {0} to {1}", handlerStart, handlerEnd));
+                                // Column 3
                             break;
                     }
 
                     #region Application
 
-                    for (int j = 0; j < cells.Count; j++)
+                    for (var j = 0; j < cells.Count; j++)
                     {
                         if (cells[j] == null || string.IsNullOrWhiteSpace(cells[j].ToString()))
                             continue;
@@ -319,7 +312,7 @@ namespace dnEditor.Handlers
 
                     var row = new DataGridViewRow();
 
-                    for (int j = 0; j < cells.Count; j++)
+                    for (var j = 0; j < cells.Count; j++)
                     {
                         row.Cells.Add(new DataGridViewTextBoxCell());
                         row.Cells[j].Value = cells[j];
@@ -340,7 +333,7 @@ namespace dnEditor.Handlers
         }
     }
 
-    internal static class ILSpyHandler
+    public static class ILSpyHandler
     {
         public static void CheckDecompile()
         {
@@ -348,6 +341,30 @@ namespace dnEditor.Handlers
             {
                 new MonoTranslator.Decompiler().Start();
             }
+        }
+
+        public static void Clear()
+        {
+            MainForm.RtbILSpy.Clear();
+        }
+    }
+
+    public static class AnalysisHandler
+    {
+        public static void SelectTab()
+        {
+            MainForm.TabControl.SelectTab(MainForm.TabControl.TabPages.Cast<TabPage>().First(tab => tab.Text == "Analysis"));
+        }
+        
+        public static void UpdateStatus(string text)
+        {
+            MainForm.LblAnalysis.Text = text;
+        }
+
+        public static void Reset()
+        {
+            MainForm.LblAnalysis.Text = "Empty...";
+            MainForm.ListAnalysis.Items.Clear();
         }
     }
 }

@@ -127,7 +127,7 @@ namespace dnEditor.Handlers
 
         public static bool HasVirtualNode(this TreeNode node)
         {
-            if (node.FindVirtualNode() !=  null)
+            if (node.FindVirtualNode() != null)
                 return true;
 
             return false;

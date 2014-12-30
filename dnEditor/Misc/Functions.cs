@@ -286,6 +286,14 @@ namespace dnEditor.Misc
             return node;
         }
 
+        public static TreeNode ModuleNode(this TreeNode node)
+        {
+            while (node == null || !(node.Tag is ModuleDefMD))
+                node = node.Parent;
+
+            return node;
+        }
+
         public static DataGridViewColumn GetColumnFromText(this DataGridViewColumnCollection columns, string text)
         {
             return columns.Cast<DataGridViewColumn>().First(t => t.HeaderText == text);

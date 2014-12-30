@@ -8,8 +8,8 @@ Feel free to upgrade, fix or touch this project by submitting a pull request and
 make sure to approve and merge it.
 
 Please note that I am working on this project during my free time, and as just a teenager doing everything
-here alone, I cannot do it all instantly or at will. If your favourite feature is not found in dnEditor - submit
-a ticket. And wait. I will eventually get through it.
+alone, I cannot do it all instantly or at will. If your favourite feature is not found in dnEditor and
+you really wish it was there - submit a ticket, and wait. I will eventually get through it.
 
 #####Cheers!
 
@@ -20,7 +20,7 @@ a ticket. And wait. I will eventually get through it.
  - [x] ~~Add variables support.~~
  - [x] ~~Add support for "try-catch".~~
  - [x] ~~Implement ILSpy decompiler.~~
- - [ ] Add full search functions.
+ - [x] ~~Add search functions.~~
  - [ ] Add member overview/preview.
  - [ ] Add member icons.
  - [ ] Add resources support.

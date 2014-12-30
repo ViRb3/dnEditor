@@ -11,7 +11,7 @@ namespace dnEditor.Misc
         public ModuleDefMD ManifestModule;
 
         public Instruction Instruction;
-        public MethodHolder Method = new MethodHolder();
+        public MethodDef Method = null;
         public string Path;
         public bool IsExecutable;
 

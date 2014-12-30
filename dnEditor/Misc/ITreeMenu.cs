@@ -6,6 +6,10 @@ namespace dnEditor.Misc
     {
         void treeMenu_Opened(object sender, EventArgs e);
 
+        void goToEntryPointToolStripMenuItem_Click(object sender, EventArgs e);
+
+        void goToModuleCtorToolStripMenuItem_Click(object sender, EventArgs e);
+
         void expandToolStripMenuItem_Click(object sender, EventArgs e);
 
         void collapseToolStripMenuItem_Click(object sender, EventArgs e);
