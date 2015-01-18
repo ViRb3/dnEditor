@@ -294,7 +294,7 @@ namespace dnEditor.Forms
         {
             MessageBox.Show(@"dnEditor is a .NET assembly editor based on dnlib.
 
-Coded, maintained and organized by ViRb3
+Coded, maintained and organized by ViRb3 (virb3e@gmail.com)
 
 GitHub project page: https://github.com/ViRb3/dnEditor
 
