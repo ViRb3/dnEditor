@@ -39,10 +39,10 @@ namespace dnEditor.Misc
             try
             {
                 if (path == null)
-                    ManifestModule = ModuleDefMD.Load(Path);
+                    ManifestModule = ModuleDefMD.Load(File.ReadAllBytes(Path));
                 else
                 {
-                    ManifestModule = ModuleDefMD.Load(path);
+                    ManifestModule = ModuleDefMD.Load(File.ReadAllBytes(path));
                     Path = path;
                 }
             }

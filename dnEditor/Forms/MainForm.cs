@@ -712,7 +712,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
         public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            _treeViewHandler.treeView_NodeMouseClick(sender, e, CurrentAssembly);
+            _treeViewHandler.treeView_NodeMouseClick(sender, e);
         }
 
         public void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)

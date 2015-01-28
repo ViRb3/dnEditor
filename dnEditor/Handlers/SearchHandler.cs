@@ -163,10 +163,8 @@ namespace dnEditor.Handlers
             if (currentModule == null)
                 return results;
 
-            foreach (TypeDef type in currentModule.Types)
-            {
+            foreach (TypeDef type in currentModule.GetTypes())
                 results.AddRange(ProcessChildren(type));
-            }
 
             return results;
         }
@@ -182,9 +180,6 @@ namespace dnEditor.Handlers
             results.AddRange(type.Fields.Where(CheckMember));
             results.AddRange(type.Properties.Where(CheckMember));
             results.AddRange(type.Events.Where(CheckMember));
-
-            foreach (TypeDef nestedType in type.NestedTypes)
-                results.AddRange(ProcessChildren(nestedType));
 
             return results;
         }
@@ -239,10 +234,8 @@ namespace dnEditor.Handlers
             if (currentModule == null)
                 return results;
 
-            foreach (TypeDef type in currentModule.Types)
-            {
+            foreach (TypeDef type in currentModule.GetTypes())
                 results.AddRange(ProcessChildren(type));
-            }
 
             return results;
         }
@@ -258,9 +251,6 @@ namespace dnEditor.Handlers
             results.AddRange(type.Fields.Where(CheckMember));
             results.AddRange(type.Properties.Where(CheckMember));
             results.AddRange(type.Events.Where(CheckMember));
-
-            foreach (TypeDef nestedType in type.NestedTypes)
-                results.AddRange(ProcessChildren(nestedType));
 
             return results;
         }
@@ -320,7 +310,7 @@ namespace dnEditor.Handlers
             if (currentModule == null)
                 return results;
 
-            foreach (TypeDef type in currentModule.Types)
+            foreach (TypeDef type in currentModule.GetTypes())
             {
                 Dictionary<object, string> output = ProcessChildren(type);
 
@@ -341,14 +331,6 @@ namespace dnEditor.Handlers
 
                 if (!string.IsNullOrEmpty(output))
                     results.Add(method, output);
-            }
-
-            foreach (TypeDef nestedType in type.NestedTypes)
-            {
-                Dictionary<object, string> output = ProcessChildren(nestedType);
-
-                foreach (KeyValuePair<object, string> pair in output)
-                    results.Add(pair.Key, pair.Value);
             }
 
             return results;

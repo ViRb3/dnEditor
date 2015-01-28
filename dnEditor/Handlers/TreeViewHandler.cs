@@ -106,7 +106,7 @@ namespace dnEditor.Handlers
 
                 treeView_NodeMouseClick(this,
                     new TreeNodeMouseClickEventArgs(_currentSearchNode, MouseButtons.Left, 1,
-                        _currentSearchNode.Bounds.X, _currentSearchNode.Bounds.Y), MainForm.CurrentAssembly);
+                        _currentSearchNode.Bounds.X, _currentSearchNode.Bounds.Y));
 
                 DataGridViewHandler.SelectTab();
             }
@@ -117,7 +117,7 @@ namespace dnEditor.Handlers
 
                 treeView_NodeMouseClick(this,
                     new TreeNodeMouseClickEventArgs(_currentSearchNode, MouseButtons.Left, 1,
-                        _currentSearchNode.Bounds.X, _currentSearchNode.Bounds.Y), MainForm.CurrentAssembly);
+                        _currentSearchNode.Bounds.X, _currentSearchNode.Bounds.Y));
 
                 DataGridViewHandler.SelectTab();
             }
@@ -475,16 +475,16 @@ namespace dnEditor.Handlers
             VirtualNodeUtilities.ExpandHandler(e.Node, this);
         }
 
-        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e, CurrentAssembly currentAssembly)
+        public void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             TreeNode assemblyNode = e.Node.FirstParentNode();
 
-            if (currentAssembly == null || currentAssembly.ManifestModule != assemblyNode.Tag as ModuleDefMD)
+            if (MainForm.CurrentAssembly == null || MainForm.CurrentAssembly.ManifestModule != assemblyNode.Tag as ModuleDefMD)
             {
                 AnalysisHandler.Reset();
 
-                currentAssembly = new CurrentAssembly(assemblyNode.Tag as ModuleDefMD);
-                currentAssembly.Path = assemblyNode.ToolTipText;
+                MainForm.CurrentAssembly = new CurrentAssembly(assemblyNode.Tag as ModuleDefMD);
+                MainForm.CurrentAssembly.Path = assemblyNode.ToolTipText;
 
                 if (e.Node.ModuleNode() != null)
                     CurrentModule = e.Node.ModuleNode();
@@ -504,7 +504,7 @@ namespace dnEditor.Handlers
             else
             {
                 CurrentMethod = null;
-                currentAssembly.Method = null;
+                MainForm.CurrentAssembly.Method = null;
                 DataGridViewHandler.ClearInstructions();
                 VariableHandler.ClearVariables();
                 ILSpyHandler.Clear();

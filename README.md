@@ -21,6 +21,7 @@ you really wish it was there - submit a ticket, and wait. I will eventually get 
  - [x] ~~Add support for "try-catch".~~
  - [x] ~~Implement ILSpy decompiler.~~
  - [x] ~~Add search functions.~~
+ - [ ] Add member creation and deletion support.
  - [ ] Add member overview/preview.
  - [ ] Add member icons.
  - [ ] Add resources support.
