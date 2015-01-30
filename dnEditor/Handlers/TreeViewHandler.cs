@@ -586,7 +586,10 @@ namespace dnEditor.Handlers
             if (node.Tag is ModuleDefMD)
             {
                 var module = node.Tag as ModuleDefMD;
-                string text = string.Format("0x{0}: {1}", module.MDToken.FullMetadataTokenString(), module.FullName);
+                string text = string.Format(
+@"MDToken: 0x{0}
+RID: {1}
+FullName: {2}", module.MDToken.FullMetadataTokenString(), module.MDToken.Rid, module.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -595,7 +598,10 @@ namespace dnEditor.Handlers
             else if (node.Tag is TypeDef)
             {
                 var type = node.Tag as TypeDef;
-                string text = string.Format("0x{0}: {1}", type.MDToken.FullMetadataTokenString(), type.FullName);
+                string text = string.Format(
+@"MDToken: 0x{0}
+RID: {1}
+FullName: {2}", type.MDToken.FullMetadataTokenString(), type.MDToken.Rid, type.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -604,7 +610,10 @@ namespace dnEditor.Handlers
             else if (node.Tag is MethodDef)
             {
                 var method = node.Tag as MethodDef;
-                string text = string.Format("0x{0}: {1}", method.MDToken.FullMetadataTokenString(), method.FullName);
+                string text = string.Format(
+@"MDToken: 0x{0}
+RID: {1}
+FullName: {2}", method.MDToken.FullMetadataTokenString(), method.MDToken.Rid, method.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -613,7 +622,10 @@ namespace dnEditor.Handlers
             else if (node.Tag is PropertyDef)
             {
                 var property = node.Tag as PropertyDef;
-                string text = string.Format("0x{0}: {1}", property.MDToken.FullMetadataTokenString(), property.FullName);
+                string text = string.Format(
+@"MDToken: 0x{0}
+RID: {1}
+FullName: {2}", property.MDToken.FullMetadataTokenString(), property.MDToken.Rid, property.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -622,7 +634,10 @@ namespace dnEditor.Handlers
             else if (node.Tag is FieldDef)
             {
                 var field = node.Tag as FieldDef;
-                string text = string.Format("0x{0}: {1}", field.MDToken.FullMetadataTokenString(), field.FullName);
+                string text = string.Format(
+@"MDToken: 0x{0}
+RID: {1}
+FullName: {2}", field.MDToken.FullMetadataTokenString(), field.MDToken.Rid, field.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);
@@ -631,7 +646,10 @@ namespace dnEditor.Handlers
             else if (node.Tag is EventDef)
             {
                 var @event = node.Tag as EventDef;
-                string text = string.Format("0x{0}: {1}", @event.MDToken.FullMetadataTokenString(), @event.FullName);
+                string text = string.Format(
+@"MDToken: 0x{0}
+RID: {1}
+FullName: {2}", @event.MDToken.FullMetadataTokenString(), @event.MDToken.Rid, @event.FullName);
 
                 node.ToolTipText = text;
                 NodeToolTip.Show(text, CurrentTreeView);

@@ -427,9 +427,28 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
 
                 CurrentAssembly.Method.Body.Instructions.Insert(instructionIndex, newInstruction);
             }
+            FixBranches();
 
             CurrentAssembly.Method.Body.Instructions.UpdateInstructionOffsets();
             DataGridViewHandler.ReadMethod(CurrentAssembly.Method);
+        }
+
+        private void FixBranches()
+        {
+            foreach (Instruction instruction in CurrentAssembly.Method.Body.Instructions)
+            {
+                if (instruction.OpCode.OperandType == OperandType.InlineBrTarget ||
+                    instruction.OpCode.OperandType == OperandType.ShortInlineBrTarget)
+                {
+                    //TODO: Fix for cases where >1 instructions have the same OpCode and Operand
+                    if (CurrentAssembly.Method.Body.Instructions.Count(i => i.OpCode == (instruction.Operand as Instruction).OpCode &&
+                        i.Operand == (instruction.Operand as Instruction).Operand) == 1)
+                    {
+                        instruction.Operand = CurrentAssembly.Method.Body.Instructions.First(i => i.OpCode == (instruction.Operand as Instruction).OpCode &&
+                        i.Operand == (instruction.Operand as Instruction).Operand);
+                    }
+                }
+            }
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
