@@ -20,11 +20,8 @@ namespace dnEditor.Misc
 
         public NavigationHistory(TreeViewHandler treeViewHandler)
         {
-            if (!(treeViewHandler.CurrentForm is MainForm))
-                throw new Exception("TreeViewHandler form is not MainForm!");
-
             _treeViewHandler = treeViewHandler;
-            _mainForm = (MainForm) _treeViewHandler.CurrentForm;
+            _mainForm = (_treeViewHandler.CurrentForm is MainForm) ? (MainForm)_treeViewHandler.CurrentForm : null;
         }
 
         public void AddPastHistory(object member)
@@ -78,7 +75,9 @@ namespace dnEditor.Misc
         {
             HasPast = _pastHistory.Count > 1;
             HasFuture = _futureHistory.Count > 0;
-            _mainForm.HandleToolStripItemsState();
+
+            if (_mainForm != null)
+                _mainForm.HandleToolStripItemsState();
         }
     }
 }
