@@ -72,6 +72,9 @@ namespace dnEditor.Forms
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnNavigateBack = new System.Windows.Forms.ToolStripButton();
+            this.btnNavigateForward = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.btnAbout = new System.Windows.Forms.ToolStripButton();
@@ -163,7 +166,7 @@ namespace dnEditor.Forms
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
             this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
             this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
-            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
+            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView_KeyDown);
             // 
             // imageList2
             // 
@@ -787,6 +790,9 @@ namespace dnEditor.Forms
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnNavigateBack,
+            this.btnNavigateForward,
+            this.toolStripSeparator13,
             this.btnOpen,
             this.btnSave,
             this.btnAbout,
@@ -805,6 +811,33 @@ namespace dnEditor.Forms
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // btnNavigateBack
+            // 
+            this.btnNavigateBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnNavigateBack.Enabled = false;
+            this.btnNavigateBack.Image = ((System.Drawing.Image)(resources.GetObject("btnNavigateBack.Image")));
+            this.btnNavigateBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnNavigateBack.Name = "btnNavigateBack";
+            this.btnNavigateBack.Size = new System.Drawing.Size(23, 22);
+            this.btnNavigateBack.Text = "Navigate back";
+            this.btnNavigateBack.Click += new System.EventHandler(this.btnNavigateBack_Click);
+            // 
+            // btnNavigateForward
+            // 
+            this.btnNavigateForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnNavigateForward.Enabled = false;
+            this.btnNavigateForward.Image = ((System.Drawing.Image)(resources.GetObject("btnNavigateForward.Image")));
+            this.btnNavigateForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnNavigateForward.Name = "btnNavigateForward";
+            this.btnNavigateForward.Size = new System.Drawing.Size(23, 22);
+            this.btnNavigateForward.Text = "Navigate forward";
+            this.btnNavigateForward.Click += new System.EventHandler(this.btnNavigateForward_Click);
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(6, 25);
+            // 
             // btnOpen
             // 
             this.btnOpen.Image = ((System.Drawing.Image)(resources.GetObject("btnOpen.Image")));
@@ -816,6 +849,7 @@ namespace dnEditor.Forms
             // 
             // btnSave
             // 
+            this.btnSave.Enabled = false;
             this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSave.Name = "btnSave";
@@ -842,6 +876,7 @@ namespace dnEditor.Forms
             // cbSearchType
             // 
             this.cbSearchType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbSearchType.Enabled = false;
             this.cbSearchType.Items.AddRange(new object[] {
             "Any name",
             "MDToken",
@@ -854,6 +889,7 @@ namespace dnEditor.Forms
             // 
             // txtSearch
             // 
+            this.txtSearch.Enabled = false;
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(135, 25);
             // 
@@ -865,6 +901,7 @@ namespace dnEditor.Forms
             // btnSearch
             // 
             this.btnSearch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnSearch.Enabled = false;
             this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSearch.Image = ((System.Drawing.Image)(resources.GetObject("btnSearch.Image")));
             this.btnSearch.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1282,6 +1319,9 @@ namespace dnEditor.Forms
         private ToolStripMenuItem goToEntryPointToolStripMenuItem;
         private ToolStripMenuItem goToModuleCCtorToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator11;
+        private ToolStripButton btnNavigateBack;
+        private ToolStripButton btnNavigateForward;
+        private ToolStripSeparator toolStripSeparator13;
     }
 }
 

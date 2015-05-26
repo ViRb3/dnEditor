@@ -239,15 +239,6 @@ namespace dnEditor.Forms
             Settings.Default.Save();
         }
 
-        private void treeView1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Delete && _treeViewHandler.SelectedNode != null &&
-                _treeViewHandler.SelectedNode.Tag is ModuleDefMD)
-            {
-                closeToolStripMenuItem_Click(sender, e);
-            }
-        }
-
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
             ILSpyHandler.CheckDecompile();
@@ -300,6 +291,38 @@ GitHub project page: https://github.com/ViRb3/dnEditor
 
 Copyright (C) 2014-2015 ViRb3
 Licenses can be found in the root directory of the project.", "About dnEditor");
+        }
+
+        public void HandleToolStripItemsState()
+        {
+            if (TreeView.Nodes.Count == 0)
+            {
+                btnNavigateBack.Enabled = false;
+                btnNavigateForward.Enabled = false;
+                btnSave.Enabled = false;
+                cbSearchType.Enabled = false;
+                txtSearch.Enabled = false;
+                btnSearch.Enabled = false;
+            }
+            else
+            {
+                btnNavigateBack.Enabled = _treeViewHandler.NavigationHistory.HasPast;
+                btnNavigateForward.Enabled = _treeViewHandler.NavigationHistory.HasFuture;
+                btnSave.Enabled = true;
+                cbSearchType.Enabled = true;
+                txtSearch.Enabled = true;
+                btnSearch.Enabled = true;
+            }
+        }
+
+        private void btnNavigateBack_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.NavigationHistory.GoBack();
+        }
+
+        private void btnNavigateForward_Click(object sender, EventArgs e)
+        {
+            _treeViewHandler.NavigationHistory.GoForward();
         }
 
         #endregion ToolStrip
@@ -676,6 +699,7 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         public void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _treeViewHandler.closeToolStripMenuItem_Click(sender, e, ref CurrentAssembly);
+            HandleToolStripItemsState();
         }
 
         #endregion TreeMenuStrip
@@ -708,6 +732,15 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
         #endregion EmptyInstructionsMenu
 
         #region TreeView Events
+
+        private void treeView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete && _treeViewHandler.SelectedNode != null &&
+                _treeViewHandler.SelectedNode.Tag is ModuleDefMD)
+            {
+                closeToolStripMenuItem_Click(sender, e);
+            }
+        }
 
         public void treeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
@@ -862,11 +895,11 @@ Licenses can be found in the root directory of the project.", "About dnEditor");
             _treeViewHandler.BrowseAndExpandMember(item.Tag);
         }
 
-        public static void SearchFinished(object result)
+        public void SearchFinished(object result)
         {
             if (result is int) // row index
             {
-                int i = Int32.Parse(result.ToString());
+                int i = int.Parse(result.ToString());
 
                 DgBody.ClearSelection();
                 DgBody.FirstDisplayedScrollingRowIndex = i;

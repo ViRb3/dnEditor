@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using dnEditor.Forms;
 using dnEditor.Handlers;
 using dnEditor.Properties;
 using dnlib.DotNet;
@@ -271,11 +272,26 @@ namespace dnEditor.Misc
 
             var newCurrentAssembly = new CurrentAssembly(file);
 
-            if (newCurrentAssembly.ManifestModule == null) return false;
+            if (newCurrentAssembly.ManifestModule == null)
+            {
+                HandleToolStripItemsState(treeViewHandler);
+                return false;
+            }
             currentAssembly = newCurrentAssembly;
 
             treeViewHandler.LoadAssembly(currentAssembly.ManifestModule, file, clear);
+            HandleToolStripItemsState(treeViewHandler);
+
             return true;
+        }
+
+        private static void HandleToolStripItemsState(TreeViewHandler treeViewHandler)
+        {
+            if (!(treeViewHandler.CurrentForm is MainForm))
+                return;
+
+            var mainForm = (MainForm) treeViewHandler.CurrentForm;
+            mainForm.HandleToolStripItemsState();
         }
 
         public static TreeNode FirstParentNode(this TreeNode node)
@@ -288,8 +304,11 @@ namespace dnEditor.Misc
 
         public static TreeNode ModuleNode(this TreeNode node)
         {
-            while (node == null || !(node.Tag is ModuleDefMD))
+            while (node.Parent != null && !(node.Tag is ModuleDefMD))
                 node = node.Parent;
+
+            while (node.Nodes.Count > 0 && node.Nodes[0].Tag is ModuleDefMD)
+                node = node.Nodes[0];
 
             return node;
         }

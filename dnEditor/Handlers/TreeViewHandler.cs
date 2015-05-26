@@ -15,23 +15,43 @@ namespace dnEditor.Handlers
     {
         private TreeNode _currentSearchNode;
         private List<object> _searchPath;
-        public TreeNode CurrentMethod;
-        public TreeNode CurrentModule;
+        private TreeNode _currentModule;
+
+        public Form CurrentForm;
+        public TreeNode CurrentMethod;   
         public ContextMenuStrip CurrentTreeMenu;
         public TreeView CurrentTreeView;
         public List<string> NameSpaceList = new List<string>();
         public ToolTip NodeToolTip = new ToolTip();
         public TreeNode RefNode;
         public TreeNode SelectedNode;
+        public NavigationHistory NavigationHistory;
+
+        public TreeNode CurrentModule
+        {
+            get { return _currentModule; }
+            set
+            {
+                if (value != _currentModule || value == null)
+                    NavigationHistory.Clear();
+
+                _currentModule = value;
+            }
+        }
 
         public TreeViewHandler(TreeView currentTreeView, ContextMenuStrip currentTreeMenu)
         {
+            CurrentForm = currentTreeView.FindForm();
             CurrentTreeView = currentTreeView;
             CurrentTreeMenu = currentTreeMenu;
+            NavigationHistory = new NavigationHistory(this);
         }
 
         public void BrowseAndExpandMember(object member)
         {
+            if (member == null)
+                return;
+
             var memberPath = new MemberPath(member);
 
             if (memberPath.Path.Count == 0)
@@ -40,7 +60,7 @@ namespace dnEditor.Handlers
             MainForm.HandleExpand = false;
             _searchPath = memberPath.Path;
 
-            TreeNode node = CurrentModule;
+            TreeNode node = _currentModule;
 
             while (node != null)
             {
@@ -49,7 +69,7 @@ namespace dnEditor.Handlers
             }
 
             var mainType = memberPath.Path[0] as TypeDef;
-            _currentSearchNode = CurrentModule.Nodes.Cast<TreeNode>().First(n => n.Text == mainType.Namespace);
+            _currentSearchNode = _currentModule.Nodes.Cast<TreeNode>().First(n => n.Text == mainType.Namespace);
             _currentSearchNode.Expand();
 
             BrowseAndExpandMember();
@@ -162,18 +182,18 @@ namespace dnEditor.Handlers
         {
             var nodes = new List<TreeNode>();
 
-            nodes.AddRange(CurrentModule.Nodes.Cast<TreeNode>().Where(n => !(n.Tag is string)));
+            nodes.AddRange(_currentModule.Nodes.Cast<TreeNode>().Where(n => !(n.Tag is string)));
             nodes.AddRange(
-                CurrentModule.Nodes.Cast<TreeNode>().Where(n => n.Tag is string).OrderBy(n => n.Text.ToLower()));
-            CurrentModule.Nodes.Clear();
-            CurrentModule.Nodes.AddRange(nodes.ToArray());
+                _currentModule.Nodes.Cast<TreeNode>().Where(n => n.Tag is string).OrderBy(n => n.Text.ToLower()));
+            _currentModule.Nodes.Clear();
+            _currentModule.Nodes.AddRange(nodes.ToArray());
         }
 
         private void OrderReferences()
         {
             var nodes = new List<TreeNode>();
 
-            TreeNode referenceFolder = CurrentModule.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Tag is AssemblyRef[]);
+            TreeNode referenceFolder = _currentModule.Nodes.Cast<TreeNode>().FirstOrDefault(n => n.Tag is AssemblyRef[]);
             if (referenceFolder == null) return;
 
             nodes.AddRange(referenceFolder.Nodes.Cast<TreeNode>().OrderBy(n => n.Text.ToLower()));
@@ -367,12 +387,12 @@ namespace dnEditor.Handlers
 
         public void goToEntryPointToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BrowseAndExpandMember((CurrentModule.Tag as ModuleDefMD).EntryPoint);
+            BrowseAndExpandMember((_currentModule.Tag as ModuleDefMD).EntryPoint);
         }
 
         public void goToModuleCCtorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BrowseAndExpandMember((CurrentModule.Tag as ModuleDefMD).GlobalType.FindStaticConstructor());
+            BrowseAndExpandMember((_currentModule.Tag as ModuleDefMD).GlobalType.FindStaticConstructor());
         }
 
         public void expandToolStripMenuItem_Click(object sender, EventArgs e)
@@ -499,6 +519,8 @@ namespace dnEditor.Handlers
                     ILSpyHandler.Clear();
                     DataGridViewHandler.ReadMethod(method);
                     CurrentMethod = e.Node;
+
+                    NavigationHistory.AddPastHistory(method);
                 }
             }
             else

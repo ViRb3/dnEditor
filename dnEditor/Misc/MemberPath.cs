@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using dnlib.DotNet;
 
 namespace dnEditor.Misc
@@ -9,6 +10,9 @@ namespace dnEditor.Misc
 
         public MemberPath(object member)
         {
+            if (member == null)
+                throw new ArgumentNullException("Member argument is invalid!");
+
             if (member is TypeDef)
             {
                 GetTypePath(member);
