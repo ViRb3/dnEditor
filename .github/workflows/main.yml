@@ -1,0 +1,34 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: [windows-2019]
+
+    steps:
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+      
+    - name: Setup Nuget.exe
+      uses: warrenbuckley/Setup-Nuget@v1
+      
+    - uses: actions/checkout@v1
+    - name: Build
+      run: |
+        git submodule update --init --recursive
+        nuget restore dnEditor.sln
+        msbuild dnEditor.sln /p:Configuration=Release /m /verbosity:normal /p:WarningLevel=0
+    - name: Create ZIP
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        Compress-Archive -Path dnEditor/bin/Release/* -DestinationPath dnEditor
+      
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+          files: dnEditor.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
